@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel Administrativo — Max Doe Portfolio</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Estilos Admin -->
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body class="admin-body">
+
+  <!-- TELA DE LOGIN (Mostrada se não autenticado) -->
+  <div id="loginScreen" class="admin-login-wrapper">
+    <div class="admin-login-card">
+      <div style="font-size: 2.5rem; color: var(--admin-primary); margin-bottom: 15px;">
+        <i class="fa-solid fa-palette"></i>
+      </div>
+      <h1>Painel de Controle</h1>
+      <p>Gerenciamento de Portfólio de Arte</p>
+
+      <form id="loginForm">
+        <div class="admin-form-group">
+          <label for="adminPassword">Senha de Acesso</label>
+          <input type="password" id="adminPassword" class="admin-input" placeholder="Digite a senha (padrão: admin123)" required />
+        </div>
+        <button type="submit" class="admin-btn" id="btnLoginSubmit">
+          <i class="fa-solid fa-arrow-right-to-bracket"></i> Entrar no Painel
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- DASHBOARD PRINCIPAL (Mostrado se autenticado) -->
+  <div id="dashboardScreen" style="display: none; min-height: 100vh; flex-direction: column;">
+    
+    <!-- Top Bar -->
+    <header class="admin-navbar">
+      <div class="admin-brand">
+        <i class="fa-solid fa-palette"></i>
+        <span>ADMIN</span> Max Doe Studio
+      </div>
+      <div class="admin-nav-actions">
+        <a href="/" target="_blank" class="admin-btn small secondary">
+          <i class="fa-solid fa-arrow-up-right-from-square"></i> Ver Site Público
+        </a>
+        <button id="btnLogout" class="admin-btn small">
+          <i class="fa-solid fa-right-from-bracket"></i> Sair
+        </button>
+      </div>
+    </header>
+
+    <!-- Layout com Sidebar + Conteúdo -->
+    <div class="admin-container">
+      
+      <!-- Sidebar -->
+      <aside class="admin-sidebar">
+        <a class="admin-nav-item active" data-tab="tabGalleries">
+          <i class="fa-solid fa-images"></i> Galerias & Fotos
+        </a>
+        <a class="admin-nav-item" data-tab="tabPages">
+          <i class="fa-solid fa-file-lines"></i> Páginas & Textos
+        </a>
+        <a class="admin-nav-item" data-tab="tabSiteInfo">
+          <i class="fa-solid fa-user-pen"></i> Perfil & Bio
+        </a>
+        <a class="admin-nav-item" data-tab="tabMenu">
+          <i class="fa-solid fa-bars"></i> Menus & Links
+        </a>
+        <a class="admin-nav-item" data-tab="tabMessages">
+          <i class="fa-solid fa-envelope"></i> Mensagens
+        </a>
+        <a class="admin-nav-item" data-tab="tabSecurity">
+          <i class="fa-solid fa-shield-halved"></i> Segurança
+        </a>
+      </aside>
+
+      <!-- Área de Conteúdo -->
+      <main class="admin-content">
+        
+        <!-- ========================================================
+             ABA 1: GALERIAS & FOTOS
+             ======================================================== -->
+        <div id="tabGalleries" class="tab-pane active">
+          <div class="admin-header-row">
+            <div>
+              <h2 class="admin-title">Gerenciador de Galerias & Obras</h2>
+              <p style="color: var(--admin-text-muted); font-size: 0.9rem; margin-top: 4px;">
+                Arraste as fotos para reorganizar a ordem de exibição no site.
+              </p>
+            </div>
+            <div style="display: flex; gap: 10px; align-items: center;">
+              <select id="gallerySelect" class="admin-input" style="width: auto; min-width: 220px; font-weight: 600;">
+                <!-- Preenchido via JS com as galerias -->
+              </select>
+              <button id="btnSaveGalleryOrder" class="admin-btn success small">
+                <i class="fa-solid fa-floppy-disk"></i> Salvar Ordem
+              </button>
+            </div>
+          </div>
+
+          <!-- Zona de Upload Drag & Drop -->
+          <div class="upload-dropzone" id="uploadDropzone">
+            <input type="file" id="fileInput" multiple accept="image/*" style="display: none;" />
+            <div class="upload-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+            <h3>Clique ou arraste novas fotos aqui</h3>
+            <p>Formatos suportados: JPG, PNG, WEBP (até 25MB por foto)</p>
+          </div>
+
+          <!-- Grid de fotos da galeria selecionada -->
+          <div id="adminGalleryGrid" class="admin-gallery-grid">
+            <!-- Renderizado dinamicamente via JS -->
+          </div>
+        </div>
+
+        <!-- ========================================================
+             ABA 2: PÁGINAS & TEXTOS
+             ======================================================== -->
+        <div id="tabPages" class="tab-pane">
+          <div class="admin-header-row">
+            <h2 class="admin-title">Gerenciar Páginas e Projetos</h2>
+            <button id="btnOpenNewPageModal" class="admin-btn small accent">
+              <i class="fa-solid fa-plus"></i> Criar Nova Galeria
+            </button>
+          </div>
+
+          <div id="pagesListContainer">
+            <!-- Lista de páginas para edição rápida de títulos/descrições -->
+          </div>
+        </div>
+
+        <!-- ========================================================
+             ABA 3: PERFIL & BIO
+             ======================================================== -->
+        <div id="tabSiteInfo" class="tab-pane">
+          <div class="admin-header-row">
+            <h2 class="admin-title">Informações do Artista</h2>
+            <button id="btnSaveSiteInfo" class="admin-btn small success">
+              <i class="fa-solid fa-floppy-disk"></i> Salvar Perfil
+            </button>
+          </div>
+
+          <form id="siteInfoForm" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div class="admin-form-group">
+              <label>Nome do Artista / Marca</label>
+              <input type="text" id="infoArtistName" class="admin-input" />
+            </div>
+
+            <div class="admin-form-group">
+              <label>Profissão / Slogan</label>
+              <input type="text" id="infoProfession" class="admin-input" />
+            </div>
+
+            <div class="admin-form-group" style="grid-column: span 2;">
+              <label>Bio Resumida (Página Inicial)</label>
+              <textarea id="infoBio" class="admin-input" rows="3"></textarea>
+            </div>
+
+            <div class="admin-form-group" style="grid-column: span 2;">
+              <label>Biografia Completa (Página Sobre)</label>
+              <textarea id="infoAboutLongBio" class="admin-input" rows="5"></textarea>
+            </div>
+
+            <div class="admin-form-group">
+              <label>E-mail de Contato</label>
+              <input type="email" id="infoEmail" class="admin-input" />
+            </div>
+
+            <div class="admin-form-group">
+              <label>Telefone / WhatsApp</label>
+              <input type="text" id="infoPhone" class="admin-input" />
+            </div>
+
+            <div class="admin-form-group" style="grid-column: span 2;">
+              <label>Endereço / Localização</label>
+              <input type="text" id="infoAddress" class="admin-input" />
+            </div>
+          </form>
+        </div>
+
+        <!-- ========================================================
+             ABA 4: MENUS & LINKS
+             ======================================================== -->
+        <div id="tabMenu" class="tab-pane">
+          <div class="admin-header-row">
+            <h2 class="admin-title">Menu de Navegação</h2>
+            <button id="btnSaveMenu" class="admin-btn small success">
+              <i class="fa-solid fa-floppy-disk"></i> Salvar Menu
+            </button>
+          </div>
+
+          <div id="menuItemsContainer" style="display: flex; flex-direction: column; gap: 12px;">
+            <!-- Itens de menu gerenciáveis -->
+          </div>
+          
+          <button id="btnAddMenuItem" class="admin-btn small secondary" style="margin-top: 15px;">
+            <i class="fa-solid fa-plus"></i> Adicionar Item de Menu
+          </button>
+        </div>
+
+        <!-- ========================================================
+             ABA 5: MENSAGENS RECEBIDAS
+             ======================================================== -->
+        <div id="tabMessages" class="tab-pane">
+          <div class="admin-header-row">
+            <h2 class="admin-title">Mensagens do Formulário de Contato</h2>
+          </div>
+          <div id="contactMessagesList">
+            <p style="color: var(--admin-text-muted);">Nenhuma nova mensagem recebida até o momento.</p>
+          </div>
+        </div>
+
+        <!-- ========================================================
+             ABA 6: SEGURANÇA
+             ======================================================== -->
+        <div id="tabSecurity" class="tab-pane">
+          <div class="admin-header-row">
+            <h2 class="admin-title">Segurança & Senha de Acesso</h2>
+          </div>
+
+          <form id="changePasswordForm" style="max-width: 400px;">
+            <div class="admin-form-group">
+              <label>Senha Atual</label>
+              <input type="password" id="currentPassword" class="admin-input" required />
+            </div>
+            <div class="admin-form-group">
+              <label>Nova Senha</label>
+              <input type="password" id="newPassword" class="admin-input" required minlength="4" />
+            </div>
+            <button type="submit" class="admin-btn">
+              <i class="fa-solid fa-key"></i> Atualizar Senha
+            </button>
+          </form>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="adminToast"></div>
+
+  <!-- Scripts do Admin -->
+  <script src="/js/admin.js"></script>
+</body>
+</html>

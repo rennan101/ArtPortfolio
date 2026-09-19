@@ -1,0 +1,3315 @@
+{
+  "title": "Max Doe",
+  "artistName": "Max Doe",
+  "profession": "Visual Artist",
+  "bio": "I believe in design that feels, not just functions. Built on curiosity, dialogue, and craft, my work explores how form and message shape experience. Every project is a collaboration, grounded in clarity and made to last.",
+  "aboutLongBio": "My work explores the quiet rhythm between light, texture, and human presence. I move between painting, printmaking, and mixed media — always drawn to subtle tension and stillness. Each piece begins with observation and becomes a search for balance between control and chance.",
+  "avatar": "/uploads/about.jpg",
+  "email": "max.doe@gmail.com",
+  "phone": "+46 70 11 22 33",
+  "address": "Gustavslundsv 99, 167 51 BROMMA",
+  "socialLinks": [
+    {
+      "name": "Instagram",
+      "url": "https://www.instagram.com/portfoliobox",
+      "icon": "instagram"
+    },
+    {
+      "name": "Twitter",
+      "url": "https://twitter.com",
+      "icon": "twitter"
+    },
+    {
+      "name": "Facebook",
+      "url": "",
+      "icon": "facebook"
+    },
+    {
+      "name": "LinkedIn",
+      "url": "",
+      "icon": "linkedin"
+    }
+  ],
+  "menu": [
+    {
+      "title": "Portfolio",
+      "url": "/"
+    },
+    {
+      "title": "Services",
+      "url": "/services"
+    },
+    {
+      "title": "About",
+      "url": "/about"
+    },
+    {
+      "title": "Contact",
+      "url": "/contact"
+    }
+  ],
+  "adminPasswordHash": "admin123",
+  "pages": [
+    {
+      "id": "gYUbv2V40XWK3ir",
+      "url": "/the-crowd",
+      "title": "The Crowd",
+      "isStartPage": false,
+      "sections": [
+        {
+          "id": "hmlwCFgu1zf17WqW",
+          "viewType": "Text",
+          "viewId": "text2",
+          "elements": [
+            {
+              "id": "dbK5lVApGYVUI0HD",
+              "view": "header-view",
+              "content": "The Crowd",
+              "style": {
+                "margin-bottom": "0.7em",
+                "max-width": "800px"
+              },
+              "settings": {
+                "animation": "fade-in"
+              }
+            },
+            {
+              "id": "vHzEQCtUskUO0mt8",
+              "view": "longtext-view",
+              "content": "A study of human gatherings, movement, and shared space. Each painting captures fleeting interactions and collective rhythm through softened edges and muted tones. The figures blur into one another, suggesting presence without individuality, echoing the quiet poetry of urban anonymity.",
+              "style": {
+                "margin-bottom": "3em",
+                "max-width": "800px",
+                "text-align": "center"
+              },
+              "settings": {
+                "animation": "fade-in"
+              }
+            },
+            {
+              "id": "P1T01kf1Xqh78vf8",
+              "view": "list-view",
+              "content": [
+                {
+                  "Guid": "lNSdFNkMlu31wxip",
+                  "Link": "",
+                  "Title": "Visuals"
+                },
+                {
+                  "Guid": "TGofMBjDFPgKYyLQ",
+                  "Link": "",
+                  "Title": "Storytelling"
+                },
+                {
+                  "Guid": "RlacEsuhPFUBVulQ",
+                  "Link": "",
+                  "Title": "Brand"
+                }
+              ],
+              "style": {
+                "flex-direction": "row",
+                "align-items": "center",
+                "max-width": "800px",
+                "background-color": "#efefef",
+                "justify-content": "center"
+              },
+              "settings": {
+                "animation": "fade-in",
+                "list-style": "tags"
+              }
+            }
+          ]
+        },
+        {
+          "id": "BywLGYJBhx2lJUvK",
+          "viewType": "Gallery",
+          "viewId": "evenrows",
+          "elements": [],
+          "gallery": {
+            "id": "kMRkR4DftavbHli5",
+            "settings": {
+              "animation": "fade-in",
+              "shadows": "",
+              "rounded": "",
+              "borders": "",
+              "lb-lightbox": "lb1",
+              "lb-animation": "fade-in",
+              "lb-item-fit": "contain",
+              "lb-height": "100%",
+              "lb-figcap-position": "lbbottom2",
+              "twoone-style": "",
+              "hover-transition": "hover-opacity",
+              "items-per-row": "",
+              "figcap-position": "cover1",
+              "item-size": "4",
+              "item-margin": "2"
+            },
+            "items": [
+              {
+                "id": "jkwOnYxnG10ol3oH",
+                "src": "/uploads/0mv-painting-simi-0316ab.jpg",
+                "width": 1024,
+                "height": 1024,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "iHDcwhDTlSdq33M4",
+                "src": "/uploads/0mv-painting-simi-cbe427.jpg",
+                "width": 1024,
+                "height": 1024,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "EszogY2MsEwzb2zM",
+                "src": "/uploads/abstract-group-portrait.jpg",
+                "width": 1567,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "CDuFyHSX74vJuYVB",
+                "src": "/uploads/dreamlike-walkers.jpg",
+                "width": 1567,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "Z11F3upzuc2IksSd",
+                "src": "/uploads/elegant-group-ill-9f9540.jpg",
+                "width": 1567,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "jp9ywoKPbIb9AHRD",
+                "src": "/uploads/impressionistic-g-8ffaf2.jpg",
+                "width": 1567,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "tjeVz5phvlhRNsH3",
+                "src": "/uploads/impressionistic-g-c0a170.jpg",
+                "width": 1567,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "FyjyPxgBQV6P4SAJ",
+                "src": "/uploads/painting-similar-6c72d6.jpg",
+                "width": 1024,
+                "height": 1024,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "Lxrj2pGS3EJv4Wiw",
+                "src": "/uploads/silhouetted-figures-walk.jpg",
+                "width": 1567,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "tPLdB0X73nq7wm1b",
+                "src": "/uploads/urban-business-group.jpg",
+                "width": 1567,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              }
+            ]
+          }
+        },
+        {
+          "id": "CukKNx5TxgvFjnri",
+          "viewType": "Text",
+          "viewId": "submenubig",
+          "elements": [
+            {
+              "id": "ROeF5kqbSRzMD0jp",
+              "view": "shorttext-view",
+              "content": "Let's work together",
+              "style": {
+                "margin-bottom": "1.75em"
+              },
+              "settings": {
+                "animation": "fade-in"
+              }
+            },
+            {
+              "id": "rL3oe6lgL9PfJ91z",
+              "view": "links-view",
+              "content": [
+                {
+                  "Guid": "eUHHfOgEA7duOkPb",
+                  "Link": "/",
+                  "Title": "Portfolio"
+                },
+                {
+                  "Guid": "mk4bRnMAaRy44FnX",
+                  "Link": "/services",
+                  "Title": "Services"
+                },
+                {
+                  "Guid": "NYisa7v5Epzr4nFE",
+                  "Link": "/about",
+                  "Title": "About"
+                }
+              ],
+              "style": {
+                "font-size": "4em",
+                "text-transform": "uppercase",
+                "line-height": "125%",
+                "flex-direction": "column"
+              },
+              "settings": {
+                "animation": "fade-in",
+                "widthAdapt": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "H9IMmAZ29cVFdJe0",
+      "url": "/dual-tone-portraits",
+      "title": "Dual Tone Portraits",
+      "isStartPage": false,
+      "sections": [
+        {
+          "id": "LBvy4zRN2iA6XSGe",
+          "viewType": "Text",
+          "viewId": "text2",
+          "elements": [
+            {
+              "id": "vM6uKxgZeBx14JAs",
+              "view": "header-view",
+              "content": "Dual Tone Portraits",
+              "style": {
+                "margin-bottom": "0.7em",
+                "max-width": "800px"
+              },
+              "settings": {
+                "animation": "fade-in"
+              }
+            },
+            {
+              "id": "uSYuZUCO24CvrKZH",
+              "view": "longtext-view",
+              "content": "A series of digital portraits exploring contrast, form, and emotion through minimal color and bold composition. Using blue and orange tones, each figure reveals character through clean lines and precise shading. The series focuses on graphic simplicity and expressive geometry.\n\nInfos:\nTechnique: Digital painting\nYear: 2025\nProject: Commissioned by Vogue Italia",
+              "style": {
+                "margin-bottom": "3em",
+                "max-width": "800px",
+                "text-align": "center"
+              },
+              "settings": {
+                "animation": "fade-in"
+              }
+            },
+            {
+              "id": "JmkOXs7ea2CjXDLH",
+              "view": "list-view",
+              "content": [
+                {
+                  "Guid": "dultmJe5ACpmeFFM",
+                  "Link": "",
+                  "Title": "Visuals"
+                },
+                {
+                  "Guid": "hevXlvUvnh0SsvdG",
+                  "Link": "",
+                  "Title": "Storytelling"
+                },
+                {
+                  "Guid": "hFhlGVDLjGbeuj6O",
+                  "Link": "",
+                  "Title": "Brand"
+                }
+              ],
+              "style": {
+                "flex-direction": "row",
+                "align-items": "center",
+                "max-width": "800px",
+                "background-color": "#efefef",
+                "justify-content": "center"
+              },
+              "settings": {
+                "animation": "fade-in",
+                "list-style": "tags"
+              }
+            }
+          ]
+        },
+        {
+          "id": "w0YPeiiaUr87CSik",
+          "viewType": "Gallery",
+          "viewId": "evenrows",
+          "elements": [],
+          "gallery": {
+            "id": "NtKSabTju3PUAPAx",
+            "settings": {
+              "animation": "fade-in",
+              "shadows": "",
+              "rounded": "",
+              "borders": "",
+              "lb-lightbox": "lb1",
+              "lb-animation": "fade-in",
+              "lb-item-fit": "contain",
+              "lb-height": "100%",
+              "lb-figcap-position": "lbbottom2",
+              "twoone-style": "",
+              "hover-transition": "hover-opacity",
+              "items-per-row": "",
+              "figcap-position": "cover1",
+              "item-size": "4",
+              "item-margin": "2"
+            },
+            "items": [
+              {
+                "id": "RlMOTpH0pWIhnolb",
+                "src": "/uploads/bold-portrait-artwork.jpg",
+                "width": 1567,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "sJiT5CpFCnt2L5ak",
+                "src": "/uploads/man-in-orange-beanie.jpg",
+                "width": 1567,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "f2AkK4UDvTISV1GH",
+                "src": "/uploads/stylized-bearded-man.jpg",
+                "width": 1567,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "QtWE82zk6PpqRDsX",
+                "src": "/uploads/stylized-man-port-82e07c.jpg",
+                "width": 1567,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "SWhBA8W65SgnUbzX",
+                "src": "/uploads/stylized-man-portrait.jpg",
+                "width": 1567,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "qHBXRG1h0EMHyXTs",
+                "src": "/uploads/stylized-portrait-96f31b.jpg",
+                "width": 1567,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "UKP1vKavucgauWtp",
+                "src": "/uploads/stylized-portrait-art.jpg",
+                "width": 1567,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              }
+            ]
+          }
+        },
+        {
+          "id": "cmL98QH05lTPFiAY",
+          "viewType": "Text",
+          "viewId": "submenubig",
+          "elements": [
+            {
+              "id": "fRnhzKUCL0GGCNUi",
+              "view": "shorttext-view",
+              "content": "Let's work together",
+              "style": {
+                "margin-bottom": "1.75em"
+              },
+              "settings": {
+                "animation": "fade-in"
+              }
+            },
+            {
+              "id": "T5wqjpjdo9biv1An",
+              "view": "links-view",
+              "content": [
+                {
+                  "Guid": "jrU1eEvqjEoauimk",
+                  "Link": "/",
+                  "Title": "Portfolio"
+                },
+                {
+                  "Guid": "CSuRFSdtbqvs1fSU",
+                  "Link": "/services",
+                  "Title": "Services"
+                },
+                {
+                  "Guid": "pklW6tvVVOQF6TU8",
+                  "Link": "/about",
+                  "Title": "About"
+                }
+              ],
+              "style": {
+                "font-size": "4em",
+                "text-transform": "uppercase",
+                "line-height": "125%",
+                "flex-direction": "column"
+              },
+              "settings": {
+                "animation": "fade-in",
+                "widthAdapt": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "nw1t70SFJGf3nctQ",
+      "url": "/winter-whispers",
+      "title": "Winter Whispers",
+      "isStartPage": false,
+      "sections": [
+        {
+          "id": "Ye2j8TOciqkTXkeC",
+          "viewType": "Text",
+          "viewId": "text2",
+          "elements": [
+            {
+              "id": "oF1XrCxUkHrHHGkx",
+              "view": "header-view",
+              "content": "Winter Whispers",
+              "style": {
+                "margin-bottom": "0.7em",
+                "max-width": "800px"
+              },
+              "settings": {
+                "animation": "fade-in"
+              }
+            },
+            {
+              "id": "dbVEx1Knll2PFeip",
+              "view": "longtext-view",
+              "content": "A quiet narrative series depicting solitary figures in winter settings. The collection combines surreal storytelling with emotional stillness, utilising muted tones, red accents, and textured brushwork to evoke warmth amidst cold landscapes. Each piece invites reflection on solitude, resilience, and imagination.",
+              "style": {
+                "margin-bottom": "3em",
+                "max-width": "800px",
+                "text-align": "center"
+              },
+              "settings": {
+                "animation": "fade-in"
+              }
+            },
+            {
+              "id": "ovvW4RuJgGeA9dBR",
+              "view": "list-view",
+              "content": [
+                {
+                  "Guid": "qnbXjpcAaRM1LdkV",
+                  "Link": "",
+                  "Title": "Visuals"
+                },
+                {
+                  "Guid": "NEd7V4COmVTf0neW",
+                  "Link": "",
+                  "Title": "Storytelling"
+                },
+                {
+                  "Guid": "p8bVyLTTn2UhJynk",
+                  "Link": "",
+                  "Title": "Brand"
+                }
+              ],
+              "style": {
+                "flex-direction": "row",
+                "align-items": "center",
+                "max-width": "800px",
+                "background-color": "#efefef",
+                "justify-content": "center"
+              },
+              "settings": {
+                "animation": "fade-in",
+                "list-style": "tags"
+              }
+            }
+          ]
+        },
+        {
+          "id": "yigW1yx0FhRKKuBL",
+          "viewType": "Gallery",
+          "viewId": "evenrows",
+          "elements": [],
+          "gallery": {
+            "id": "Sw9jJLVhLBAy0jNy",
+            "settings": {
+              "animation": "fade-in",
+              "shadows": "",
+              "rounded": "",
+              "borders": "",
+              "lb-lightbox": "lb1",
+              "lb-animation": "fade-in",
+              "lb-item-fit": "contain",
+              "lb-height": "100%",
+              "lb-figcap-position": "lbbottom2",
+              "twoone-style": "",
+              "hover-transition": "hover-opacity",
+              "items-per-row": "",
+              "figcap-position": "cover1",
+              "item-size": "4",
+              "item-margin": "2"
+            },
+            "items": [
+              {
+                "id": "gAA1Oh9lWZlRVdVO",
+                "src": "/uploads/serene-girl-in-red-coat.jpg",
+                "width": 1567,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "XOh8gUjNKcCUbou6",
+                "src": "/uploads/serene-landscape-735f61.jpg",
+                "width": 1567,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "AFne2NyXE0MXwR0N",
+                "src": "/uploads/stylized-characte-52d8f4.jpg",
+                "width": 1567,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "iButonH4hndaen1Y",
+                "src": "/uploads/stylized-figure-w-46599d.jpg",
+                "width": 1567,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "k1DdKSpvzaVNRJmb",
+                "src": "/uploads/whimsical-bird-li-630150.jpg",
+                "width": 1567,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "rymOpmrmTcE597n6",
+                "src": "/uploads/whimsical-snowy-night.jpg",
+                "width": 1567,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              }
+            ]
+          }
+        },
+        {
+          "id": "zX96wFFoYhjkImt0",
+          "viewType": "Text",
+          "viewId": "submenubig",
+          "elements": [
+            {
+              "id": "cmf4sWVuaMyzvXV",
+              "view": "shorttext-view",
+              "content": "Let's work together",
+              "style": {
+                "margin-bottom": "1.75em"
+              },
+              "settings": {
+                "animation": "fade-in"
+              }
+            },
+            {
+              "id": "ESLjtrcrt6tgUJE8",
+              "view": "links-view",
+              "content": [
+                {
+                  "Guid": "vCzW6zB850UtCFKO",
+                  "Link": "/",
+                  "Title": "Portfolio"
+                },
+                {
+                  "Guid": "GCWkfhIXsaeg3X2N",
+                  "Link": "/services",
+                  "Title": "Services"
+                },
+                {
+                  "Guid": "MtaPJghYPZwnOKWY",
+                  "Link": "/about",
+                  "Title": "About"
+                }
+              ],
+              "style": {
+                "font-size": "4em",
+                "text-transform": "uppercase",
+                "line-height": "125%",
+                "flex-direction": "column"
+              },
+              "settings": {
+                "animation": "fade-in",
+                "widthAdapt": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pjSElm6ZKCWmXyod",
+      "url": "/bloom-studies",
+      "title": "Bloom Studies",
+      "isStartPage": false,
+      "sections": [
+        {
+          "id": "jmAgx4J8SpE7IaBn",
+          "viewType": "Text",
+          "viewId": "text2",
+          "elements": [
+            {
+              "id": "g5UbPMqVpHCgRDOG",
+              "view": "header-view",
+              "content": "Bloom Studies",
+              "style": {
+                "margin-bottom": "0.7em",
+                "max-width": "800px"
+              },
+              "settings": {
+                "animation": "fade-in"
+              }
+            },
+            {
+              "id": "efcxE3X2APxn2frK",
+              "view": "longtext-view",
+              "content": "A series of floral portraits celebrating form, color, and stillness. Each piece captures the rhythm of natural growth through clean composition and controlled tone. The works reinterpret botanical subjects with a graphic, modern sensibility, transforming organic details into quiet design.",
+              "style": {
+                "margin-bottom": "3em",
+                "max-width": "800px",
+                "text-align": "center"
+              },
+              "settings": {
+                "animation": "fade-in"
+              }
+            },
+            {
+              "id": "GwyXeJtSDCvBi0FT",
+              "view": "list-view",
+              "content": [
+                {
+                  "Guid": "rFDvH6AgMuWlf5ov",
+                  "Link": "",
+                  "Title": "Visuals"
+                },
+                {
+                  "Guid": "ft4uHC6wVEdPrpGb",
+                  "Link": "",
+                  "Title": "Storytelling"
+                },
+                {
+                  "Guid": "uJ9RHI3tvuvn9M5Z",
+                  "Link": "",
+                  "Title": "Brand"
+                }
+              ],
+              "style": {
+                "flex-direction": "row",
+                "align-items": "center",
+                "max-width": "800px",
+                "background-color": "#efefef",
+                "justify-content": "center"
+              },
+              "settings": {
+                "animation": "fade-in",
+                "list-style": "tags"
+              }
+            }
+          ]
+        },
+        {
+          "id": "iPbzh62ORcOnEI7w",
+          "viewType": "Gallery",
+          "viewId": "evenrows",
+          "elements": [],
+          "gallery": {
+            "id": "NyrnObjqZxz68kbv",
+            "settings": {
+              "animation": "fade-in",
+              "shadows": "",
+              "rounded": "",
+              "borders": "",
+              "lb-lightbox": "lb1",
+              "lb-animation": "fade-in",
+              "lb-item-fit": "contain",
+              "lb-height": "100%",
+              "lb-figcap-position": "lbbottom2",
+              "twoone-style": "",
+              "hover-transition": "hover-opacity",
+              "items-per-row": "",
+              "figcap-position": "cover1",
+              "item-size": "4",
+              "item-margin": "2"
+            },
+            "items": [
+              {
+                "id": "i9hdpLfAjAkmpwyA",
+                "src": "/uploads/artistic-pink-flower.jpg",
+                "width": 1719,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "R0qCoPZcJ5L4Ioje",
+                "src": "/uploads/close-up-of-pink-flower.jpg",
+                "width": 1719,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "vpunGzxmdTPeEEI6",
+                "src": "/uploads/graphic-tulip-art.jpg",
+                "width": 1719,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "cA1pzDpxDsyGxFbv",
+                "src": "/uploads/morning-glory-artwork.jpg",
+                "width": 2080,
+                "height": 1387,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "Gf15kkDMYaFD3KBU",
+                "src": "/uploads/morning-glory-blooms.jpg",
+                "width": 2080,
+                "height": 1387,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "riLrYSpufS0XonhN",
+                "src": "/uploads/stylized-floral-artwork.jpg",
+                "width": 2080,
+                "height": 1387,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "vhtkKUPIrEdP6n05",
+                "src": "/uploads/vibrant-pink-tulip-art.jpg",
+                "width": 1719,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "AG2Sc05sq0u47On2",
+                "src": "/uploads/yellow-tulip-art.jpg",
+                "width": 1719,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              }
+            ]
+          }
+        },
+        {
+          "id": "mgCicraJ9G1IejzD",
+          "viewType": "Text",
+          "viewId": "submenubig",
+          "elements": [
+            {
+              "id": "tDWZ43a14sE7jFmg",
+              "view": "shorttext-view",
+              "content": "Let's work together",
+              "style": {
+                "margin-bottom": "1.75em"
+              },
+              "settings": {
+                "animation": "fade-in"
+              }
+            },
+            {
+              "id": "Bjrl7SSxdxz8VzR7",
+              "view": "links-view",
+              "content": [
+                {
+                  "Guid": "k9NWeXcATQOTDykZ",
+                  "Link": "/",
+                  "Title": "Portfolio"
+                },
+                {
+                  "Guid": "hc7qIs08UaZUQrjk",
+                  "Link": "/services",
+                  "Title": "Services"
+                },
+                {
+                  "Guid": "f7Ht1d938mGeLdXK",
+                  "Link": "/about",
+                  "Title": "About"
+                }
+              ],
+              "style": {
+                "font-size": "4em",
+                "text-transform": "uppercase",
+                "line-height": "125%",
+                "flex-direction": "column"
+              },
+              "settings": {
+                "animation": "fade-in",
+                "widthAdapt": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Qaa0sU6BKwHw8lvM",
+      "url": "/nocturne",
+      "title": "Nocturne",
+      "isStartPage": false,
+      "sections": [
+        {
+          "id": "jUxduY2aCovRAO2t",
+          "viewType": "Text",
+          "viewId": "text2",
+          "elements": [
+            {
+              "id": "BLJ3gYioTgnLrPsU",
+              "view": "header-view",
+              "content": "Nocturne",
+              "style": {
+                "margin-bottom": "0.7em",
+                "max-width": "800px"
+              },
+              "settings": {
+                "animation": "fade-in"
+              }
+            },
+            {
+              "id": "hJA5GbX0zLO2gub1",
+              "view": "longtext-view",
+              "content": "A darkly elegant portrait series inspired by Gothic art and celestial iconography. Each piece explores light and shadow through intricate textures, evoking a sense of mystery, divinity, and human fragility. The series blends fantasy and historical influence, reimagined through a digital chiaroscuro style.",
+              "style": {
+                "margin-bottom": "3em",
+                "max-width": "800px",
+                "text-align": "center"
+              },
+              "settings": {
+                "animation": "fade-in"
+              }
+            },
+            {
+              "id": "zoSXa8yUxGquxTyM",
+              "view": "list-view",
+              "content": [
+                {
+                  "Guid": "QoUusPvpfG3TopX7",
+                  "Link": "",
+                  "Title": "Visuals"
+                },
+                {
+                  "Guid": "Hyphy3xyLQHvGgmR",
+                  "Link": "",
+                  "Title": "Storytelling"
+                },
+                {
+                  "Guid": "ZaEXzc49Zjk829cy",
+                  "Link": "",
+                  "Title": "Brand"
+                }
+              ],
+              "style": {
+                "flex-direction": "row",
+                "align-items": "center",
+                "max-width": "800px",
+                "background-color": "#efefef",
+                "justify-content": "center"
+              },
+              "settings": {
+                "animation": "fade-in",
+                "list-style": "tags"
+              }
+            }
+          ]
+        },
+        {
+          "id": "LBUSiLxvMbSlUHnX",
+          "viewType": "Gallery",
+          "viewId": "evenrows",
+          "elements": [],
+          "gallery": {
+            "id": "utQgoYhxMj0DHxLP",
+            "settings": {
+              "animation": "fade-in",
+              "shadows": "",
+              "rounded": "",
+              "borders": "",
+              "lb-lightbox": "lb1",
+              "lb-animation": "fade-in",
+              "lb-item-fit": "contain",
+              "lb-height": "100%",
+              "lb-figcap-position": "lbbottom2",
+              "twoone-style": "",
+              "hover-transition": "hover-opacity",
+              "items-per-row": "",
+              "figcap-position": "cover1",
+              "item-size": "4",
+              "item-margin": "2"
+            },
+            "items": [
+              {
+                "id": "DKQ7m2j8C2lyC93C",
+                "src": "/uploads/celestial-woman-portrait.jpg",
+                "width": 1567,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "kMb1iviJTkz4cfCp",
+                "src": "/uploads/dramatic-man-portrait.jpg",
+                "width": 1567,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "t8kVBtUl7v1H2YeJ",
+                "src": "/uploads/elegant-woman-portrait.jpg",
+                "width": 1567,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "jrDAhkpkWCqay3e5",
+                "src": "/uploads/gothic-celestial-7e5cee.jpg",
+                "width": 1567,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "sdYuZLwJ8BSI7fel",
+                "src": "/uploads/gothic-portrait-art.jpg",
+                "width": 1567,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "K7JRIzuy2ulTB1aY",
+                "src": "/uploads/gothic-woman-portrait.jpg",
+                "width": 1567,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "Vo2T1rv2nlCAjKEx",
+                "src": "/uploads/regal-fantasy-portrait.jpg",
+                "width": 1567,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "HaA0iJ6cPgKuF3vC",
+                "src": "/uploads/stylized-woman-portrait.jpg",
+                "width": 1567,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              }
+            ]
+          }
+        },
+        {
+          "id": "CjKb0aQ3xlrD1Gt5",
+          "viewType": "Text",
+          "viewId": "submenubig",
+          "elements": [
+            {
+              "id": "eFRekvfAAZqANfhv",
+              "view": "shorttext-view",
+              "content": "Let's work together",
+              "style": {
+                "margin-bottom": "1.75em"
+              },
+              "settings": {
+                "animation": "fade-in"
+              }
+            },
+            {
+              "id": "iZjrUnHb7woATOU7",
+              "view": "links-view",
+              "content": [
+                {
+                  "Guid": "OPDMb3qbbNKdtEAN",
+                  "Link": "/",
+                  "Title": "Portfolio"
+                },
+                {
+                  "Guid": "BnuqqhFJfIEY67vY",
+                  "Link": "/services",
+                  "Title": "Services"
+                },
+                {
+                  "Guid": "lFxPZdKRylO6hIQf",
+                  "Link": "/about",
+                  "Title": "About"
+                }
+              ],
+              "style": {
+                "font-size": "4em",
+                "text-transform": "uppercase",
+                "line-height": "125%",
+                "flex-direction": "column"
+              },
+              "settings": {
+                "animation": "fade-in",
+                "widthAdapt": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "RsK9qde8mPpO90UI",
+      "url": "/pressed-in-blue",
+      "title": "Pressed In Blue",
+      "isStartPage": false,
+      "sections": [
+        {
+          "id": "NOIHKuML1MSEixw8",
+          "viewType": "Text",
+          "viewId": "text2",
+          "elements": [
+            {
+              "id": "xbpTZv52QzTWPR58",
+              "view": "header-view",
+              "content": "Pressed In Blue",
+              "style": {
+                "margin-bottom": "0.7em",
+                "max-width": "800px"
+              },
+              "settings": {
+                "animation": "fade-in"
+              }
+            },
+            {
+              "id": "xCnhAw88UiMHihC1",
+              "view": "longtext-view",
+              "content": "A collection of hand-printed works exploring line, contrast, and repetition through the simplicity of a single colour. Each print captures everyday forms—portraits, animals, and architecture—transformed by the tactile quality of ink and texture. The series reflects the rhythm and imperfection of manual printmaking.",
+              "style": {
+                "margin-bottom": "3em",
+                "max-width": "800px",
+                "text-align": "center"
+              },
+              "settings": {
+                "animation": "fade-in"
+              }
+            },
+            {
+              "id": "LCD1Cb6FLjKgOrl5",
+              "view": "list-view",
+              "content": [
+                {
+                  "Guid": "uSgaF51zzLxcleu5",
+                  "Link": "",
+                  "Title": "Visuals"
+                },
+                {
+                  "Guid": "o2CpYGyp3DZMjfNu",
+                  "Link": "",
+                  "Title": "Storytelling"
+                },
+                {
+                  "Guid": "srZAuug8ATROqdaY",
+                  "Link": "",
+                  "Title": "Brand"
+                }
+              ],
+              "style": {
+                "flex-direction": "row",
+                "align-items": "center",
+                "max-width": "800px",
+                "background-color": "#efefef",
+                "justify-content": "center"
+              },
+              "settings": {
+                "animation": "fade-in",
+                "list-style": "tags"
+              }
+            }
+          ]
+        },
+        {
+          "id": "dYt88R1QpzcWSA0Z",
+          "viewType": "Gallery",
+          "viewId": "evenrows",
+          "elements": [],
+          "gallery": {
+            "id": "MStWHTgwq4r0fV5b",
+            "settings": {
+              "animation": "fade-in",
+              "shadows": "",
+              "rounded": "",
+              "borders": "",
+              "lb-lightbox": "lb1",
+              "lb-animation": "fade-in",
+              "lb-item-fit": "contain",
+              "lb-height": "100%",
+              "lb-figcap-position": "lbbottom2",
+              "twoone-style": "",
+              "hover-transition": "hover-opacity",
+              "items-per-row": "",
+              "figcap-position": "cover1",
+              "item-size": "4",
+              "item-margin": "2"
+            },
+            "items": [
+              {
+                "id": "YEZH8YvTbFCQA2Xw",
+                "src": "/uploads/int-simplified-po-161c59.jpg",
+                "width": 1024,
+                "height": 1024,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "BrGnCokwWFLfs8le",
+                "src": "/uploads/int-simplified-po-ef5d64.jpg",
+                "width": 1024,
+                "height": 1024,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "uEWSK97PctUBE5gB",
+                "src": "/uploads/int-simplified-po-feef42.jpg",
+                "width": 1024,
+                "height": 1024,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "tX7oeDTkU2RXvzh7",
+                "src": "/uploads/no-print-simplifi-465099.jpg",
+                "width": 1024,
+                "height": 1024,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "U6DL4efJSqusOGGF",
+                "src": "/uploads/pexels-shvetsa-5641870.jpg",
+                "width": 1387,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "dVFQftkYcUKKB9Q1",
+                "src": "/uploads/pexels-shvetsa-5641903.jpg",
+                "width": 2080,
+                "height": 1387,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "ConNCteLdKW6WocL",
+                "src": "/uploads/pexels-shvetsa-5641904.jpg",
+                "width": 1387,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "clZilFvl0CU9IGZO",
+                "src": "/uploads/pexels-shvetsa-5642073.jpg",
+                "width": 1387,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "ibxNNTqBO2LAX1jl",
+                "src": "/uploads/print-simplified-207466.jpg",
+                "width": 1024,
+                "height": 1024,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "SniXR70cakKVSJje",
+                "src": "/uploads/print-simplified-e43d0d.jpg",
+                "width": 1024,
+                "height": 1024,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "nKieubRWOyMqfvL",
+                "src": "/uploads/simplified-urban-430300.jpg",
+                "width": 1024,
+                "height": 1024,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "bfpcSBJzgXrN4wdt",
+                "src": "/uploads/simplified-urban-b56ef8.jpg",
+                "width": 1024,
+                "height": 1024,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              }
+            ]
+          }
+        },
+        {
+          "id": "d5ZX06EE4zkCduf5",
+          "viewType": "Text",
+          "viewId": "submenubig",
+          "elements": [
+            {
+              "id": "kDoE8zmmo3V6HWFQ",
+              "view": "shorttext-view",
+              "content": "Let's work together",
+              "style": {
+                "margin-bottom": "1.75em"
+              },
+              "settings": {
+                "animation": "fade-in"
+              }
+            },
+            {
+              "id": "Z7rXI1hsoj98pbo3",
+              "view": "links-view",
+              "content": [
+                {
+                  "Guid": "tdGk9V1jAjS0GOCj",
+                  "Link": "/",
+                  "Title": "Portfolio"
+                },
+                {
+                  "Guid": "doqaIaZHjrYi5PoH",
+                  "Link": "/services",
+                  "Title": "Services"
+                },
+                {
+                  "Guid": "KsI9GdvCRuJI8uBq",
+                  "Link": "/about",
+                  "Title": "About"
+                }
+              ],
+              "style": {
+                "font-size": "4em",
+                "text-transform": "uppercase",
+                "line-height": "125%",
+                "flex-direction": "column"
+              },
+              "settings": {
+                "animation": "fade-in",
+                "widthAdapt": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ScP2wqjFjz4fzVKt",
+      "url": "/poses-and-postures",
+      "title": "Poses And Postures",
+      "isStartPage": false,
+      "sections": [
+        {
+          "id": "McS7HfvzwJUfMsVJ",
+          "viewType": "Text",
+          "viewId": "text2",
+          "elements": [
+            {
+              "id": "i9POQaBi2TPRfJbo",
+              "view": "header-view",
+              "content": "Poses And Postures",
+              "style": {
+                "margin-bottom": "0.7em",
+                "max-width": "800px"
+              },
+              "settings": {
+                "animation": "fade-in"
+              }
+            },
+            {
+              "id": "A0EO37cQWXvupzFB",
+              "view": "longtext-view",
+              "content": "A playful series of stylized character studies exploring the geometry of the human body through bold color blocks and flattened perspective. Each figure, caught mid-motion or at rest, reveals rhythm and attitude through shape rather than expression. The contrast between green and orange surfaces enhances the sense of balance and design.",
+              "style": {
+                "margin-bottom": "3em",
+                "max-width": "800px",
+                "text-align": "center"
+              },
+              "settings": {
+                "animation": "fade-in"
+              }
+            },
+            {
+              "id": "sq9LUWkkmtYQNT5d",
+              "view": "list-view",
+              "content": [
+                {
+                  "Guid": "NSIYHp6bHMdjeaoi",
+                  "Link": "",
+                  "Title": "Visuals"
+                },
+                {
+                  "Guid": "ZxK42ax033Of3hsW",
+                  "Link": "",
+                  "Title": "Storytelling"
+                },
+                {
+                  "Guid": "mEfrQG0EI7bIQTwr",
+                  "Link": "",
+                  "Title": "Brand"
+                }
+              ],
+              "style": {
+                "flex-direction": "row",
+                "align-items": "center",
+                "max-width": "800px",
+                "background-color": "#efefef",
+                "justify-content": "center"
+              },
+              "settings": {
+                "animation": "fade-in",
+                "list-style": "tags"
+              }
+            }
+          ]
+        },
+        {
+          "id": "bpWCsCcaJ9CP80aL",
+          "viewType": "Gallery",
+          "viewId": "evenrows",
+          "elements": [],
+          "gallery": {
+            "id": "T8irAa8QycvE8UIj",
+            "settings": {
+              "animation": "fade-in",
+              "shadows": "",
+              "rounded": "",
+              "borders": "",
+              "lb-lightbox": "lb1",
+              "lb-animation": "fade-in",
+              "lb-item-fit": "contain",
+              "lb-height": "100%",
+              "lb-figcap-position": "lbbottom2",
+              "twoone-style": "",
+              "hover-transition": "hover-opacity",
+              "items-per-row": "",
+              "figcap-position": "cover1",
+              "item-size": "4",
+              "item-margin": "2"
+            },
+            "items": [
+              {
+                "id": "PMjXiHHfg50hPUMb",
+                "src": "/uploads/abstract-reclinin-6b65c9.jpg",
+                "width": 1560,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "GKhOyniYWH6H11id",
+                "src": "/uploads/man-on-green-surface.jpg",
+                "width": 1567,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "uEArSMra9ZZFQjh8",
+                "src": "/uploads/striped-tights-and-shoes.jpg",
+                "width": 1560,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "YnIq3FpiNwVHgZ6v",
+                "src": "/uploads/stylish-portrait-pose.jpg",
+                "width": 1567,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "E195uUxHe2FbxkVd",
+                "src": "/uploads/stylized-confident-pose.jpg",
+                "width": 1567,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "K2YZodVadrri2lKe",
+                "src": "/uploads/stylized-footwear-art.jpg",
+                "width": 1567,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "yhT2r6aq617Rz0lR",
+                "src": "/uploads/stylized-man-illu-78b16c.jpg",
+                "width": 1567,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "cQR2ETKRp8EwkHPw",
+                "src": "/uploads/stylized-person-i-536a27.jpg",
+                "width": 1560,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "sB1my7WQPLVEyX8B",
+                "src": "/uploads/stylized-person-i-8449d8.jpg",
+                "width": 1567,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "vPrCKDLAxVfTZapm",
+                "src": "/uploads/stylized-person-i-8b52e7.jpg",
+                "width": 1567,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "OVWNCOe5qKorayET",
+                "src": "/uploads/stylized-reclining-man.jpg",
+                "width": 1567,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "WNkNqM7Tqp4kOwFm",
+                "src": "/uploads/stylized-soccer-portrait.jpg",
+                "width": 1567,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              }
+            ]
+          }
+        },
+        {
+          "id": "os8UIJ0FZUGx6tyX",
+          "viewType": "Text",
+          "viewId": "submenubig",
+          "elements": [
+            {
+              "id": "vDNOFzfV0Tz95z1Y",
+              "view": "shorttext-view",
+              "content": "Let's work together",
+              "style": {
+                "margin-bottom": "1.75em"
+              },
+              "settings": {
+                "animation": "fade-in"
+              }
+            },
+            {
+              "id": "j5Rss8m4lvdn1vtp",
+              "view": "links-view",
+              "content": [
+                {
+                  "Guid": "xgb88TvYCQqNBeIk",
+                  "Link": "/",
+                  "Title": "Portfolio"
+                },
+                {
+                  "Guid": "zg54W5jHDurCZ2zN",
+                  "Link": "/services",
+                  "Title": "Services"
+                },
+                {
+                  "Guid": "dS20gBR8nwsz0i40",
+                  "Link": "/about",
+                  "Title": "About"
+                }
+              ],
+              "style": {
+                "font-size": "4em",
+                "text-transform": "uppercase",
+                "line-height": "125%",
+                "flex-direction": "column"
+              },
+              "settings": {
+                "animation": "fade-in",
+                "widthAdapt": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tr2jBm6JdZ38Epb0",
+      "url": "/creatures",
+      "title": "Creatures",
+      "isStartPage": false,
+      "sections": [
+        {
+          "id": "Vixy7wGrKN1evvDx",
+          "viewType": "Text",
+          "viewId": "text2",
+          "elements": [
+            {
+              "id": "6zNOurUKiqZx8CW",
+              "view": "header-view",
+              "content": "Creatures",
+              "style": {
+                "margin-bottom": "0.7em",
+                "max-width": "800px"
+              },
+              "settings": {
+                "animation": "fade-in"
+              }
+            },
+            {
+              "id": "tSt5qsJpNAPBVWMw",
+              "view": "longtext-view",
+              "content": "A series of surreal portraits blending animal and human traits. These works explore the line between whimsy and strangeness, where familiar forms take on new personalities. Soft colors, smooth textures, and precise detail create a world that feels still yet alive.",
+              "style": {
+                "margin-bottom": "3em",
+                "max-width": "800px",
+                "text-align": "center"
+              },
+              "settings": {
+                "animation": "fade-in"
+              }
+            },
+            {
+              "id": "qHMEy36osNyvJqQL",
+              "view": "list-view",
+              "content": [
+                {
+                  "Guid": "mRkYs4qDhhCev8Hh",
+                  "Link": "",
+                  "Title": "Visuals"
+                },
+                {
+                  "Guid": "BClAo45iiIVkPJnD",
+                  "Link": "",
+                  "Title": "Storytelling"
+                },
+                {
+                  "Guid": "QYBPLmY2ZYVJGSjT",
+                  "Link": "",
+                  "Title": "Brand"
+                }
+              ],
+              "style": {
+                "flex-direction": "row",
+                "align-items": "center",
+                "max-width": "800px",
+                "background-color": "#efefef",
+                "justify-content": "center"
+              },
+              "settings": {
+                "animation": "fade-in",
+                "list-style": "tags"
+              }
+            }
+          ]
+        },
+        {
+          "id": "TP25qg7kZpryPEko",
+          "viewType": "Gallery",
+          "viewId": "evenrows",
+          "elements": [],
+          "gallery": {
+            "id": "JSwsw1wMSgFVmR67",
+            "settings": {
+              "animation": "fade-in",
+              "shadows": "",
+              "rounded": "",
+              "borders": "",
+              "lb-lightbox": "lb1",
+              "lb-animation": "fade-in",
+              "lb-item-fit": "contain",
+              "lb-height": "100%",
+              "lb-figcap-position": "lbbottom2",
+              "twoone-style": "",
+              "hover-transition": "hover-opacity",
+              "items-per-row": "",
+              "figcap-position": "cover1",
+              "item-size": "4",
+              "item-margin": "2"
+            },
+            "items": [
+              {
+                "id": "lo9J7iEdsYsJgn3k",
+                "src": "/uploads/artistic-bird-ill-797164.jpg",
+                "width": 1566,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "sGtQASBGrsU8Wz8G",
+                "src": "/uploads/artistic-bird-ill-995b03.jpg",
+                "width": 1566,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "PFHJjrye15In74BS",
+                "src": "/uploads/surreal-bird-illu-99a496.jpg",
+                "width": 1560,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "GendJDkqiQgQtfa3",
+                "src": "/uploads/surreal-fantastic-ae6eee.jpg",
+                "width": 1566,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "YrDsveFUUjFCtloi",
+                "src": "/uploads/surreal-goat-humanoid.jpg",
+                "width": 1566,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "UZBdPehLimNAo1ec",
+                "src": "/uploads/surreal-humanoid-artwork.jpg",
+                "width": 1566,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "Y4BSE4xfKIj8mnrl",
+                "src": "/uploads/whimsical-antelope-art.jpg",
+                "width": 1566,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "urN6yEE1npyNgTcA",
+                "src": "/uploads/whimsical-bird-character.jpg",
+                "width": 1560,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              }
+            ]
+          }
+        },
+        {
+          "id": "uMpokOScizBorgn",
+          "viewType": "Text",
+          "viewId": "submenubig",
+          "elements": [
+            {
+              "id": "VcSpf7EYVPgkWtea",
+              "view": "shorttext-view",
+              "content": "Let's work together",
+              "style": {
+                "margin-bottom": "1.75em"
+              },
+              "settings": {
+                "animation": "fade-in"
+              }
+            },
+            {
+              "id": "E8TSJlyQ9n0CrhoH",
+              "view": "links-view",
+              "content": [
+                {
+                  "Guid": "nmJTLKrwnceMMG4Y",
+                  "Link": "/",
+                  "Title": "Portfolio"
+                },
+                {
+                  "Guid": "ESFX53zS9n0SKaGP",
+                  "Link": "/services",
+                  "Title": "Services"
+                },
+                {
+                  "Guid": "tmg2ARQsHnk0ICNE",
+                  "Link": "/about",
+                  "Title": "About"
+                }
+              ],
+              "style": {
+                "font-size": "4em",
+                "text-transform": "uppercase",
+                "line-height": "125%",
+                "flex-direction": "column"
+              },
+              "settings": {
+                "animation": "fade-in",
+                "widthAdapt": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "XBVhGiliofQlnvbz",
+      "url": "/contact",
+      "title": "Contact",
+      "isStartPage": false,
+      "sections": [
+        {
+          "id": "MeoFJIPrRd8gfDVh",
+          "viewType": "Contacts",
+          "viewId": "contactplain1",
+          "elements": [
+            {
+              "id": "FLZ7TaKZkFG1P0RS",
+              "view": "header-view",
+              "content": "Contact",
+              "style": {
+                "margin-bottom": "0.7em",
+                "max-width": "800px",
+                "text-align": "center"
+              },
+              "settings": {
+                "animation": "fade-in"
+              }
+            },
+            {
+              "id": "pXNOdC02rfGInII3",
+              "view": "longtext-view",
+              "content": "I’m always happy to connect. Reach out with questions, ideas, or project inquiries, and I’ll get back to you as soon as possible.",
+              "style": {
+                "margin-bottom": "3em",
+                "max-width": "550px",
+                "text-align": "center"
+              },
+              "settings": {
+                "animation": "fade-in"
+              }
+            },
+            {
+              "id": "iJrMtdMhfaToYHFV",
+              "view": "form-view",
+              "content": [
+                {
+                  "Guid": "KV2m99qxbk1QgRrv",
+                  "View": "inputtwotext-view",
+                  "Style": [],
+                  "Content": {
+                    "Texts": [
+                      {
+                        "Guid": "D4A4BQ4zmy9dZKsh",
+                        "Title": "First Name",
+                        "Value": ""
+                      },
+                      {
+                        "Guid": "lMht4YJRpOXEs18d",
+                        "Title": "Last Name",
+                        "Value": ""
+                      }
+                    ],
+                    "Title": "Text pair",
+                    "Answer": ""
+                  }
+                },
+                {
+                  "Guid": "iczzWzRK5zUswUmu",
+                  "View": "inputemail-view",
+                  "Style": [],
+                  "Content": {
+                    "Title": "Your email",
+                    "Answer": ""
+                  }
+                },
+                {
+                  "Guid": "Qp96XrZ9CPFEfBLm",
+                  "View": "inputtextarea-view",
+                  "Style": [],
+                  "Content": {
+                    "Title": "Your message",
+                    "Answer": ""
+                  }
+                },
+                {
+                  "Guid": "x61F8wi4tbvdvW5Y",
+                  "View": "inputbutton-view",
+                  "Style": {
+                    "Content": {
+                      "Title": "Submit"
+                    }
+                  },
+                  "Content": {
+                    "Title": "Submit"
+                  }
+                }
+              ],
+              "style": {
+                "max-width": "800px",
+                "text-align": "left",
+                "margin-bottom": "3em"
+              },
+              "settings": {
+                "animation": "fade-in",
+                "form-btn-position": ""
+              }
+            },
+            {
+              "id": "b2WPrbc2rDUhEHfv",
+              "view": "longtext-view",
+              "content": "<span style='font-weight: bold;'>Max Doe</span><br/>Gustavslundsv 99<br/>167 51 BROMMA<br/>Phone: +46 70 11 22 33<br/>max.doe@gmail.com",
+              "style": {
+                "margin-bottom": "1.1em",
+                "max-width": "800px",
+                "text-align": "center"
+              },
+              "settings": {
+                "animation": "fade-in"
+              }
+            },
+            {
+              "id": "SDUmOdPXnAXmuM3x",
+              "view": "socialmedia-view",
+              "content": [
+                {
+                  "Guid": "UxyxVJiJiKidbo1",
+                  "Type": "twitter",
+                  "Title": "X",
+                  "Link": ""
+                },
+                {
+                  "Guid": "RO9dRKYsvzzYKTIW",
+                  "Type": "instagram",
+                  "Title": "Instagram",
+                  "Link": "https://www.instagram.com/portfoliobox"
+                },
+                {
+                  "Guid": "XfIHy1AinjPMN4es",
+                  "Type": "facebook",
+                  "Title": "Facebook",
+                  "Link": ""
+                },
+                {
+                  "Guid": "krO4LwN3v5clKhwd",
+                  "Type": "linkedin",
+                  "Title": "LinkedIn",
+                  "Link": ""
+                }
+              ],
+              "style": {
+                "font-size": "1.3em",
+                "margin-top": "1em",
+                "margin-bottom": "0",
+                "max-width": "200px"
+              },
+              "settings": {
+                "icon-type": "regular",
+                "icon-behaviour": "link",
+                "animation": "fade-in",
+                "widthAdapt": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ymSRtCMWyQFOCe7K",
+      "url": "/paper-botanica",
+      "title": "Paper Botanica",
+      "isStartPage": false,
+      "sections": [
+        {
+          "id": "GcYY8CuzPhfbX7h1",
+          "viewType": "Text",
+          "viewId": "text2",
+          "elements": [
+            {
+              "id": "RtwA7OHUXhOpDbvl",
+              "view": "header-view",
+              "content": "Paper Botanica",
+              "style": {
+                "margin-bottom": "0.7em",
+                "max-width": "800px"
+              },
+              "settings": {
+                "animation": "fade-in"
+              }
+            },
+            {
+              "id": "BIli7WU95yJpxeG9",
+              "view": "longtext-view",
+              "content": "A floral illustration series exploring texture, balance, and organic form through paper-inspired digital layering. Each piece combines sculptural depth with soft palettes to evoke the calm rhythm of nature. Created as part of a personal portfolio focusing on tactile visual storytelling.",
+              "style": {
+                "margin-bottom": "3em",
+                "max-width": "800px",
+                "text-align": "center"
+              },
+              "settings": {
+                "animation": "fade-in"
+              }
+            },
+            {
+              "id": "xJdQ4qfukeHMMAqj",
+              "view": "list-view",
+              "content": [
+                {
+                  "Guid": "g5eJcaPYx0ad4OIs",
+                  "Link": "",
+                  "Title": "Visuals"
+                },
+                {
+                  "Guid": "ByCzpBtVZGbn4Qta",
+                  "Link": "",
+                  "Title": "Storytelling"
+                },
+                {
+                  "Guid": "GlIXBgWpPpjtpVt5",
+                  "Link": "",
+                  "Title": "Brand"
+                }
+              ],
+              "style": {
+                "flex-direction": "row",
+                "align-items": "center",
+                "max-width": "800px",
+                "background-color": "#efefef",
+                "justify-content": "center"
+              },
+              "settings": {
+                "animation": "fade-in",
+                "list-style": "tags"
+              }
+            }
+          ]
+        },
+        {
+          "id": "mnEmE7G6udiJZhvV",
+          "viewType": "Gallery",
+          "viewId": "evenrows",
+          "elements": [],
+          "gallery": {
+            "id": "t5OB8JMlDWk4kzTP",
+            "settings": {
+              "animation": "fade-in",
+              "shadows": "",
+              "rounded": "",
+              "borders": "",
+              "lb-lightbox": "lb1",
+              "lb-animation": "fade-in",
+              "lb-item-fit": "contain",
+              "lb-height": "100%",
+              "lb-figcap-position": "lbbottom2",
+              "twoone-style": "",
+              "hover-transition": "hover-opacity",
+              "items-per-row": "",
+              "figcap-position": "cover1",
+              "item-size": "4",
+              "item-margin": "2"
+            },
+            "items": [
+              {
+                "id": "pQDm15uP5mv7TVtx",
+                "src": "/uploads/abstract-floral-art-copy.jpg",
+                "width": 1675,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "yPQjJ1tsPrNaL4ro",
+                "src": "/uploads/abstract-floral-art.jpg",
+                "width": 1675,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "e03jmlCoYwsRG531",
+                "src": "/uploads/artistic-floral-i-3d8e4d.jpg",
+                "width": 1675,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "GccCMAiKhoYLTZee",
+                "src": "/uploads/layered-floral-design.jpg",
+                "width": 1675,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "oiShIZctkaIAgmGr",
+                "src": "/uploads/minimalist-floral-art.jpg",
+                "width": 1675,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "G7GUWIKyU3HWwSQ6",
+                "src": "/uploads/paper-flower-artwork.jpg",
+                "width": 1675,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "cz9O1iFNHvU4w3CK",
+                "src": "/uploads/paper-flowers-artwork.jpg",
+                "width": 1675,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "tPSAgkCO0KLb9JS1",
+                "src": "/uploads/stylized-floral-art.jpg",
+                "width": 1675,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              }
+            ]
+          }
+        },
+        {
+          "id": "gzQ7by3yWfXx2Ri8",
+          "viewType": "Text",
+          "viewId": "submenubig",
+          "elements": [
+            {
+              "id": "QHRn64AljZDEELrB",
+              "view": "shorttext-view",
+              "content": "Let's work together",
+              "style": {
+                "margin-bottom": "1.75em"
+              },
+              "settings": {
+                "animation": "fade-in"
+              }
+            },
+            {
+              "id": "Lv10iW9yx3FJOkWL",
+              "view": "links-view",
+              "content": [
+                {
+                  "Guid": "Cg4hzu5GD7UvH5B8",
+                  "Link": "/",
+                  "Title": "Portfolio"
+                },
+                {
+                  "Guid": "bSADzmV0FTh8hTyS",
+                  "Link": "/services",
+                  "Title": "Services"
+                },
+                {
+                  "Guid": "WQeTPkShAgueU0am",
+                  "Link": "/about",
+                  "Title": "About"
+                }
+              ],
+              "style": {
+                "font-size": "4em",
+                "text-transform": "uppercase",
+                "line-height": "125%",
+                "flex-direction": "column"
+              },
+              "settings": {
+                "animation": "fade-in",
+                "widthAdapt": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "HSTx2B7roHmuDg8S",
+      "url": "/services",
+      "title": "Services",
+      "isStartPage": false,
+      "sections": [
+        {
+          "id": "B9ML8Fl1jSvauwrU",
+          "viewType": "LinkPage",
+          "viewId": "horizontalslideportrait",
+          "elements": [
+            {
+              "id": "iWkpN9UFXOkfmLoI",
+              "view": "header-view",
+              "content": "Services",
+              "style": {
+                "margin-bottom": "0.7em",
+                "max-width": "800px"
+              },
+              "settings": {
+                "animation": "fade-in"
+              }
+            }
+          ],
+          "gallery": {
+            "id": "FxQE4drrTqk5vIGC",
+            "settings": {
+              "item-size": "4",
+              "item-margin": "2",
+              "animation": "fade-in",
+              "shadows": "",
+              "rounded": "",
+              "borders": "",
+              "figcap-position": "bottom1",
+              "hover-transition": "hover-opacity",
+              "iframe-thumb-play": "1",
+              "captionbutton-class": "link",
+              "items-per-row": "",
+              "filter": "",
+              "categories": [],
+              "incDesc": "yes"
+            },
+            "items": [
+              {
+                "id": "Nk95oa69BNfEWc1r",
+                "src": "/uploads/dreamlike-walkers.jpg",
+                "width": 1567,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "Commissioned Paintings",
+                "subtitle": "Private & Public Collections",
+                "description": "Bespoke works developed through conversation and site context. Each painting is an exploration of space, light, and emotion tailored to the environment it will inhabit."
+              },
+              {
+                "id": "yJQYCgUPoN8BIbda",
+                "src": "/uploads/no-print-simplifi-465099.jpg",
+                "width": 1024,
+                "height": 1024,
+                "alt": "",
+                "link": null,
+                "title": "Limited Edition Prints",
+                "subtitle": "Studios & Collectors",
+                "description": "A curated selection of hand-printed and mixed-media works produced in small runs, signed and numbered. Each print carries the trace of process — ink, pressure, and imperfection."
+              },
+              {
+                "id": "H2oJlFbBz2XdwoTz",
+                "src": "/uploads/layered-floral-design.jpg",
+                "width": 1675,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "Collaborative Projects",
+                "subtitle": "Architects & Designers",
+                "description": "Custom artworks and visual concepts developed for spatial or design contexts — murals, large-scale prints, and series responding to architecture and material environments."
+              }
+            ]
+          }
+        },
+        {
+          "id": "EJHx63YDjXXPJ2LU",
+          "viewType": "Text",
+          "viewId": "quote1",
+          "elements": [
+            {
+              "id": "QsXWiRuQJSjkINI4",
+              "view": "icon-view",
+              "content": {
+                "Name": "quote-left-solid",
+                "Link": "",
+                "Target": "_self"
+              },
+              "style": {
+                "width": "3em",
+                "color": "#DEDCDC",
+                "margin-bottom": "2em"
+              },
+              "settings": {
+                "animation": "fade-in",
+                "hover-transition": "none"
+              }
+            },
+            {
+              "id": "Bs7AhnL6pfdhIL2k",
+              "view": "longtext-view",
+              "content": "A smooth and professional experience from start to finish. Clear communication, strong ideas, and a result that exceeded expectations.",
+              "style": {
+                "margin-bottom": "1.5em",
+                "max-width": "800px",
+                "font-size": "1.2em",
+                "text-align": "center"
+              },
+              "settings": {
+                "animation": "fade-in"
+              }
+            },
+            {
+              "id": "DLVAjAElLvsvap1l",
+              "view": "longtext-view",
+              "content": "<span style='font-weight: bold'>James Henry</span><br/>Story Well",
+              "style": {
+                "margin-bottom": "1.1em",
+                "max-width": "800px",
+                "font-size": "1em",
+                "align": "center",
+                "text-align": "center",
+                "font-weight": "lighter"
+              },
+              "settings": {
+                "animation": "fade-in"
+              }
+            }
+          ]
+        },
+        {
+          "id": "AswO16rJqaAcdleO",
+          "viewType": "Text",
+          "viewId": "submenubig",
+          "elements": [
+            {
+              "id": "fZwaBVmJhZXpfhg8",
+              "view": "shorttext-view",
+              "content": "Let's work together",
+              "style": {
+                "margin-bottom": "1.75em"
+              },
+              "settings": {
+                "animation": "fade-in"
+              }
+            },
+            {
+              "id": "UQ2bTrBWe3dZsTa8",
+              "view": "links-view",
+              "content": [
+                {
+                  "Guid": "ssnfRgWjBo205XNr",
+                  "Link": "/",
+                  "Title": "Portfolio"
+                },
+                {
+                  "Guid": "AF1rm9WR8OUaBUWX",
+                  "Link": "/about",
+                  "Title": "About"
+                },
+                {
+                  "Guid": "RZSoHkuUSVSgbPrJ",
+                  "Link": "/contact",
+                  "Title": "Contact"
+                }
+              ],
+              "style": {
+                "font-size": "4em",
+                "text-transform": "uppercase",
+                "line-height": "125%",
+                "flex-direction": "column"
+              },
+              "settings": {
+                "animation": "fade-in",
+                "widthAdapt": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "or3eOSkptWOvIvQh",
+      "url": "/modern-figures",
+      "title": "Modern Figures",
+      "isStartPage": false,
+      "sections": [
+        {
+          "id": "Xcfquzv9quWe4DnX",
+          "viewType": "Text",
+          "viewId": "text2",
+          "elements": [
+            {
+              "id": "wZZWi8RTwsZL4lfP",
+              "view": "header-view",
+              "content": "Modern Figures",
+              "style": {
+                "margin-bottom": "0.7em",
+                "max-width": "800px"
+              },
+              "settings": {
+                "animation": "fade-in"
+              }
+            },
+            {
+              "id": "uoeGJcehfvp9JBnw",
+              "view": "longtext-view",
+              "content": "A portrait series created for Modern Muse Magazine, exploring contemporary femininity through minimal form and bold geometry. The works combine clean colour fields, sharp contours, and subtle expression to portray strength and stillness in equal measure.",
+              "style": {
+                "margin-bottom": "3em",
+                "max-width": "800px",
+                "text-align": "center"
+              },
+              "settings": {
+                "animation": "fade-in"
+              }
+            },
+            {
+              "id": "mBQHdFsic1FfaqdD",
+              "view": "list-view",
+              "content": [
+                {
+                  "Guid": "ovgQ8xgtch9ZRf8C",
+                  "Link": "",
+                  "Title": "Visuals"
+                },
+                {
+                  "Guid": "NHnSImZv3ifzmwp",
+                  "Link": "",
+                  "Title": "Storytelling"
+                },
+                {
+                  "Guid": "d6SziXjcCttGlUFU",
+                  "Link": "",
+                  "Title": "Brand"
+                }
+              ],
+              "style": {
+                "flex-direction": "row",
+                "align-items": "center",
+                "max-width": "800px",
+                "background-color": "#efefef",
+                "justify-content": "center"
+              },
+              "settings": {
+                "animation": "fade-in",
+                "list-style": "tags"
+              }
+            }
+          ]
+        },
+        {
+          "id": "N3oBagSHvAZWuZDR",
+          "viewType": "Gallery",
+          "viewId": "evenrows",
+          "elements": [],
+          "gallery": {
+            "id": "llK5YOMhYhT2Y0uu",
+            "settings": {
+              "animation": "fade-in",
+              "shadows": "",
+              "rounded": "",
+              "borders": "",
+              "lb-lightbox": "lb1",
+              "lb-animation": "fade-in",
+              "lb-item-fit": "contain",
+              "lb-height": "100%",
+              "lb-figcap-position": "lbbottom2",
+              "twoone-style": "",
+              "hover-transition": "hover-opacity",
+              "items-per-row": "",
+              "figcap-position": "cover1",
+              "item-size": "4",
+              "item-margin": "2"
+            },
+            "items": [
+              {
+                "id": "FwW4jYEFKrGxWiPl",
+                "src": "/uploads/bold-profile-illu-bbe1fb.jpg",
+                "width": 1567,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "YjkLyrlfquLx03vb",
+                "src": "/uploads/futuristic-woman-profile.jpg",
+                "width": 1567,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "y0iy7gOQeyXv1qUH",
+                "src": "/uploads/striking-makeup-portrait.jpg",
+                "width": 1567,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "EJ8hvKTchBr8w8Vu",
+                "src": "/uploads/stylized-portrait-art.jpg",
+                "width": 1567,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "xl7YmNlWyAFJ1h8C",
+                "src": "/uploads/stylized-profile-4db8c3.jpg",
+                "width": 1567,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "Mw35KoUCNaorS2iq",
+                "src": "/uploads/stylized-woman-portrait.jpg",
+                "width": 1567,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              },
+              {
+                "id": "uyK7LJqRf1z7NbKU",
+                "src": "/uploads/stylized-woman-pr-e5dc62.jpg",
+                "width": 1567,
+                "height": 2080,
+                "alt": "",
+                "link": null,
+                "title": "",
+                "subtitle": "",
+                "description": ""
+              }
+            ]
+          }
+        },
+        {
+          "id": "kV6s4nMJETdzI9FT",
+          "viewType": "Text",
+          "viewId": "submenubig",
+          "elements": [
+            {
+              "id": "iJBFSPKYjxjADVQI",
+              "view": "shorttext-view",
+              "content": "Let's work together",
+              "style": {
+                "margin-bottom": "1.75em"
+              },
+              "settings": {
+                "animation": "fade-in"
+              }
+            },
+            {
+              "id": "Apcy0HT3si5yRtm5",
+              "view": "links-view",
+              "content": [
+                {
+                  "Guid": "oudEDGzYtG8CKk65",
+                  "Link": "/",
+                  "Title": "Portfolio"
+                },
+                {
+                  "Guid": "fIqGzQ2bL3ikDGT8",
+                  "Link": "/services",
+                  "Title": "Services"
+                },
+                {
+                  "Guid": "w424PeFuwLprncIo",
+                  "Link": "/about",
+                  "Title": "About"
+                }
+              ],
+              "style": {
+                "font-size": "4em",
+                "text-transform": "uppercase",
+                "line-height": "125%",
+                "flex-direction": "column"
+              },
+              "settings": {
+                "animation": "fade-in",
+                "widthAdapt": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OW3Fg1OhLBFJb2JX",
+      "url": "/",
+      "title": "Portfolio",
+      "isStartPage": true,
+      "sections": [
+        {
+          "id": "WbuwsHYmceyaSniU",
+          "viewType": "Text",
+          "viewId": "person4",
+          "elements": [
+            {
+              "id": "zDtInKolGlb0QdbY",
+              "view": "shorttext-view",
+              "content": "Visual Artist",
+              "style": {
+                "align": "center",
+                "text-align": "center",
+                "margin-bottom": "0.8em"
+              },
+              "settings": {
+                "animation": "fade-in"
+              }
+            },
+            {
+              "id": "FpD1Kw8RWAviKkWb",
+              "view": "header-view",
+              "content": "Max Doe",
+              "style": {
+                "margin-bottom": "0",
+                "max-width": "800px"
+              },
+              "settings": {
+                "animation": "fade-in"
+              }
+            },
+            {
+              "id": "g1WosBrdp7Jncj1d",
+              "view": "longtext-view",
+              "content": "I believe in design that feels, not just functions. Built on curiosity, dialogue, and craft, my work explores how form and message shape experience. Every project is a collaboration, grounded in clarity and made to last.",
+              "style": {
+                "margin-bottom": "0",
+                "max-width": "520px",
+                "text-align": "center",
+                "margin-top": "2em"
+              },
+              "settings": {
+                "animation": "fade-in"
+              }
+            }
+          ]
+        },
+        {
+          "id": "Hg7H3Fk6NzmnQXAL",
+          "viewType": "LinkPage",
+          "viewId": "dynamicgrid",
+          "elements": [
+            {
+              "id": "LhJoSbHPn1KZ3JWb",
+              "view": "header2-view",
+              "content": "Portfolio",
+              "style": {
+                "margin-bottom": "0.7em",
+                "max-width": "800px"
+              },
+              "settings": {
+                "animation": "fade-in"
+              }
+            }
+          ],
+          "gallery": {
+            "id": "DZWU4JHalu8pyZPh",
+            "settings": {
+              "item-size": "4",
+              "item-margin": "4",
+              "animation": "fade-in",
+              "shadows": "",
+              "rounded": "",
+              "borders": "",
+              "figcap-position": "bottom1",
+              "hover-transition": "hover-opacity",
+              "iframe-thumb-play": "1",
+              "captionbutton-class": "link",
+              "items-per-row": "",
+              "filter": "",
+              "categories": []
+            },
+            "items": [
+              {
+                "id": "uwiCk7U9DJz2unnb",
+                "src": "/uploads/artistic-bird-ill-797164.jpg",
+                "width": 1566,
+                "height": 2080,
+                "alt": "",
+                "link": "/creatures",
+                "title": "Creatures",
+                "subtitle": "Gallery",
+                "description": "Surreal portraits merging human and animal traits in a world both still and alive."
+              },
+              {
+                "id": "AUXUf54OkEbRqMMP",
+                "src": "/uploads/serene-girl-in-red-coat.jpg",
+                "width": 1567,
+                "height": 2080,
+                "alt": "",
+                "link": "/winter-whispers",
+                "title": "Winter Whispers",
+                "subtitle": "Gallery",
+                "description": "Quiet winter scenes blending surreal storytelling with warmth, solitude, and reflection."
+              },
+              {
+                "id": "gLRhAJmoOADwy30y",
+                "src": "/uploads/bold-profile-illu-bbe1fb.jpg",
+                "width": 1567,
+                "height": 2080,
+                "alt": "",
+                "link": "/modern-figures",
+                "title": "Modern Figures",
+                "subtitle": "Gallery",
+                "description": "Portrait series for Modern Muse exploring femininity through minimal form and bold geometry."
+              },
+              {
+                "id": "DzvYzy7XzffKuH2r",
+                "src": "/uploads/artistic-pink-flower.jpg",
+                "width": 1719,
+                "height": 2080,
+                "alt": "",
+                "link": "/bloom-studies",
+                "title": "Bloom Studies",
+                "subtitle": "Gallery",
+                "description": "Floral portraits celebrating form and stillness, where nature meets modern graphic design."
+              },
+              {
+                "id": "pijXBUNDXdZKazyW",
+                "src": "/uploads/int-simplified-po-161c59.jpg",
+                "width": 1024,
+                "height": 1024,
+                "alt": "",
+                "link": "/pressed-in-blue",
+                "title": "Pressed In Blue",
+                "subtitle": "Gallery",
+                "description": "Hand-printed works exploring line, contrast, and rhythm through tactile, single-colour prints."
+              },
+              {
+                "id": "p5zNEKtQHtUXlcqH",
+                "src": "/uploads/0mv-painting-simi-0316ab.jpg",
+                "width": 1024,
+                "height": 1024,
+                "alt": "",
+                "link": "/the-crowd",
+                "title": "The Crowd",
+                "subtitle": "Gallery",
+                "description": "Paintings capturing collective rhythm and quiet urban poetry through blurred, muted figures."
+              },
+              {
+                "id": "dbOTm8S4nUSaHjQn",
+                "src": "/uploads/celestial-woman-portrait.jpg",
+                "width": 1567,
+                "height": 2080,
+                "alt": "",
+                "link": "/nocturne",
+                "title": "Nocturne",
+                "subtitle": "Gallery",
+                "description": "Elegant gothic portraits exploring light, shadow, and divinity through digital chiaroscuro."
+              },
+              {
+                "id": "xB7fisUZUg939pSX",
+                "src": "/uploads/bold-portrait-artwork.jpg",
+                "width": 1567,
+                "height": 2080,
+                "alt": "",
+                "link": "/dual-tone-portraits",
+                "title": "Dual Tone Portraits",
+                "subtitle": "Gallery",
+                "description": "Digital portraits exploring form and emotion through bold geometry and minimal colour."
+              },
+              {
+                "id": "UjFPiudmXtYKTEGe",
+                "src": "/uploads/abstract-reclinin-6b65c9.jpg",
+                "width": 1560,
+                "height": 2080,
+                "alt": "",
+                "link": "/poses-and-postures",
+                "title": "Poses And Postures",
+                "subtitle": "Gallery",
+                "description": "Playful character studies exploring body geometry, rhythm, and balance through bold colour."
+              },
+              {
+                "id": "oHykCEiBxlQiwUkR",
+                "src": "/uploads/abstract-floral-art-copy.jpg",
+                "width": 1675,
+                "height": 2080,
+                "alt": "",
+                "link": "/paper-botanica",
+                "title": "Paper Botanica",
+                "subtitle": "Gallery",
+                "description": "Floral illustrations blending texture, balance, and calm rhythm through layered digital forms."
+              }
+            ]
+          }
+        },
+        {
+          "id": "yc3Dieiil0lCU3LI",
+          "viewType": "Text",
+          "viewId": "submenubig",
+          "elements": [
+            {
+              "id": "phSV8UdpLXVWnOjo",
+              "view": "shorttext-view",
+              "content": "Let's work together",
+              "style": {
+                "margin-bottom": "1.75em"
+              },
+              "settings": {
+                "animation": "fade-in"
+              }
+            },
+            {
+              "id": "zhJdShrJ1225Or4c",
+              "view": "links-view",
+              "content": [
+                {
+                  "Guid": "iNZarFWjpwt0x4QF",
+                  "Link": "/services",
+                  "Title": "Services"
+                },
+                {
+                  "Guid": "o0S5VYO9IYEA3j8q",
+                  "Link": "/about",
+                  "Title": "About"
+                },
+                {
+                  "Guid": "Tmt2rZlzzXokTJri",
+                  "Link": "/contact",
+                  "Title": "Contact"
+                }
+              ],
+              "style": {
+                "font-size": "4em",
+                "text-transform": "uppercase",
+                "line-height": "125%",
+                "flex-direction": "column"
+              },
+              "settings": {
+                "animation": "fade-in",
+                "widthAdapt": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P8yHnisCi53Wyp0V",
+      "url": "/about",
+      "title": "About",
+      "isStartPage": false,
+      "sections": [
+        {
+          "id": "Wn8wJCN5EHWnMDBv",
+          "viewType": "Text",
+          "viewId": "person2",
+          "elements": [
+            {
+              "id": "E3Lph5QBa6ieO6en",
+              "view": "singleimage-view",
+              "content": {
+                "Src": "/uploads/about.jpg",
+                "Width": 1627,
+                "Height": 2080
+              },
+              "style": {
+                "object-fit": "cover",
+                "max-width": "100px",
+                "margin-bottom": "2em"
+              },
+              "settings": {
+                "shadows": "",
+                "rounded": "",
+                "borders": "",
+                "thumb-size": "",
+                "iframe-hide-controls": "",
+                "iframe-auto-play": "",
+                "iframe-mute": "",
+                "iframe-loop": "",
+                "animation": "fade-in",
+                "hover-transition": "none",
+                "round": "round",
+                "thumb-type": "h400"
+              }
+            },
+            {
+              "id": "VQCN501Nr4OEB96H",
+              "view": "header-view",
+              "content": "Max Doe",
+              "style": {
+                "margin-bottom": "0.2em",
+                "max-width": "800px"
+              },
+              "settings": {
+                "animation": "fade-in"
+              }
+            },
+            {
+              "id": "P1wNCwoAR2GDOG52",
+              "view": "shorttext-view",
+              "content": "Visual Artist",
+              "style": {
+                "align": "center",
+                "text-align": "center"
+              },
+              "settings": {
+                "animation": "fade-in"
+              }
+            },
+            {
+              "id": "jPnGCDAQqH6uahOy",
+              "view": "longtext-view",
+              "content": "My work explores the quiet rhythm between light, texture, and human presence. I move between painting, printmaking, and mixed media — always drawn to subtle tension and stillness. Each piece begins with observation and becomes a search for balance between control and chance.",
+              "style": {
+                "margin-bottom": "1.1em",
+                "max-width": "520px",
+                "text-align": "center",
+                "margin-top": "2em"
+              },
+              "settings": {
+                "animation": "fade-in"
+              }
+            }
+          ]
+        },
+        {
+          "id": "Gf4MhZhgwqGvX2fl",
+          "viewType": "Text",
+          "viewId": "awardswide",
+          "elements": [
+            {
+              "id": "P5B88sgdWzlufexw",
+              "view": "smalllist-view",
+              "content": [
+                {
+                  "Guid": "PrY6wtI5uGw5HEGb",
+                  "Title": "Design Week",
+                  "Subtitle": "Profiled",
+                  "Link": ""
+                },
+                {
+                  "Guid": "rpstmFnOskiJuLRr",
+                  "Title": "Awwwards",
+                  "Subtitle": "Web design",
+                  "Link": ""
+                },
+                {
+                  "Guid": "iCOm9Gjo3Vnr6JnZ",
+                  "Title": "Red Dot Award",
+                  "Subtitle": "Product design",
+                  "Link": ""
+                }
+              ],
+              "style": {
+                "max-width": "400px",
+                "line-height": "1.5em",
+                "font-weight": "bold",
+                "align-self": "flex-start",
+                "tex-align": "left"
+              },
+              "settings": {
+                "animation": "fade-in",
+                "list-type": "verticalunderline"
+              }
+            }
+          ]
+        },
+        {
+          "id": "cmO3rVrCpkepcT0",
+          "viewType": "Text",
+          "viewId": "awardswide",
+          "elements": [
+            {
+              "id": "yjZM6in1ZpPPMCdU",
+              "view": "smalllist-view",
+              "content": [
+                {
+                  "Guid": "U4gdv64JKPRbGNLa",
+                  "Title": "Spotify",
+                  "Subtitle": "2025",
+                  "Link": ""
+                },
+                {
+                  "Guid": "Wk0LvG4JuYvrgYmq",
+                  "Title": "IKEA",
+                  "Subtitle": "2025",
+                  "Link": ""
+                },
+                {
+                  "Guid": "pPn56j3rMKiJe01N",
+                  "Title": "Portfoliobox",
+                  "Subtitle": "2024",
+                  "Link": ""
+                },
+                {
+                  "Guid": "kZbCjEXBdICvjVPY",
+                  "Title": "Volvo",
+                  "Subtitle": "2024",
+                  "Link": ""
+                },
+                {
+                  "Guid": "kseh84mWxo9hwGog",
+                  "Title": "ICA",
+                  "Subtitle": "2024",
+                  "Link": ""
+                }
+              ],
+              "style": {
+                "max-width": "400px",
+                "line-height": "1.5em",
+                "font-weight": "bold",
+                "align-self": "flex-start",
+                "tex-align": "left"
+              },
+              "settings": {
+                "animation": "fade-in",
+                "list-type": "verticalunderline"
+              }
+            }
+          ]
+        },
+        {
+          "id": "Hl27g46rK5sXl8Re",
+          "viewType": "Text",
+          "viewId": "submenubig",
+          "elements": [
+            {
+              "id": "tMR7yTrLdPsAuA2Z",
+              "view": "shorttext-view",
+              "content": "Let's work together",
+              "style": {
+                "margin-bottom": "1.75em"
+              },
+              "settings": {
+                "animation": "fade-in"
+              }
+            },
+            {
+              "id": "u0p47ffOeJZ6cdMO",
+              "view": "links-view",
+              "content": [
+                {
+                  "Guid": "zGYDwbCEJ4UBdXK1",
+                  "Link": "/",
+                  "Title": "Portfolio"
+                },
+                {
+                  "Guid": "WAcLdAGyjpmoxKev",
+                  "Link": "/services",
+                  "Title": "Services"
+                },
+                {
+                  "Guid": "EGlg8Obemx56PiWg",
+                  "Link": "/contact",
+                  "Title": "Contact"
+                }
+              ],
+              "style": {
+                "font-size": "4em",
+                "text-transform": "uppercase",
+                "line-height": "125%",
+                "flex-direction": "column"
+              },
+              "settings": {
+                "animation": "fade-in",
+                "widthAdapt": true
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
