@@ -413,6 +413,8 @@ app.put('/api/site', async (req, res) => {
   if (phone !== undefined) data.phone = phone;
   if (address !== undefined) data.address = address;
   if (socialLinks !== undefined) data.socialLinks = socialLinks;
+  if (req.body.customStyles !== undefined) data.customStyles = req.body.customStyles;
+  if (req.body.aboutSections !== undefined) data.aboutSections = req.body.aboutSections;
 
   // Atualização do menu com criação automática de página/galeria para qualquer novo menu
   if (menu !== undefined && Array.isArray(menu)) {
@@ -752,42 +754,69 @@ app.post('/api/contact', async (req, res) => {
   res.json({ success: true, message: 'Mensagem enviada com sucesso!' });
 });
 
-// 10. Rota de Tradução Automática em Tempo Real (Google Translate Engine + Cache Redis)
+// 10. Rota de Tradução Automática em Tempo Real (Google Translate Engine + MyMemory Fallback + Cache Redis)
 async function performTranslate(text, targetLang) {
   if (!text || typeof text !== 'string' || !text.trim()) return text;
   
   const cleanTarget = targetLang.toLowerCase().startsWith('pt') ? 'pt' : targetLang.toLowerCase();
   
+  // 1. Tenta API Primária (Google Translate GTX)
   try {
     const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${cleanTarget}&dt=t&q=${encodeURIComponent(text.trim())}`;
-    const response = await fetch(url);
-    const data = await response.json();
-    let translated = text;
-    if (data && data[0]) {
-      translated = data[0].map(item => item[0]).join('');
+    const response = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0' } });
+    if (response.ok) {
+      const data = await response.json();
+      if (data && data[0]) {
+        let translated = data[0].map(item => item[0]).join('');
+        if (targetLang === 'pt-pt') {
+          translated = translated
+            .replace(/\bcontato\b/gi, 'contacto')
+            .replace(/\bcontatos\b/gi, 'contactos')
+            .replace(/\bfato\b/gi, 'facto')
+            .replace(/\bfatos\b/gi, 'factos')
+            .replace(/\bprojeto\b/gi, 'projecto')
+            .replace(/\bprojetos\b/gi, 'projectos')
+            .replace(/\bequipe\b/gi, 'equipa')
+            .replace(/\bequipes\b/gi, 'equipas')
+            .replace(/\bconosco\b/gi, 'connosco')
+            .replace(/\bvocê\b/gi, 'consigo')
+            .replace(/\bcelular\b/gi, 'telemóvel');
+        }
+        if (translated && translated.trim()) return translated;
+      }
     }
-
-    // Se o destino for PT-PT, aplica adaptações ortográficas
-    if (targetLang === 'pt-pt') {
-      translated = translated
-        .replace(/\bcontato\b/gi, 'contacto')
-        .replace(/\bcontatos\b/gi, 'contactos')
-        .replace(/\bfato\b/gi, 'facto')
-        .replace(/\bfatos\b/gi, 'factos')
-        .replace(/\bprojeto\b/gi, 'projecto')
-        .replace(/\bprojetos\b/gi, 'projectos')
-        .replace(/\bequipe\b/gi, 'equipa')
-        .replace(/\bequipes\b/gi, 'equipas')
-        .replace(/\bconosco\b/gi, 'connosco')
-        .replace(/\bvocê\b/gi, 'consigo')
-        .replace(/\bcelular\b/gi, 'telemóvel');
-    }
-
-    return translated;
   } catch (err) {
-    console.warn('Falha na API de tradução:', err.message);
-    return text;
+    console.warn('Google GTX Translate offline/falhou:', err.message);
   }
+
+  // 2. Fallback Secundário (MyMemory Translated API)
+  try {
+    const langPair = cleanTarget === 'en' ? 'pt|en' : 'en|pt';
+    const fallbackUrl = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text.trim())}&langpair=${langPair}`;
+    const fbRes = await fetch(fallbackUrl);
+    if (fbRes.ok) {
+      const fbData = await fbRes.json();
+      if (fbData && fbData.responseData && fbData.responseData.translatedText) {
+        let translated = fbData.responseData.translatedText;
+        if (targetLang === 'pt-pt') {
+          translated = translated
+            .replace(/\bcontato\b/gi, 'contacto')
+            .replace(/\bcontatos\b/gi, 'contactos')
+            .replace(/\bfato\b/gi, 'facto')
+            .replace(/\bfatos\b/gi, 'factos')
+            .replace(/\bprojeto\b/gi, 'projecto')
+            .replace(/\bprojetos\b/gi, 'projectos')
+            .replace(/\bequipe\b/gi, 'equipa')
+            .replace(/\bequipes\b/gi, 'equipas');
+        }
+        return translated;
+      }
+    }
+  } catch (err2) {
+    console.warn('MyMemory Translate falhou:', err2.message);
+  }
+
+  return text;
 }
 
 app.post('/api/translate', async (req, res) => {

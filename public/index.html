@@ -9,7 +9,7 @@
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Cinzel:wght@400;600;700&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Lora:ital,wght@0,400;0,600;1,400&family=Montserrat:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
   
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -28,6 +28,8 @@
     </div>
     
     <div class="live-editor-center">
+      <button class="live-tool-btn" id="btnLiveOpenDrawer" title="Inserir Textos & Estilos de Fonte" style="background: #3b82f6; border-color: #2563eb; color: #fff;"><i class="fa-solid fa-font"></i> Textos & Estilo</button>
+      <button class="live-tool-btn" id="btnLiveAddSectionAbout" title="Adicionar Nova Seção (ex: Clientes, Prêmios, Bio)" style="display: none;"><i class="fa-solid fa-table-columns"></i> Nova Seção</button>
       <button class="live-tool-btn" id="btnLiveAddPhoto" title="Adicionar Nova Foto"><i class="fa-solid fa-cloud-arrow-up"></i> Adicionar Fotos</button>
       <button class="live-tool-btn" id="btnLiveAddPage" title="Nova Galeria / Página"><i class="fa-solid fa-plus"></i> Nova Galeria</button>
       <button class="live-tool-btn" id="btnLiveManageMenu" title="Editar Menus"><i class="fa-solid fa-bars"></i> Menus</button>
@@ -45,13 +47,13 @@
   <!-- Header Principal -->
   <header class="site-header">
     <div class="header-top-bar">
-      <!-- Seletor de Idiomas (PT-BR / PT-PT / EN) -->
+      <!-- Seletor de Idiomas Minimalista e Discreto (PT-BR / PT-PT / EN) -->
       <div class="lang-switcher" id="langSwitcher" role="group" aria-label="Seletor de Idioma">
-        <button type="button" class="lang-btn active" data-lang="pt-br" title="Português (Brasil)">🇧🇷 PT-BR</button>
-        <span class="lang-divider">|</span>
-        <button type="button" class="lang-btn" data-lang="pt-pt" title="Português (Portugal)">🇵🇹 PT-PT</button>
-        <span class="lang-divider">|</span>
-        <button type="button" class="lang-btn" data-lang="en" title="English">🇺🇸 EN</button>
+        <button type="button" class="lang-btn active" data-lang="pt-br" title="Português (Brasil)">PT-BR</button>
+        <span class="lang-divider">/</span>
+        <button type="button" class="lang-btn" data-lang="pt-pt" title="Português (Portugal)">PT-PT</button>
+        <span class="lang-divider">/</span>
+        <button type="button" class="lang-btn" data-lang="en" title="English">EN</button>
       </div>
     </div>
 
@@ -173,6 +175,133 @@
       </div>
     </div>
   </div>
+
+  <!-- DRAWER LATERAL DIREITO DE ESTILOS DE TEXTO & TIPOGRAFIA (ESTILO WIX) -->
+  <aside id="liveTextDrawer" class="live-text-drawer" aria-label="Painel de Formatação e Textos">
+    <div class="drawer-header">
+      <div class="drawer-title">
+        <i class="fa-solid fa-palette"></i>
+        <span>Textos & Tipografia</span>
+      </div>
+      <button class="drawer-close-btn" id="closeLiveTextDrawer" title="Fechar Painel">&times;</button>
+    </div>
+
+    <div class="drawer-body">
+      <!-- Seção 1: Inserir Novos Blocos de Texto na Página Atual -->
+      <div class="drawer-group">
+        <label class="drawer-label"><i class="fa-solid fa-plus-circle"></i> Inserir Novo Bloco de Texto</label>
+        <p class="drawer-help">Clique para adicionar um elemento de texto editável à página atual:</p>
+        <div class="drawer-block-buttons">
+          <button type="button" class="drawer-action-btn" id="btnInsertBigTitle">
+            <i class="fa-solid fa-heading"></i>
+            <span>Título Grande (H1)</span>
+          </button>
+          <button type="button" class="drawer-action-btn" id="btnInsertSubTitle">
+            <i class="fa-solid fa-heading" style="font-size: 0.8em;"></i>
+            <span>Subtítulo (H2/H3)</span>
+          </button>
+          <button type="button" class="drawer-action-btn" id="btnInsertLongText">
+            <i class="fa-solid fa-align-left"></i>
+            <span>Parágrafo Longo</span>
+          </button>
+          <button type="button" class="drawer-action-btn" id="btnInsertSmallText">
+            <i class="fa-solid fa-comment-dots"></i>
+            <span>Texto Curto / Legenda</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Seção 2: Formatação do Texto Selecionado ou Focado -->
+      <div class="drawer-group">
+        <label class="drawer-label"><i class="fa-solid fa-pen-nib"></i> Formatar Texto Focado</label>
+        <div class="drawer-target-indicator" id="drawerTargetIndicator">
+          Nenhum texto selecionado. Clique em qualquer texto da página para formatar.
+        </div>
+
+        <!-- Fonte -->
+        <div class="drawer-control-row">
+          <label>Família da Fonte:</label>
+          <select id="drawerFontFamily" class="drawer-select">
+            <option value="inherit">Padrão da Página</option>
+            <option value="'Barlow', sans-serif">Barlow (Editorial / Sans-serif)</option>
+            <option value="'Open Sans', sans-serif">Open Sans (Clássica / Limpa)</option>
+            <option value="'Playfair Display', serif">Playfair Display (Elegante / Serifa)</option>
+            <option value="'Cinzel', serif">Cinzel (Clássica / Artística)</option>
+            <option value="'Montserrat', sans-serif">Montserrat (Moderna / Geométrica)</option>
+            <option value="'Lora', serif">Lora (Contemporânea / Serifa)</option>
+            <option value="'Courier Prime', monospace">Courier (Monospace / Datilografia)</option>
+          </select>
+        </div>
+
+        <!-- Tamanho da Fonte -->
+        <div class="drawer-control-row">
+          <label>Tamanho da Fonte:</label>
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <input type="range" id="drawerFontSizeRange" min="10" max="72" value="16" class="drawer-range" />
+            <span id="drawerFontSizeValue" style="font-size: 0.85rem; font-weight: 600; width: 42px; text-align: right;">16px</span>
+          </div>
+        </div>
+
+        <!-- Estilo: Negrito, Itálico, Sublinhado, Alinhamento -->
+        <div class="drawer-control-row">
+          <label>Estilo & Ênfase:</label>
+          <div class="drawer-btn-group">
+            <button type="button" class="drawer-toggle-btn" id="btnToggleBold" title="Negrito (Ctrl+B)"><strong>B</strong></button>
+            <button type="button" class="drawer-toggle-btn" id="btnToggleItalic" title="Itálico (Ctrl+I)"><em>I</em></button>
+            <button type="button" class="drawer-toggle-btn" id="btnToggleUnderline" title="Sublinhado (Ctrl+U)"><u>U</u></button>
+            <button type="button" class="drawer-toggle-btn" id="btnToggleUppercase" title="Maiúsculas">TT</button>
+          </div>
+        </div>
+
+        <!-- Alinhamento -->
+        <div class="drawer-control-row">
+          <label>Alinhamento:</label>
+          <div class="drawer-btn-group">
+            <button type="button" class="drawer-toggle-btn" id="btnAlignLeft" title="Alinhar à Esquerda"><i class="fa-solid fa-align-left"></i></button>
+            <button type="button" class="drawer-toggle-btn" id="btnAlignCenter" title="Centralizar"><i class="fa-solid fa-align-center"></i></button>
+            <button type="button" class="drawer-toggle-btn" id="btnAlignRight" title="Alinhar à Direita"><i class="fa-solid fa-align-right"></i></button>
+          </div>
+        </div>
+
+        <!-- Cor do Texto -->
+        <div class="drawer-control-row">
+          <label>Cor do Texto:</label>
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <input type="color" id="drawerTextColor" value="#000000" style="width: 40px; height: 32px; border: none; cursor: pointer; border-radius: 4px; background: transparent;" />
+            <span style="font-size: 0.85rem; color: #94a3b8;" id="drawerTextColorLabel">#000000</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Seção 3: Tipografia Global do Site -->
+      <div class="drawer-group">
+        <label class="drawer-label"><i class="fa-solid fa-sliders"></i> Tipografia Global do Site</label>
+        <p class="drawer-help">Altera a fonte padrão de títulos e corpo em todo o site:</p>
+        
+        <div class="drawer-control-row">
+          <label>Fonte de Títulos:</label>
+          <select id="globalHeadingFont" class="drawer-select">
+            <option value="'Barlow', sans-serif">Barlow (Original)</option>
+            <option value="'Playfair Display', serif">Playfair Display</option>
+            <option value="'Cinzel', serif">Cinzel</option>
+            <option value="'Montserrat', sans-serif">Montserrat</option>
+            <option value="'Lora', serif">Lora</option>
+            <option value="'Open Sans', sans-serif">Open Sans</option>
+          </select>
+        </div>
+
+        <div class="drawer-control-row">
+          <label>Fonte de Textos/Parágrafos:</label>
+          <select id="globalBodyFont" class="drawer-select">
+            <option value="'Open Sans', sans-serif">Open Sans (Original)</option>
+            <option value="'Barlow', sans-serif">Barlow</option>
+            <option value="'Montserrat', sans-serif">Montserrat</option>
+            <option value="'Lora', serif">Lora</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </aside>
 
   <!-- Toast Notification -->
   <div id="liveToast" class="live-toast"></div>

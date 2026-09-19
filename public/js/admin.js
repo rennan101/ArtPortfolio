@@ -658,6 +658,11 @@
   // ----------------------------------------------------------------
   function populateProfileTab() {
     if (!siteData) return;
+    const adminAvatarPreview = document.getElementById('adminAvatarPreview');
+    const infoAvatar = document.getElementById('infoAvatar');
+    if (adminAvatarPreview) adminAvatarPreview.src = siteData.avatar || '/uploads/about.jpg';
+    if (infoAvatar) infoAvatar.value = siteData.avatar || '/uploads/about.jpg';
+
     infoArtistName.value = siteData.artistName || '';
     infoProfession.value = siteData.profession || '';
     infoBio.value = siteData.bio || '';
@@ -686,6 +691,42 @@
   function setupProfileControls() {
     const btnAdminAddSocial = document.getElementById('btnAdminAddSocial');
     const adminSocialListContainer = document.getElementById('adminSocialListContainer');
+    const btnAdminUploadAvatar = document.getElementById('btnAdminUploadAvatar');
+    const adminAvatarFileInput = document.getElementById('adminAvatarFileInput');
+    const adminAvatarPreview = document.getElementById('adminAvatarPreview');
+    const infoAvatar = document.getElementById('infoAvatar');
+
+    if (btnAdminUploadAvatar && adminAvatarFileInput) {
+      btnAdminUploadAvatar.addEventListener('click', () => adminAvatarFileInput.click());
+      adminAvatarFileInput.addEventListener('change', async () => {
+        if (adminAvatarFileInput.files.length === 0) return;
+        const file = adminAvatarFileInput.files[0];
+        const formData = new FormData();
+        formData.append('photos', file);
+
+        const token = localStorage.getItem('adm_token');
+        showToast('Enviando foto de perfil...', 'info');
+
+        try {
+          const res = await fetch('/api/upload', {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}` },
+            body: formData
+          });
+          const data = await res.json();
+          if (data.success && data.files && data.files[0]) {
+            const newUrl = data.files[0].src;
+            if (adminAvatarPreview) adminAvatarPreview.src = newUrl;
+            if (infoAvatar) infoAvatar.value = newUrl;
+            showToast('Foto carregada! Clique em "Salvar Perfil" para gravar.', 'success');
+          } else {
+            showToast(data.error || 'Erro no upload do avatar.', 'error');
+          }
+        } catch (e) {
+          showToast('Erro ao enviar foto.', 'error');
+        }
+      });
+    }
 
     if (btnAdminAddSocial && adminSocialListContainer) {
       btnAdminAddSocial.addEventListener('click', () => {
@@ -719,6 +760,7 @@
         profession: infoProfession.value,
         bio: infoBio.value,
         aboutLongBio: infoAboutLongBio.value,
+        avatar: infoAvatar ? infoAvatar.value : undefined,
         email: infoEmail.value,
         phone: infoPhone.value,
         address: infoAddress.value,

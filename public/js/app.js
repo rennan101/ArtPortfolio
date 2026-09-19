@@ -276,10 +276,40 @@
         if (currentLang === targetLang) {
           el.textContent = translated;
         }
+        return;
       }
     } catch (e) {
-      // Em caso de falha de rede silenciosa, preserva o texto original
+      // Falha de rede para /api/translate, tenta fallback direto do navegador
     }
+
+    // Fallback direto via cliente caso a API backend esteja indisponível
+    try {
+      const cleanTarget = targetLang.toLowerCase().startsWith('pt') ? 'pt' : targetLang.toLowerCase();
+      const directUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${cleanTarget}&dt=t&q=${encodeURIComponent(clean)}`;
+      const directRes = await fetch(directUrl);
+      const directData = await directRes.json();
+      if (directData && directData[0]) {
+        let directTranslated = directData[0].map(item => item[0]).join('');
+        if (targetLang === 'pt-pt') {
+          directTranslated = directTranslated
+            .replace(/\bcontato\b/gi, 'contacto')
+            .replace(/\bcontatos\b/gi, 'contactos')
+            .replace(/\bfato\b/gi, 'facto')
+            .replace(/\bfatos\b/gi, 'factos')
+            .replace(/\bprojeto\b/gi, 'projecto')
+            .replace(/\bprojetos\b/gi, 'projectos')
+            .replace(/\bequipe\b/gi, 'equipa')
+            .replace(/\bequipes\b/gi, 'equipas');
+        }
+        if (directTranslated && directTranslated !== clean) {
+          dynamicTranslationCache[cacheKey] = directTranslated;
+          try { localStorage.setItem(`tr_${cacheKey}`, directTranslated); } catch (e) {}
+          if (currentLang === targetLang) {
+            el.textContent = directTranslated;
+          }
+        }
+      }
+    } catch (e2) {}
   }
 
   // -------------------------------------------------------------
@@ -344,9 +374,37 @@
   const btnLiveManageMenu = document.getElementById('btnLiveManageMenu');
   const btnLiveManageSocial = document.getElementById('btnLiveManageSocial');
   const btnLiveEditProfile = document.getElementById('btnLiveEditProfile');
+  const btnLiveOpenDrawer = document.getElementById('btnLiveOpenDrawer');
+  const btnLiveAddSectionAbout = document.getElementById('btnLiveAddSectionAbout');
   const btnLiveSaveAll = document.getElementById('btnLiveSaveAll');
   const btnLiveLogout = document.getElementById('btnLiveLogout');
   const liveToast = document.getElementById('liveToast');
+
+  // Drawer Lateral de Texto e Tipografia
+  const liveTextDrawer = document.getElementById('liveTextDrawer');
+  const closeLiveTextDrawer = document.getElementById('closeLiveTextDrawer');
+  const drawerTargetIndicator = document.getElementById('drawerTargetIndicator');
+  const drawerFontFamily = document.getElementById('drawerFontFamily');
+  const drawerFontSizeRange = document.getElementById('drawerFontSizeRange');
+  const drawerFontSizeValue = document.getElementById('drawerFontSizeValue');
+  const btnToggleBold = document.getElementById('btnToggleBold');
+  const btnToggleItalic = document.getElementById('btnToggleItalic');
+  const btnToggleUnderline = document.getElementById('btnToggleUnderline');
+  const btnToggleUppercase = document.getElementById('btnToggleUppercase');
+  const btnAlignLeft = document.getElementById('btnAlignLeft');
+  const btnAlignCenter = document.getElementById('btnAlignCenter');
+  const btnAlignRight = document.getElementById('btnAlignRight');
+  const drawerTextColor = document.getElementById('drawerTextColor');
+  const drawerTextColorLabel = document.getElementById('drawerTextColorLabel');
+  const btnInsertBigTitle = document.getElementById('btnInsertBigTitle');
+  const btnInsertSubTitle = document.getElementById('btnInsertSubTitle');
+  const btnInsertLongText = document.getElementById('btnInsertLongText');
+  const btnInsertSmallText = document.getElementById('btnInsertSmallText');
+  const globalHeadingFont = document.getElementById('globalHeadingFont');
+  const globalBodyFont = document.getElementById('globalBodyFont');
+
+  // Elemento de texto atualmente em foco/seleção para o Drawer
+  let currentSelectedTextEl = null;
 
   // Modal Login Discreto
   const secretAdminTrigger = document.getElementById('secretAdminTrigger');
@@ -533,6 +591,19 @@
     if (liveAdminToolbar) liveAdminToolbar.style.display = 'none';
   }
 
+  function applyCustomStyles() {
+    if (!siteData || !siteData.customStyles) return;
+    const styles = siteData.customStyles;
+    if (styles.headingFont) {
+      document.documentElement.style.setProperty('--font-heading', styles.headingFont);
+      if (globalHeadingFont) globalHeadingFont.value = styles.headingFont;
+    }
+    if (styles.bodyFont) {
+      document.documentElement.style.setProperty('--font-body', styles.bodyFont);
+      if (globalBodyFont) globalBodyFont.value = styles.bodyFont;
+    }
+  }
+
   // -------------------------------------------------------------
   // BUSCA DE DADOS & NAVEGAÇÃO
   // -------------------------------------------------------------
@@ -540,6 +611,7 @@
     try {
       const res = await fetch('/api/site');
       siteData = await res.json();
+      applyCustomStyles();
       renderNavigation();
       updateGlobalInfo();
     } catch (err) {
@@ -553,6 +625,7 @@
 
   function updateGlobalInfo() {
     if (!siteData) return;
+    applyCustomStyles();
     const name = siteData.artistName || 'Max Doe';
     if (siteBrandLogo) siteBrandLogo.textContent = name;
     if (footerCopyright) {
@@ -602,10 +675,16 @@
     menuItems.forEach(item => {
       const isActive = (item.url === '/' && currentPath === '/') || (item.url !== '/' && currentPath.startsWith(item.url));
       const translatedTitle = autoTranslate(item.title);
-      navHtml += `<a href="${item.url}" class="nav-link ${isActive ? 'active' : ''}" data-nav>${translatedTitle}</a>`;
+      navHtml += `<a href="${item.url}" class="nav-link ${isActive ? 'active' : ''}" data-original-text="${item.title}" data-nav>${translatedTitle}</a>`;
     });
 
     mainNav.innerHTML = navHtml;
+
+    // Traduz itens de menu personalizados que não estejam no léxico
+    mainNav.querySelectorAll('a[data-nav]').forEach(link => {
+      const orig = link.getAttribute('data-original-text');
+      if (orig) translateDynamicElement(link, orig);
+    });
 
     mainNav.querySelectorAll('a[data-nav]').forEach(link => {
       link.addEventListener('click', (e) => {
@@ -693,26 +772,42 @@
   function triggerDynamicPageTranslations() {
     if (!siteData) return;
     
-    // Traduz bio principal
+    // 1. Traduz bio principal da Home
     const heroDesc = document.getElementById('liveHeroDesc');
     if (heroDesc && siteData.bio) {
       translateDynamicElement(heroDesc, siteData.bio);
     }
 
-    // Traduz bio da página About
+    // 2. Traduz bio da página About
     const aboutBio = document.getElementById('liveAboutBio');
     if (aboutBio && (siteData.aboutLongBio || siteData.bio)) {
       translateDynamicElement(aboutBio, siteData.aboutLongBio || siteData.bio);
     }
 
-    // Traduz descrição de páginas de galeria
-    const pageDesc = document.getElementById('livePageDesc');
-    if (pageDesc && pageDesc.textContent.trim()) {
-      translateDynamicElement(pageDesc, pageDesc.textContent.trim());
+    // 3. Traduz título e descrição de páginas de galeria
+    const pageTitleEl = document.getElementById('livePageTitle');
+    if (pageTitleEl) {
+      const orig = pageTitleEl.getAttribute('data-original-text') || pageTitleEl.textContent.trim();
+      if (!pageTitleEl.hasAttribute('data-original-text')) pageTitleEl.setAttribute('data-original-text', orig);
+      if (orig) translateDynamicElement(pageTitleEl, orig);
     }
 
-    // Traduz títulos e descrições de cartões/itens
-    document.querySelectorAll('.card-description, .card-title, .item-title').forEach(el => {
+    const pageDesc = document.getElementById('livePageDesc');
+    if (pageDesc) {
+      const orig = pageDesc.getAttribute('data-original-text') || pageDesc.textContent.trim();
+      if (!pageDesc.hasAttribute('data-original-text')) pageDesc.setAttribute('data-original-text', orig);
+      if (orig) translateDynamicElement(pageDesc, orig);
+    }
+
+    // 4. Traduz todas as tags da galeria
+    document.querySelectorAll('.tag-badge').forEach(el => {
+      const orig = el.getAttribute('data-original-text') || el.textContent.trim();
+      if (!el.hasAttribute('data-original-text')) el.setAttribute('data-original-text', orig);
+      if (orig) translateDynamicElement(el, orig);
+    });
+
+    // 5. Traduz títulos e descrições de cartões/itens do grid
+    document.querySelectorAll('.card-description, .card-title, .card-subtitle, .item-title, .item-subtitle, .service-title, .service-description').forEach(el => {
       const orig = el.getAttribute('data-original-text') || el.textContent.trim();
       if (orig && !el.hasAttribute('data-original-text')) {
         el.setAttribute('data-original-text', orig);
@@ -982,38 +1077,67 @@
     const profession = autoTranslate(siteData.profession || 'Visual Artist');
     if (pageTitle) pageTitle.textContent = `${t('about_title')} — ${artistName}`;
 
-    const recognition = [
-      { title: 'Design Week', sub: 'Profiled' },
-      { title: 'Awwwards', sub: 'Web design' },
-      { title: 'Red Dot Award', sub: 'Product design' }
+    // Suporte a Múltiplas Seções no Sobre (ex: Recognition, Selected Clients, Exibições, etc.)
+    const defaultSections = [
+      {
+        id: 'sec_recog',
+        title: 'Recognition',
+        items: [
+          { title: 'Design Week', sub: 'Profiled' },
+          { title: 'Awwwards', sub: 'Web design' },
+          { title: 'Red Dot Award', sub: 'Product design' }
+        ]
+      },
+      {
+        id: 'sec_clients',
+        title: 'Selected Clients',
+        items: [
+          { title: 'Spotify', sub: '2025' },
+          { title: 'IKEA', sub: '2025' },
+          { title: 'Portfoliobox', sub: '2024' },
+          { title: 'Volvo', sub: '2024' },
+          { title: 'ICA', sub: '2024' }
+        ]
+      }
     ];
 
-    const clients = [
-      { title: 'Spotify', sub: '2025' },
-      { title: 'IKEA', sub: '2025' },
-      { title: 'Portfoliobox', sub: '2024' },
-      { title: 'Volvo', sub: '2024' },
-      { title: 'ICA', sub: '2024' }
-    ];
+    const currentAboutSections = siteData.aboutSections && Array.isArray(siteData.aboutSections) && siteData.aboutSections.length > 0
+      ? siteData.aboutSections
+      : defaultSections;
 
-    const recognitionHtml = recognition.map(r => `
-      <li class="about-list-item">
-        <span class="item-title ${isLiveAdmin ? 'editable-active' : ''}" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${r.title}</span>
-        <span class="item-subtitle ${isLiveAdmin ? 'editable-active' : ''}" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${r.sub}</span>
-      </li>
-    `).join('');
+    const sectionsHtml = currentAboutSections.map((sec, secIdx) => {
+      const itemsHtml = (sec.items || []).map((item, itemIdx) => `
+        <li class="about-list-item" data-sec-idx="${secIdx}" data-item-idx="${itemIdx}">
+          <span class="item-title ${isLiveAdmin ? 'editable-active' : ''}" data-field="about-item-title" data-sec-idx="${secIdx}" data-item-idx="${itemIdx}" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${autoTranslate(item.title)}</span>
+          <span class="item-subtitle ${isLiveAdmin ? 'editable-active' : ''}" data-field="about-item-sub" data-sec-idx="${secIdx}" data-item-idx="${itemIdx}" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${autoTranslate(item.sub || '')}</span>
+          ${isLiveAdmin ? `<button type="button" class="btn-del-about-item" data-sec-idx="${secIdx}" data-item-idx="${itemIdx}" style="background:none; border:none; color:#ef4444; margin-left:8px; cursor:pointer;" title="Excluir item"><i class="fa-solid fa-xmark"></i></button>` : ''}
+        </li>
+      `).join('');
 
-    const clientsHtml = clients.map(c => `
-      <li class="about-list-item">
-        <span class="item-title ${isLiveAdmin ? 'editable-active' : ''}" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${c.title}</span>
-        <span class="item-subtitle ${isLiveAdmin ? 'editable-active' : ''}" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${c.sub}</span>
-      </li>
-    `).join('');
+      return `
+        <div class="about-column fade-in" data-sec-idx="${secIdx}">
+          <div style="display: flex; justify-content: space-between; align-items: baseline;">
+            <h2 class="about-col-title ${isLiveAdmin ? 'editable-active' : ''}" data-field="about-sec-title" data-sec-idx="${secIdx}" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${autoTranslate(sec.title || 'Nova Seção')}</h2>
+            ${isLiveAdmin ? `<button type="button" class="section-delete-btn btn-del-about-sec" data-sec-idx="${secIdx}" title="Excluir Seção"><i class="fa-solid fa-trash"></i> Excluir</button>` : ''}
+          </div>
+          <ul class="about-list">
+            ${itemsHtml}
+          </ul>
+          ${isLiveAdmin ? `<button type="button" class="about-item-add-btn btn-add-about-item" data-sec-idx="${secIdx}"><i class="fa-solid fa-plus"></i> Adicionar Item</button>` : ''}
+        </div>
+      `;
+    }).join('');
 
     mainApp.innerHTML = `
       <div class="about-container">
-        <div class="about-avatar-wrapper fade-in">
-          <img src="${siteData.avatar || '/uploads/about.jpg'}" alt="${artistName}" />
+        <div class="about-avatar-wrapper fade-in" id="liveAboutAvatarWrapper" style="${isLiveAdmin ? 'cursor: pointer;' : ''}">
+          <img src="${siteData.avatar || '/uploads/about.jpg'}" alt="${artistName}" id="liveAboutAvatarImg" />
+          ${isLiveAdmin ? `
+            <div class="avatar-upload-overlay" id="btnLiveUploadAvatar" title="Clique para trocar a foto de perfil">
+              <i class="fa-solid fa-camera"></i>
+              <span>Trocar Foto</span>
+            </div>
+          ` : ''}
         </div>
         
         <h1 class="hero-title ${isLiveAdmin ? 'editable-active' : ''}" id="liveAboutArtistName" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${artistName}</h1>
@@ -1022,20 +1146,15 @@
           ${siteData.aboutLongBio || siteData.bio || 'My work explores the quiet rhythm between light, texture, and human presence.'}
         </p>
 
-        <section class="about-columns-section">
-          <div class="about-column fade-in">
-            <h2 class="about-col-title">${t('recognition')}</h2>
-            <ul class="about-list">
-              ${recognitionHtml}
-            </ul>
-          </div>
-          <div class="about-column fade-in">
-            <h2 class="about-col-title">${t('selected_clients')}</h2>
-            <ul class="about-list">
-              ${clientsHtml}
-            </ul>
-          </div>
+        <section class="about-columns-section" id="liveAboutColumnsSection">
+          ${sectionsHtml}
         </section>
+
+        ${isLiveAdmin ? `
+          <div class="about-section-controls">
+            <button type="button" class="btn-add-about-sec" id="btnAddNewAboutSection"><i class="fa-solid fa-plus"></i> Adicionar Nova Seção (ex: Exposições, Prêmios, Bio...)</button>
+          </div>
+        ` : ''}
 
         ${renderSubmenuBigSection([
           { title: 'Portfolio', url: '/' },
@@ -1044,6 +1163,61 @@
         ])}
       </div>
     `;
+
+    if (isLiveAdmin) {
+      const avatarBtn = document.getElementById('btnLiveUploadAvatar');
+      const avatarWrapper = document.getElementById('liveAboutAvatarWrapper');
+      if (avatarBtn || avatarWrapper) {
+        (avatarBtn || avatarWrapper).addEventListener('click', () => {
+          const fileInput = document.createElement('input');
+          fileInput.type = 'file';
+          fileInput.accept = 'image/*';
+          fileInput.onchange = async () => {
+            if (fileInput.files.length === 0) return;
+            const file = fileInput.files[0];
+            const formData = new FormData();
+            formData.append('photos', file);
+
+            const token = localStorage.getItem('adm_token');
+            showLiveToast('Enviando nova foto de perfil...', 'info');
+
+            try {
+              const res = await fetch('/api/upload', {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}` },
+                body: formData
+              });
+              const data = await res.json();
+              if (data.success && data.files && data.files[0]) {
+                const newAvatarUrl = data.files[0].src;
+                
+                // Salva no perfil
+                const saveRes = await fetch('/api/site', {
+                  method: 'PUT',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                  },
+                  body: JSON.stringify({ avatar: newAvatarUrl })
+                });
+                const saveData = await saveRes.json();
+                if (saveData.success) {
+                  siteData.avatar = newAvatarUrl;
+                  const img = document.getElementById('liveAboutAvatarImg');
+                  if (img) img.src = newAvatarUrl;
+                  showLiveToast('Foto de perfil atualizada com sucesso!', 'success');
+                }
+              } else {
+                showLiveToast(data.error || 'Erro no upload da foto.', 'error');
+              }
+            } catch (e) {
+              showLiveToast('Erro ao conectar com o servidor.', 'error');
+            }
+          };
+          fileInput.click();
+        });
+      }
+    }
   }
 
   // -------------------------------------------------------------
@@ -1052,22 +1226,6 @@
   function renderContactPage() {
     const artistName = siteData.artistName || 'Max Doe';
     if (pageTitle) pageTitle.textContent = `${t('contact_title')} — ${artistName}`;
-
-    const socialLinks = siteData.socialLinks || [
-      { name: 'Instagram', url: 'https://www.instagram.com', icon: 'instagram' },
-      { name: 'WhatsApp', url: '', icon: 'whatsapp' },
-      { name: 'Facebook', url: '', icon: 'facebook' },
-      { name: 'LinkedIn', url: '', icon: 'linkedin' }
-    ];
-
-    let socialIconsHtml = socialLinks
-      .filter(s => s.url && s.url.trim())
-      .map(s => {
-        const iconCls = getSocialIconClass(s.icon || s.name);
-        const url = formatSocialUrl(s.icon || s.name, s.url);
-        return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="social-icon-link" aria-label="${s.name}" title="${s.name}"><i class="${iconCls}"></i></a>`;
-      })
-      .join('');
 
     mainApp.innerHTML = `
       <div class="contact-container">
@@ -1110,8 +1268,6 @@
           <p>${t('phone_label')} <span class="${isLiveAdmin ? 'editable-active' : ''}" id="liveContactPhone" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${siteData.phone || '+46 70 11 22 33'}</span></p>
           <p><span class="${isLiveAdmin ? 'editable-active' : ''}" id="liveContactEmail" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${siteData.email || 'max.doe@gmail.com'}</span></p>
         </div>
-
-        ${socialIconsHtml ? `<div class="contact-social-icons">${socialIconsHtml}</div>` : ''}
       </div>
     `;
 
@@ -1191,10 +1347,92 @@
   }
 
   // -------------------------------------------------------------
-  // RECURSOS DA BARRA DE EDIÇÃO VISUAL AO VIVO (WIX STYLE)
+  // RECURSOS DA BARRA DE EDIÇÃO VISUAL AO VIVO (WIX STYLE) & DRAWER
   // -------------------------------------------------------------
+  function selectEditableElement(el) {
+    if (!el || !isLiveAdmin) return;
+    
+    // Remove borda de foco do anterior
+    if (currentSelectedTextEl && currentSelectedTextEl !== el) {
+      currentSelectedTextEl.style.outline = '';
+    }
+
+    currentSelectedTextEl = el;
+    currentSelectedTextEl.style.outline = '2px dashed var(--accent-color)';
+
+    // Atualiza o Drawer
+    if (drawerTargetIndicator) {
+      const tagName = el.tagName.toLowerCase();
+      const snippet = el.innerText.trim().slice(0, 30) || '(Vazio)';
+      drawerTargetIndicator.innerHTML = `<strong>Selecionado:</strong> &lt;${tagName}&gt; "${snippet}..."`;
+    }
+
+    // Lê estilos computados do elemento para preencher os seletores do Drawer
+    const computed = window.getComputedStyle(el);
+    if (drawerFontSizeRange && drawerFontSizeValue) {
+      const pxVal = parseInt(computed.fontSize, 10) || 16;
+      drawerFontSizeRange.value = pxVal;
+      drawerFontSizeValue.textContent = `${pxVal}px`;
+    }
+
+    if (drawerTextColor && drawerTextColorLabel) {
+      // Converte rgb para hex se necessário
+      const rgb = computed.color;
+      let hex = rgbToHex(rgb);
+      if (hex) {
+        drawerTextColor.value = hex;
+        drawerTextColorLabel.textContent = hex;
+      }
+    }
+
+    // Status dos botões de estilo
+    updateStyleButtonStates(computed);
+  }
+
+  function rgbToHex(rgbStr) {
+    if (!rgbStr || !rgbStr.startsWith('rgb')) return '#000000';
+    const match = rgbStr.match(/\d+/g);
+    if (!match || match.length < 3) return '#000000';
+    const r = parseInt(match[0], 10).toString(16).padStart(2, '0');
+    const g = parseInt(match[1], 10).toString(16).padStart(2, '0');
+    const b = parseInt(match[2], 10).toString(16).padStart(2, '0');
+    return `#${r}${g}${b}`;
+  }
+
+  function updateStyleButtonStates(computed) {
+    if (btnToggleBold) {
+      const isBold = computed.fontWeight === 'bold' || parseInt(computed.fontWeight, 10) >= 600;
+      btnToggleBold.classList.toggle('active', isBold);
+    }
+    if (btnToggleItalic) {
+      const isItalic = computed.fontStyle === 'italic';
+      btnToggleItalic.classList.toggle('active', isItalic);
+    }
+    if (btnToggleUnderline) {
+      const isUnder = (computed.textDecorationLine || computed.textDecoration || '').includes('underline');
+      btnToggleUnderline.classList.toggle('active', isUnder);
+    }
+    if (btnToggleUppercase) {
+      const isUpper = computed.textTransform === 'uppercase';
+      btnToggleUppercase.classList.toggle('active', isUpper);
+    }
+    if (btnAlignLeft && btnAlignCenter && btnAlignRight) {
+      btnAlignLeft.classList.toggle('active', computed.textAlign === 'left' || computed.textAlign === 'start');
+      btnAlignCenter.classList.toggle('active', computed.textAlign === 'center');
+      btnAlignRight.classList.toggle('active', computed.textAlign === 'right' || computed.textAlign === 'end');
+    }
+  }
+
   function attachLiveInlineEditing(path) {
     document.querySelectorAll('[contenteditable="true"]').forEach(el => {
+      // Foco e seleção para o Drawer
+      el.addEventListener('focus', () => selectEditableElement(el));
+      el.addEventListener('click', (e) => {
+        if (isLiveAdmin) {
+          selectEditableElement(el);
+        }
+      });
+
       el.addEventListener('input', () => {
         hasPendingChanges = true;
         btnLiveSaveAll.style.background = '#f59e0b';
@@ -1208,8 +1446,94 @@
           if (field === 'card-subtitle' || field === 'gallery-sub') currentActiveGalleryItems[index].subtitle = el.innerText;
           if (field === 'card-desc') currentActiveGalleryItems[index].description = el.innerText;
         }
+
+        // About Sections
+        const secIdx = parseInt(el.getAttribute('data-sec-idx'), 10);
+        const itemIdx = parseInt(el.getAttribute('data-item-idx'), 10);
+        if (!isNaN(secIdx) && siteData.aboutSections && siteData.aboutSections[secIdx]) {
+          if (field === 'about-sec-title') {
+            siteData.aboutSections[secIdx].title = el.innerText.trim();
+          } else if (field === 'about-item-title' && !isNaN(itemIdx) && siteData.aboutSections[secIdx].items[itemIdx]) {
+            siteData.aboutSections[secIdx].items[itemIdx].title = el.innerText.trim();
+          } else if (field === 'about-item-sub' && !isNaN(itemIdx) && siteData.aboutSections[secIdx].items[itemIdx]) {
+            siteData.aboutSections[secIdx].items[itemIdx].sub = el.innerText.trim();
+          }
+        }
       });
     });
+
+    // Se estiver na página About, conecta os botões de adicionar e excluir seções/itens
+    if (path === '/about' && isLiveAdmin) {
+      document.querySelectorAll('.btn-del-about-sec').forEach(btn => {
+        btn.onclick = (e) => {
+          e.stopPropagation();
+          const secIdx = parseInt(btn.getAttribute('data-sec-idx'), 10);
+          if (confirm('Deseja excluir esta seção do Sobre?')) {
+            if (siteData.aboutSections && siteData.aboutSections[secIdx]) {
+              siteData.aboutSections.splice(secIdx, 1);
+              hasPendingChanges = true;
+              renderCurrentRoute();
+              showLiveToast('Seção removida! Clique em Salvar Alterações para gravar.', 'success');
+            }
+          }
+        };
+      });
+
+      document.querySelectorAll('.btn-add-about-item').forEach(btn => {
+        btn.onclick = (e) => {
+          e.stopPropagation();
+          const secIdx = parseInt(btn.getAttribute('data-sec-idx'), 10);
+          if (siteData.aboutSections && siteData.aboutSections[secIdx]) {
+            if (!Array.isArray(siteData.aboutSections[secIdx].items)) {
+              siteData.aboutSections[secIdx].items = [];
+            }
+            siteData.aboutSections[secIdx].items.push({
+              title: 'Novo Item',
+              sub: '2026'
+            });
+            hasPendingChanges = true;
+            renderCurrentRoute();
+            showLiveToast('Novo item adicionado! Edite os textos diretamente.', 'success');
+          }
+        };
+      });
+
+      document.querySelectorAll('.btn-del-about-item').forEach(btn => {
+        btn.onclick = (e) => {
+          e.stopPropagation();
+          const secIdx = parseInt(btn.getAttribute('data-sec-idx'), 10);
+          const itemIdx = parseInt(btn.getAttribute('data-item-idx'), 10);
+          if (siteData.aboutSections && siteData.aboutSections[secIdx] && siteData.aboutSections[secIdx].items) {
+            siteData.aboutSections[secIdx].items.splice(itemIdx, 1);
+            hasPendingChanges = true;
+            renderCurrentRoute();
+            showLiveToast('Item removido!', 'success');
+          }
+        };
+      });
+
+      const btnAddNewSection = document.getElementById('btnAddNewAboutSection');
+      if (btnAddNewSection) {
+        btnAddNewSection.onclick = () => {
+          const secTitle = prompt('Título da nova seção (ex: Exposições, Prêmios, Bio, Clientes):', 'Nova Seção');
+          if (!secTitle) return;
+          if (!Array.isArray(siteData.aboutSections)) {
+            siteData.aboutSections = [];
+          }
+          siteData.aboutSections.push({
+            id: 'sec_' + Date.now(),
+            title: secTitle,
+            items: [
+              { title: 'Item Exemplo 1', sub: '2026' },
+              { title: 'Item Exemplo 2', sub: '2025' }
+            ]
+          });
+          hasPendingChanges = true;
+          renderCurrentRoute();
+          showLiveToast(`Seção "${secTitle}" adicionada com sucesso!`, 'success');
+        };
+      }
+    }
 
     document.querySelectorAll('.btn-move-left').forEach(btn => {
       btn.addEventListener('click', (e) => {
@@ -1302,7 +1626,242 @@
     });
   }
 
+  // -------------------------------------------------------------
+  // CONTROLES DO DRAWER LATERAL DE TEXTOS E TIPOGRAFIA
+  // -------------------------------------------------------------
+  function setupLiveDrawer() {
+    if (btnLiveOpenDrawer && liveTextDrawer) {
+      btnLiveOpenDrawer.onclick = () => {
+        liveTextDrawer.classList.toggle('open');
+      };
+    }
+
+    if (closeLiveTextDrawer && liveTextDrawer) {
+      closeLiveTextDrawer.onclick = () => {
+        liveTextDrawer.classList.remove('open');
+      };
+    }
+
+    // Botão na barra de ferramentas para Adicionar Seção Sobre
+    if (btnLiveAddSectionAbout) {
+      btnLiveAddSectionAbout.onclick = () => {
+        if (window.location.pathname !== '/about') {
+          navigateTo('/about');
+          setTimeout(() => {
+            const btn = document.getElementById('btnAddNewAboutSection');
+            if (btn) btn.click();
+          }, 300);
+        } else {
+          const btn = document.getElementById('btnAddNewAboutSection');
+          if (btn) btn.click();
+        }
+      };
+    }
+
+    // 1. Mudança de Família da Fonte do elemento selecionado
+    if (drawerFontFamily) {
+      drawerFontFamily.onchange = () => {
+        if (!currentSelectedTextEl) {
+          showLiveToast('Selecione ou clique em um texto na página primeiro!', 'info');
+          return;
+        }
+        const val = drawerFontFamily.value;
+        currentSelectedTextEl.style.fontFamily = val === 'inherit' ? '' : val;
+        hasPendingChanges = true;
+        btnLiveSaveAll.style.background = '#f59e0b';
+      };
+    }
+
+    // 2. Mudança de Tamanho da Fonte
+    if (drawerFontSizeRange && drawerFontSizeValue) {
+      drawerFontSizeRange.oninput = () => {
+        const val = drawerFontSizeRange.value;
+        drawerFontSizeValue.textContent = `${val}px`;
+        if (currentSelectedTextEl) {
+          currentSelectedTextEl.style.fontSize = `${val}px`;
+          hasPendingChanges = true;
+          btnLiveSaveAll.style.background = '#f59e0b';
+        }
+      };
+    }
+
+    // 3. Negrito
+    if (btnToggleBold) {
+      btnToggleBold.onclick = () => {
+        if (!currentSelectedTextEl) {
+          showLiveToast('Clique em um texto na página primeiro!', 'info');
+          return;
+        }
+        const currentWeight = currentSelectedTextEl.style.fontWeight;
+        const isBold = currentWeight === 'bold' || parseInt(currentWeight, 10) >= 600;
+        currentSelectedTextEl.style.fontWeight = isBold ? 'normal' : 'bold';
+        btnToggleBold.classList.toggle('active', !isBold);
+        hasPendingChanges = true;
+        btnLiveSaveAll.style.background = '#f59e0b';
+      };
+    }
+
+    // 4. Itálico
+    if (btnToggleItalic) {
+      btnToggleItalic.onclick = () => {
+        if (!currentSelectedTextEl) {
+          showLiveToast('Clique em um texto na página primeiro!', 'info');
+          return;
+        }
+        const isItalic = currentSelectedTextEl.style.fontStyle === 'italic';
+        currentSelectedTextEl.style.fontStyle = isItalic ? 'normal' : 'italic';
+        btnToggleItalic.classList.toggle('active', !isItalic);
+        hasPendingChanges = true;
+        btnLiveSaveAll.style.background = '#f59e0b';
+      };
+    }
+
+    // 5. Sublinhado
+    if (btnToggleUnderline) {
+      btnToggleUnderline.onclick = () => {
+        if (!currentSelectedTextEl) {
+          showLiveToast('Clique em um texto na página primeiro!', 'info');
+          return;
+        }
+        const isUnder = currentSelectedTextEl.style.textDecoration.includes('underline');
+        currentSelectedTextEl.style.textDecoration = isUnder ? 'none' : 'underline';
+        btnToggleUnderline.classList.toggle('active', !isUnder);
+        hasPendingChanges = true;
+        btnLiveSaveAll.style.background = '#f59e0b';
+      };
+    }
+
+    // 6. Maiúsculas (Uppercase)
+    if (btnToggleUppercase) {
+      btnToggleUppercase.onclick = () => {
+        if (!currentSelectedTextEl) {
+          showLiveToast('Clique em um texto na página primeiro!', 'info');
+          return;
+        }
+        const isUpper = currentSelectedTextEl.style.textTransform === 'uppercase';
+        currentSelectedTextEl.style.textTransform = isUpper ? 'none' : 'uppercase';
+        btnToggleUppercase.classList.toggle('active', !isUpper);
+        hasPendingChanges = true;
+        btnLiveSaveAll.style.background = '#f59e0b';
+      };
+    }
+
+    // 7. Alinhamento (Left, Center, Right)
+    if (btnAlignLeft) {
+      btnAlignLeft.onclick = () => {
+        if (!currentSelectedTextEl) return;
+        currentSelectedTextEl.style.textAlign = 'left';
+        btnAlignLeft.classList.add('active');
+        btnAlignCenter.classList.remove('active');
+        btnAlignRight.classList.remove('active');
+        hasPendingChanges = true;
+        btnLiveSaveAll.style.background = '#f59e0b';
+      };
+    }
+    if (btnAlignCenter) {
+      btnAlignCenter.onclick = () => {
+        if (!currentSelectedTextEl) return;
+        currentSelectedTextEl.style.textAlign = 'center';
+        btnAlignCenter.classList.add('active');
+        btnAlignLeft.classList.remove('active');
+        btnAlignRight.classList.remove('active');
+        hasPendingChanges = true;
+        btnLiveSaveAll.style.background = '#f59e0b';
+      };
+    }
+    if (btnAlignRight) {
+      btnAlignRight.onclick = () => {
+        if (!currentSelectedTextEl) return;
+        currentSelectedTextEl.style.textAlign = 'right';
+        btnAlignRight.classList.add('active');
+        btnAlignLeft.classList.remove('active');
+        btnAlignCenter.classList.remove('active');
+        hasPendingChanges = true;
+        btnLiveSaveAll.style.background = '#f59e0b';
+      };
+    }
+
+    // 8. Cor do Texto
+    if (drawerTextColor && drawerTextColorLabel) {
+      drawerTextColor.oninput = () => {
+        const val = drawerTextColor.value;
+        drawerTextColorLabel.textContent = val;
+        if (currentSelectedTextEl) {
+          currentSelectedTextEl.style.color = val;
+          hasPendingChanges = true;
+          btnLiveSaveAll.style.background = '#f59e0b';
+        }
+      };
+    }
+
+    // 9. Inserção de Novos Blocos de Texto
+    function insertCustomTextBlock(tag, defaultText, defaultStyle = '') {
+      const container = mainApp.querySelector('.hero-section') || mainApp.querySelector('.about-container') || mainApp.querySelector('.gallery-header') || mainApp;
+      if (!container) return;
+
+      const newEl = document.createElement(tag);
+      newEl.className = 'editable-active custom-inserted-text';
+      newEl.setAttribute('contenteditable', 'true');
+      newEl.textContent = defaultText;
+      newEl.style.cssText = defaultStyle + '; margin: 15px 0; outline: 2px dashed var(--accent-color);';
+
+      // Insere antes de listas ou no final do container
+      const ref = container.querySelector('.about-columns-section') || container.querySelector('.submenu-big-section') || null;
+      if (ref) {
+        container.insertBefore(newEl, ref);
+      } else {
+        container.appendChild(newEl);
+      }
+
+      selectEditableElement(newEl);
+      newEl.focus();
+      hasPendingChanges = true;
+      btnLiveSaveAll.style.background = '#f59e0b';
+      showLiveToast('Novo bloco de texto inserido! Digite e customize no painel.', 'success');
+    }
+
+    if (btnInsertBigTitle) {
+      btnInsertBigTitle.onclick = () => insertCustomTextBlock('h1', 'Novo Título Principal', 'font-size: 2.4rem; font-weight: 700; line-height: 1.2;');
+    }
+    if (btnInsertSubTitle) {
+      btnInsertSubTitle.onclick = () => insertCustomTextBlock('h2', 'Novo Subtítulo da Seção', 'font-size: 1.5rem; font-weight: 600; line-height: 1.3; color: #475569;');
+    }
+    if (btnInsertLongText) {
+      btnInsertLongText.onclick = () => insertCustomTextBlock('p', 'Digite aqui o seu parágrafo completo de texto...', 'font-size: 1.05rem; line-height: 1.8; color: #334155; max-width: 780px;');
+    }
+    if (btnInsertSmallText) {
+      btnInsertSmallText.onclick = () => insertCustomTextBlock('span', 'Texto curto ou legenda informativa', 'font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.08em; color: #64748b;');
+    }
+
+    // 10. Tipografia Global do Site
+    if (globalHeadingFont) {
+      globalHeadingFont.onchange = () => {
+        const font = globalHeadingFont.value;
+        document.documentElement.style.setProperty('--font-heading', font);
+        if (!siteData.customStyles) siteData.customStyles = {};
+        siteData.customStyles.headingFont = font;
+        hasPendingChanges = true;
+        btnLiveSaveAll.style.background = '#f59e0b';
+        showLiveToast(`Fonte de títulos alterada para ${font.split(',')[0]}!`, 'info');
+      };
+    }
+
+    if (globalBodyFont) {
+      globalBodyFont.onchange = () => {
+        const font = globalBodyFont.value;
+        document.documentElement.style.setProperty('--font-body', font);
+        if (!siteData.customStyles) siteData.customStyles = {};
+        siteData.customStyles.bodyFont = font;
+        hasPendingChanges = true;
+        btnLiveSaveAll.style.background = '#f59e0b';
+        showLiveToast(`Fonte de textos alterada para ${font.split(',')[0]}!`, 'info');
+      };
+    }
+  }
+
   function setupLiveModals() {
+    setupLiveDrawer();
+
     if (btnLiveAddPhoto) {
       btnLiveAddPhoto.onclick = () => {
         inlineUploadProgress.textContent = '';
@@ -1680,7 +2239,9 @@
           body: JSON.stringify({
             artistName,
             profession,
-            aboutLongBio: aboutBio
+            aboutLongBio: aboutBio,
+            aboutSections: siteData.aboutSections || [],
+            customStyles: siteData.customStyles || {}
           })
         });
       }
@@ -1699,7 +2260,13 @@
         await fetch('/api/site', {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-          body: JSON.stringify({ artistName: name, address, phone, email })
+          body: JSON.stringify({
+            artistName: name,
+            address,
+            phone,
+            email,
+            customStyles: siteData.customStyles || {}
+          })
         });
       }
       // 4. Se for uma Galeria de Projeto
@@ -1708,6 +2275,15 @@
         const pageTitle = document.getElementById('livePageTitle')?.innerText;
         const pageDesc = document.getElementById('livePageDesc')?.innerText;
         const tags = Array.from(document.querySelectorAll('#liveTagsContainer .tag-badge')).map(t => t.innerText.trim()).filter(Boolean);
+
+        // Salva customStyles caso tenha mudado
+        if (siteData.customStyles) {
+          await fetch('/api/site', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify({ customStyles: siteData.customStyles })
+          });
+        }
 
         // Atualiza textos da galeria
         await fetch(`/api/pages/${cleanUrl}`, {
