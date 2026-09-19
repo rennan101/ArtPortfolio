@@ -42,35 +42,96 @@ const upload = multer({
   }
 });
 
-// Caminho do banco de dados JSON
+// Armazenamento em Nuvem / Local Híbrido
 const dbPath = path.join(__dirname, 'data', 'site-data.json');
+let inMemoryCache = null;
 
-// Helper para ler dados
-function readData() {
-  if (!fs.existsSync(dbPath)) {
-    return {
-      title: "Max Doe",
-      artistName: "Max Doe",
-      profession: "Visual Artist",
-      bio: "",
-      aboutLongBio: "",
-      avatar: "/uploads/about.jpg",
-      email: "max.doe@gmail.com",
-      phone: "+46 70 11 22 33",
-      address: "Gustavslundsv 99, 167 51 BROMMA",
-      socialLinks: [],
-      menu: [],
-      adminPasswordHash: "admin123",
-      pages: []
-    };
-  }
-  const raw = fs.readFileSync(dbPath, 'utf-8');
-  return JSON.parse(raw);
+// Inicializa cliente Upstash Redis se configurado
+let redisClient = null;
+if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
+  const { Redis } = require('@upstash/redis');
+  redisClient = new Redis({
+    url: process.env.KV_REST_API_URL,
+    token: process.env.KV_REST_API_TOKEN,
+  });
+  console.log('⚡ Upstash Redis / Vercel KV conectado para persistência em nuvem.');
+} else if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) {
+  const { Redis } = require('@upstash/redis');
+  redisClient = new Redis({
+    url: process.env.UPSTASH_REDIS_REST_URL,
+    token: process.env.UPSTASH_REDIS_REST_TOKEN,
+  });
+  console.log('⚡ Upstash Redis conectado para persistência em nuvem.');
 }
 
-// Helper para salvar dados
-function saveData(data) {
-  fs.writeFileSync(dbPath, JSON.stringify(data, null, 2), 'utf-8');
+// Helper síncrono para leitura inicial
+function getInitialLocalData() {
+  if (fs.existsSync(dbPath)) {
+    try {
+      return JSON.parse(fs.readFileSync(dbPath, 'utf-8'));
+    } catch (e) {}
+  }
+  return {
+    title: "Max Doe",
+    artistName: "Max Doe",
+    profession: "Visual Artist",
+    bio: "",
+    aboutLongBio: "",
+    avatar: "/uploads/about.jpg",
+    email: "max.doe@gmail.com",
+    phone: "+46 70 11 22 33",
+    address: "Gustavslundsv 99, 167 51 BROMMA",
+    socialLinks: [],
+    menu: [],
+    adminPasswordHash: "$2b$10$8Oy52wLdi4ZwUOTna.1/1ugK0jwPg.y3rSj5ODWnn8etOsIDjbtaO",
+    pages: []
+  };
+}
+
+// Leitura assíncrona com suporte a Nuvem (Redis/KV) + Cache + Arquivo
+async function readData() {
+  if (redisClient) {
+    try {
+      const cloudData = await redisClient.get('site_data');
+      if (cloudData) {
+        inMemoryCache = typeof cloudData === 'string' ? JSON.parse(cloudData) : cloudData;
+        return inMemoryCache;
+      }
+    } catch (err) {
+      console.warn('Aviso: Falha ao ler do Redis, usando fallback local/cache:', err.message);
+    }
+  }
+
+  if (inMemoryCache) {
+    return inMemoryCache;
+  }
+
+  inMemoryCache = getInitialLocalData();
+  return inMemoryCache;
+}
+
+// Gravação assíncrona com suporte a Nuvem (Redis/KV) + Cache + Arquivo
+async function saveData(data) {
+  inMemoryCache = data;
+
+  // Grava na nuvem se Redis estiver conectado
+  if (redisClient) {
+    try {
+      await redisClient.set('site_data', JSON.stringify(data));
+      console.log('✅ Dados salvos na nuvem (Upstash Redis) com sucesso!');
+    } catch (err) {
+      console.error('Erro ao gravar no Redis:', err.message);
+    }
+  }
+
+  // Tenta gravar no disco local se tiver permissão (fora do serverless)
+  try {
+    if (fs.existsSync(path.dirname(dbPath))) {
+      fs.writeFileSync(dbPath, JSON.stringify(data, null, 2), 'utf-8');
+    }
+  } catch (e) {
+    // Em ambientes serverless read-only, silencia erro de gravação em disco
+  }
 }
 
 // Servir arquivos estáticos
@@ -85,9 +146,9 @@ const bcrypt = require('bcryptjs');
 // Token simples para sessão admin
 let currentAdminToken = null;
 
-app.post('/api/admin/login', (req, res) => {
+app.post('/api/admin/login', async (req, res) => {
   const { password } = req.body;
-  const data = readData();
+  const data = await readData();
 
   if (!password) {
     return res.status(400).json({ success: false, message: 'Senha é obrigatória.' });
@@ -116,14 +177,14 @@ app.post('/api/admin/verify', (req, res) => {
   return res.json({ authenticated: false });
 });
 
-app.post('/api/admin/change-password', (req, res) => {
+app.post('/api/admin/change-password', async (req, res) => {
   const token = req.headers['authorization']?.replace('Bearer ', '');
   if (!token || token !== currentAdminToken) {
     return res.status(401).json({ error: 'Não autorizado.' });
   }
 
   const { currentPassword, newPassword } = req.body;
-  const data = readData();
+  const data = await readData();
 
   const isCurrentMatch = data.adminPasswordHash && (
     (data.adminPasswordHash.startsWith('$2b$') || data.adminPasswordHash.startsWith('$2a$'))
@@ -140,7 +201,7 @@ app.post('/api/admin/change-password', (req, res) => {
   }
 
   data.adminPasswordHash = bcrypt.hashSync(newPassword, 10);
-  saveData(data);
+  await saveData(data);
   return res.json({ success: true, message: 'Senha atualizada com sucesso!' });
 });
 
@@ -149,22 +210,26 @@ app.post('/api/admin/change-password', (req, res) => {
    ============================================================ */
 
 // 1. Obter dados completos do site
-app.get('/api/site', (req, res) => {
-  const data = readData();
-  // Não envia a senha pro público
+app.get('/api/site', async (req, res) => {
+  // Evitar cache no navegador dos visitantes para refletir atualizações na hora
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+
+  const data = await readData();
   const safeData = { ...data };
   delete safeData.adminPasswordHash;
   res.json(safeData);
 });
 
 // 2. Atualizar informações gerais do site (perfil, bio, redes, footer, menu)
-app.put('/api/site', (req, res) => {
+app.put('/api/site', async (req, res) => {
   const token = req.headers['authorization']?.replace('Bearer ', '');
   if (!token || token !== currentAdminToken) {
     return res.status(401).json({ error: 'Não autorizado.' });
   }
 
-  const data = readData();
+  const data = await readData();
   const { title, artistName, profession, bio, aboutLongBio, avatar, email, phone, address, socialLinks, menu } = req.body;
 
   if (title !== undefined) data.title = title;
@@ -179,14 +244,15 @@ app.put('/api/site', (req, res) => {
   if (socialLinks !== undefined) data.socialLinks = socialLinks;
   if (menu !== undefined) data.menu = menu;
 
-  saveData(data);
+  await saveData(data);
   res.json({ success: true, message: 'Dados do site atualizados com sucesso!', data });
 });
 
 // 3. Obter dados de uma página específica
-app.get('/api/pages/:url', (req, res) => {
+app.get('/api/pages/:url', async (req, res) => {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
   const pageUrl = req.params.url === 'home' ? '/' : '/' + req.params.url;
-  const data = readData();
+  const data = await readData();
   const page = data.pages.find(p => p.url === pageUrl || p.url === '/' + req.params.url || (pageUrl === '/' && p.isStartPage));
 
   if (!page) {
@@ -197,7 +263,7 @@ app.get('/api/pages/:url', (req, res) => {
 });
 
 // 4. Criar nova página/galeria
-app.post('/api/pages', (req, res) => {
+app.post('/api/pages', async (req, res) => {
   const token = req.headers['authorization']?.replace('Bearer ', '');
   if (!token || token !== currentAdminToken) {
     return res.status(401).json({ error: 'Não autorizado.' });
@@ -209,7 +275,7 @@ app.post('/api/pages', (req, res) => {
   }
 
   const cleanUrl = url.startsWith('/') ? url : '/' + url;
-  const data = readData();
+  const data = await readData();
 
   if (data.pages.some(p => p.url === cleanUrl)) {
     return res.status(400).json({ error: 'Uma página com esta URL já existe.' });
@@ -292,7 +358,6 @@ app.post('/api/pages', (req, res) => {
 
   data.pages.push(newPage);
 
-  // Também adiciona no grid do Portfolio se for uma galeria de projeto
   const homePage = data.pages.find(p => p.isStartPage || p.url === '/');
   if (homePage) {
     const portfolioGrid = homePage.sections.find(s => s.gallery || (s.viewType === 'LinkPage' && s.gallery));
@@ -308,12 +373,12 @@ app.post('/api/pages', (req, res) => {
     }
   }
 
-  saveData(data);
+  await saveData(data);
   res.json({ success: true, page: newPage });
 });
 
 // 5. Atualizar detalhes de uma página (título, descrição, tags)
-app.put('/api/pages/:url', (req, res) => {
+app.put('/api/pages/:url', async (req, res) => {
   const token = req.headers['authorization']?.replace('Bearer ', '');
   if (!token || token !== currentAdminToken) {
     return res.status(401).json({ error: 'Não autorizado.' });
@@ -321,7 +386,7 @@ app.put('/api/pages/:url', (req, res) => {
 
   const pageUrl = req.params.url === 'home' ? '/' : (req.params.url.startsWith('/') ? req.params.url : '/' + req.params.url);
   const { title, description, tags } = req.body;
-  const data = readData();
+  const data = await readData();
 
   const page = data.pages.find(p => p.url === pageUrl || (pageUrl === '/' && p.isStartPage));
   if (!page) {
@@ -330,7 +395,6 @@ app.put('/api/pages/:url', (req, res) => {
 
   if (title) page.title = title;
 
-  // Atualiza seção de texto
   const textSec = page.sections.find(s => s.viewType === 'Text' && s.elements && s.elements.length > 0);
   if (textSec) {
     const titleEl = textSec.elements.find(e => e.view === 'header-view');
@@ -345,12 +409,12 @@ app.put('/api/pages/:url', (req, res) => {
     }
   }
 
-  saveData(data);
+  await saveData(data);
   res.json({ success: true, page });
 });
 
 // 6. Atualizar itens/fotos de uma galeria (adicionar, reordenar, apagar)
-app.put('/api/pages/:url/items', (req, res) => {
+app.put('/api/pages/:url/items', async (req, res) => {
   const token = req.headers['authorization']?.replace('Bearer ', '');
   if (!token || token !== currentAdminToken) {
     return res.status(401).json({ error: 'Não autorizado.' });
@@ -363,13 +427,12 @@ app.put('/api/pages/:url/items', (req, res) => {
     return res.status(400).json({ error: 'Lista de itens inválida.' });
   }
 
-  const data = readData();
+  const data = await readData();
   const page = data.pages.find(p => p.url === pageUrl || (pageUrl === '/' && p.isStartPage));
   if (!page) {
     return res.status(404).json({ error: 'Página não encontrada.' });
   }
 
-  // Acha a seção de galeria
   let gallerySec = page.sections.find(s => s.gallery);
   if (!gallerySec) {
     gallerySec = {
@@ -385,12 +448,12 @@ app.put('/api/pages/:url/items', (req, res) => {
   }
 
   gallerySec.gallery.items = items;
-  saveData(data);
+  await saveData(data);
   res.json({ success: true, items });
 });
 
 // 7. Excluir uma página
-app.delete('/api/pages/:url', (req, res) => {
+app.delete('/api/pages/:url', async (req, res) => {
   const token = req.headers['authorization']?.replace('Bearer ', '');
   if (!token || token !== currentAdminToken) {
     return res.status(401).json({ error: 'Não autorizado.' });
@@ -401,7 +464,7 @@ app.delete('/api/pages/:url', (req, res) => {
     return res.status(400).json({ error: 'A página inicial não pode ser excluída.' });
   }
 
-  const data = readData();
+  const data = await readData();
   const initialLength = data.pages.length;
   data.pages = data.pages.filter(p => p.url !== pageUrl);
 
@@ -409,10 +472,8 @@ app.delete('/api/pages/:url', (req, res) => {
     return res.status(404).json({ error: 'Página não encontrada.' });
   }
 
-  // Remove do menu se estiver lá
   data.menu = data.menu.filter(m => m.url !== pageUrl);
 
-  // Remove do grid do portfolio se estiver lá
   const homePage = data.pages.find(p => p.isStartPage || p.url === '/');
   if (homePage) {
     const portfolioGrid = homePage.sections.find(s => s.gallery);
@@ -421,7 +482,7 @@ app.delete('/api/pages/:url', (req, res) => {
     }
   }
 
-  saveData(data);
+  await saveData(data);
   res.json({ success: true, message: 'Página removida com sucesso!' });
 });
 
