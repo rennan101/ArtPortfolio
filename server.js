@@ -250,66 +250,10 @@ app.get('/api/site', async (req, res) => {
   res.json(safeData);
 });
 
-// 2. Atualizar informações gerais do site
-app.put('/api/site', async (req, res) => {
-  if (!isAuthenticated(req)) {
-    return res.status(401).json({ error: 'Não autorizado.' });
-  }
-
-  const data = await readData();
-  const { title, artistName, profession, bio, aboutLongBio, avatar, email, phone, address, socialLinks, menu } = req.body;
-
-  if (title !== undefined) data.title = title;
-  if (artistName !== undefined) data.artistName = artistName;
-  if (profession !== undefined) data.profession = profession;
-  if (bio !== undefined) data.bio = bio;
-  if (aboutLongBio !== undefined) data.aboutLongBio = aboutLongBio;
-  if (avatar !== undefined) data.avatar = avatar;
-  if (email !== undefined) data.email = email;
-  if (phone !== undefined) data.phone = phone;
-  if (address !== undefined) data.address = address;
-  if (socialLinks !== undefined) data.socialLinks = socialLinks;
-  if (menu !== undefined) data.menu = menu;
-
-  await saveData(data);
-  res.json({ success: true, message: 'Dados do site atualizados com sucesso!', data });
-});
-
-// 3. Obter dados de uma página específica
-app.get('/api/pages/:url', async (req, res) => {
-  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
-  const pageUrl = req.params.url === 'home' ? '/' : '/' + req.params.url;
-  const data = await readData();
-  const page = data.pages.find(p => p.url === pageUrl || p.url === '/' + req.params.url || (pageUrl === '/' && p.isStartPage));
-
-  if (!page) {
-    return res.status(404).json({ error: 'Página não encontrada.' });
-  }
-
-  res.json(page);
-});
-
-// 4. Criar nova página/galeria
-app.post('/api/pages', async (req, res) => {
-  if (!isAuthenticated(req)) {
-    return res.status(401).json({ error: 'Não autorizado.' });
-  }
-
-  const { title, url, description, tags, coverImage } = req.body;
-  if (!title || !url) {
-    return res.status(400).json({ error: 'Título e URL são obrigatórios.' });
-  }
-
-  const cleanUrl = url.startsWith('/') ? url : '/' + url;
-  const data = await readData();
-
-  if (data.pages.some(p => p.url === cleanUrl)) {
-    return res.status(400).json({ error: 'Uma página com esta URL já existe.' });
-  }
-
-  const newPageId = 'page_' + Date.now();
-  const newPage = {
-    id: newPageId,
+// Helper para criar estrutura padrão de página com galeria
+function createDefaultGalleryPage(title, cleanUrl, coverImage = '', description = '', tags = ['Visuals', 'Storytelling', 'Brand']) {
+  return {
+    id: 'page_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
     url: cleanUrl,
     title,
     isStartPage: false,
@@ -334,7 +278,7 @@ app.post('/api/pages', async (req, res) => {
           {
             id: 'el_tags_' + Date.now(),
             view: 'list-view',
-            content: (tags || ['Visuals', 'Storytelling', 'Brand']).map(t => ({ Title: t })),
+            content: tags.map(t => ({ Title: typeof t === 'string' ? t : (t.Title || '') })),
             style: { "flex-direction": "row", "align-items": "center", "max-width": "800px", "background-color": "#efefef", "justify-content": "center" }
           }
         ]
@@ -373,7 +317,8 @@ app.post('/api/pages', async (req, res) => {
             content: [
               { Title: "Portfolio", Link: "/" },
               { Title: "Services", Link: "/services" },
-              { Title: "About", Link: "/about" }
+              { Title: "About", Link: "/about" },
+              { Title: "Contact", Link: "/contact" }
             ],
             style: { "font-size": "4em", "text-transform": "uppercase", "line-height": "125%", "flex-direction": "column" }
           }
@@ -381,8 +326,167 @@ app.post('/api/pages', async (req, res) => {
       }
     ]
   };
+}
 
+// 2. Atualizar informações gerais do site (perfil, bio, redes, footer, menu)
+app.put('/api/site', async (req, res) => {
+  if (!isAuthenticated(req)) {
+    return res.status(401).json({ error: 'Não autorizado.' });
+  }
+
+  const data = await readData();
+  const { title, artistName, profession, bio, aboutLongBio, avatar, email, phone, address, socialLinks, menu } = req.body;
+
+  if (title !== undefined) data.title = title;
+
+  if (artistName !== undefined) {
+    data.artistName = artistName;
+    if (!data.title || data.title === 'Max Doe') data.title = artistName;
+
+    // Atualiza na página Home
+    const homePage = data.pages.find(p => p.isStartPage || p.url === '/' || p.url === '/portfolio');
+    if (homePage && homePage.sections) {
+      const textSec = homePage.sections.find(s => s.viewType === 'Text');
+      if (textSec && textSec.elements) {
+        const tEl = textSec.elements.find(e => e.view === 'header-view');
+        if (tEl) tEl.content = artistName;
+      }
+    }
+
+    // Atualiza na página About
+    const aboutPage = data.pages.find(p => p.url === '/about');
+    if (aboutPage && aboutPage.sections) {
+      const textSec = aboutPage.sections.find(s => s.viewType === 'Text');
+      if (textSec && textSec.elements) {
+        const tEl = textSec.elements.find(e => e.view === 'header-view');
+        if (tEl) tEl.content = artistName;
+      }
+    }
+  }
+
+  if (profession !== undefined) {
+    data.profession = profession;
+    const homePage = data.pages.find(p => p.isStartPage || p.url === '/' || p.url === '/portfolio');
+    if (homePage && homePage.sections) {
+      const textSec = homePage.sections.find(s => s.viewType === 'Text');
+      if (textSec && textSec.elements) {
+        const subEl = textSec.elements.find(e => e.view === 'shorttext-view');
+        if (subEl) subEl.content = profession;
+      }
+    }
+    const aboutPage = data.pages.find(p => p.url === '/about');
+    if (aboutPage && aboutPage.sections) {
+      const textSec = aboutPage.sections.find(s => s.viewType === 'Text');
+      if (textSec && textSec.elements) {
+        const subEl = textSec.elements.find(e => e.view === 'shorttext-view');
+        if (subEl) subEl.content = profession;
+      }
+    }
+  }
+
+  if (bio !== undefined) {
+    data.bio = bio;
+    const homePage = data.pages.find(p => p.isStartPage || p.url === '/' || p.url === '/portfolio');
+    if (homePage && homePage.sections) {
+      const textSec = homePage.sections.find(s => s.viewType === 'Text');
+      if (textSec && textSec.elements) {
+        const descEl = textSec.elements.find(e => e.view === 'longtext-view');
+        if (descEl) descEl.content = bio;
+      }
+    }
+  }
+
+  if (aboutLongBio !== undefined) {
+    data.aboutLongBio = aboutLongBio;
+    const aboutPage = data.pages.find(p => p.url === '/about');
+    if (aboutPage && aboutPage.sections) {
+      const textSec = aboutPage.sections.find(s => s.viewType === 'Text');
+      if (textSec && textSec.elements) {
+        const descEl = textSec.elements.find(e => e.view === 'longtext-view');
+        if (descEl) descEl.content = aboutLongBio;
+      }
+    }
+  }
+
+  if (avatar !== undefined) data.avatar = avatar;
+  if (email !== undefined) data.email = email;
+  if (phone !== undefined) data.phone = phone;
+  if (address !== undefined) data.address = address;
+  if (socialLinks !== undefined) data.socialLinks = socialLinks;
+
+  // Atualização do menu com criação automática de página/galeria para qualquer novo menu
+  if (menu !== undefined && Array.isArray(menu)) {
+    data.menu = menu;
+
+    const homePage = data.pages.find(p => p.isStartPage || p.url === '/' || p.url === '/portfolio');
+    const homeGrid = homePage?.sections?.find(s => s.gallery);
+
+    menu.forEach(item => {
+      if (item.url && item.url.startsWith('/') && item.url !== '/' && item.url !== '/portfolio' && item.url !== '/services' && item.url !== '/about' && item.url !== '/contact') {
+        const pageExists = data.pages.some(p => p.url === item.url);
+        if (!pageExists) {
+          const newGalleryPage = createDefaultGalleryPage(item.title || item.url.replace('/', ''), item.url);
+          data.pages.push(newGalleryPage);
+
+          if (homeGrid && homeGrid.gallery && homeGrid.gallery.items) {
+            homeGrid.gallery.items.push({
+              id: 'card_' + Date.now() + '_' + Math.random().toString(36).substring(2, 5),
+              link: item.url,
+              src: '/uploads/about.jpg',
+              title: item.title,
+              subtitle: 'Gallery',
+              description: ''
+            });
+          }
+        }
+      }
+    });
+  }
+
+  await saveData(data);
+  res.json({ success: true, message: 'Dados do site atualizados com sucesso!', data });
+});
+
+// 3. Obter dados de uma página específica
+app.get('/api/pages/:url', async (req, res) => {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
+  const pageUrl = req.params.url === 'home' ? '/' : '/' + req.params.url;
+  const data = await readData();
+  const page = data.pages.find(p => p.url === pageUrl || p.url === '/' + req.params.url || (pageUrl === '/' && p.isStartPage));
+
+  if (!page) {
+    return res.status(404).json({ error: 'Página não encontrada.' });
+  }
+
+  res.json(page);
+});
+
+// 4. Criar nova página/galeria
+app.post('/api/pages', async (req, res) => {
+  if (!isAuthenticated(req)) {
+    return res.status(401).json({ error: 'Não autorizado.' });
+  }
+
+  const { title, url, description, tags, coverImage } = req.body;
+  if (!title || !url) {
+    return res.status(400).json({ error: 'Título e URL são obrigatórios.' });
+  }
+
+  const cleanUrl = url.startsWith('/') ? url : '/' + url;
+  const data = await readData();
+
+  if (data.pages.some(p => p.url === cleanUrl)) {
+    return res.status(400).json({ error: 'Uma página com esta URL já existe.' });
+  }
+
+  const newPage = createDefaultGalleryPage(title, cleanUrl, coverImage, description, tags || ['Visuals', 'Storytelling', 'Brand']);
   data.pages.push(newPage);
+
+  // Garante que a nova página também entra no menu de navegação automaticamente
+  if (!data.menu) data.menu = [];
+  if (!data.menu.some(m => m.url === cleanUrl)) {
+    data.menu.push({ title, url: cleanUrl });
+  }
 
   const homePage = data.pages.find(p => p.isStartPage || p.url === '/');
   if (homePage) {

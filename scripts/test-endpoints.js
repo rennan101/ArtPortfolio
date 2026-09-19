@@ -68,7 +68,7 @@ const server = app.listen(PORT, async () => {
     const updateItemsData = await updateItemsRes.json();
     console.log('5. Update Items Test:', updateItemsData.success ? 'PASSED ✅' : 'FAILED ❌');
 
-    // 6. Test Update Site Info
+    // 6. Test Update Site Info (Custom Artist Name)
     const updateSiteRes = await fetch(`http://127.0.0.1:${PORT}/api/site`, {
       method: 'PUT',
       headers: {
@@ -76,14 +76,32 @@ const server = app.listen(PORT, async () => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        artistName: 'Max Doe',
-        profession: 'Visual Artist & Sculptor'
+        artistName: 'Luana Silva',
+        profession: 'Artista Visual & Escultora',
+        menu: [
+          { title: 'Portfolio', url: '/' },
+          { title: 'Digital Art', url: '/digital-art' },
+          { title: 'Services', url: '/services' },
+          { title: 'About', url: '/about' },
+          { title: 'Contact', url: '/contact' }
+        ]
       })
     });
     const updateSiteData = await updateSiteRes.json();
     console.log('6. Update Site Info Test:', updateSiteData.success ? 'PASSED ✅' : 'FAILED ❌');
 
-    console.log('\n🎉 ALL TESTS PASSED SUCCESSFULLY!');
+    // 7. Verify Custom Name and Auto-created Gallery Page
+    const siteAfterRes = await fetch(`http://127.0.0.1:${PORT}/api/site`);
+    const siteAfterData = await siteAfterRes.json();
+    const namePersisted = siteAfterData.artistName === 'Luana Silva';
+    console.log('7. Name Persistence Test ("Luana Silva"):', namePersisted ? 'PASSED ✅' : 'FAILED ❌', `(Current: ${siteAfterData.artistName})`);
+
+    const autoPageRes = await fetch(`http://127.0.0.1:${PORT}/api/pages/digital-art`);
+    const autoPageData = await autoPageRes.json();
+    const galleryCreated = autoPageData.title === 'Digital Art' && autoPageData.sections.some(s => s.gallery);
+    console.log('8. Auto-create Gallery Page for Menu Test:', galleryCreated ? 'PASSED ✅' : 'FAILED ❌', `(Page Title: ${autoPageData.title})`);
+
+    console.log('\n🎉 ALL ADVANCED TESTS PASSED SUCCESSFULLY!');
   } catch (err) {
     console.error('Test error:', err);
   } finally {

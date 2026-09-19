@@ -1,7 +1,7 @@
 {
-  "title": "Max Doe",
-  "artistName": "Max Doe",
-  "profession": "Visual Artist & Sculptor",
+  "title": "Luana Silva",
+  "artistName": "Luana Silva",
+  "profession": "Artista Visual & Escultora",
   "bio": "I believe in design that feels, not just functions. Built on curiosity, dialogue, and craft, my work explores how form and message shape experience. Every project is a collaboration, grounded in clarity and made to last.",
   "aboutLongBio": "My work explores the quiet rhythm between light, texture, and human presence. I move between painting, printmaking, and mixed media — always drawn to subtle tension and stillness. Each piece begins with observation and becomes a search for balance between control and chance.",
   "avatar": "/uploads/about.jpg",
@@ -34,6 +34,10 @@
     {
       "title": "Portfolio",
       "url": "/"
+    },
+    {
+      "title": "Digital Art",
+      "url": "/digital-art"
     },
     {
       "title": "Services",
@@ -1882,9 +1886,9 @@
             },
             "items": [
               {
-                "id": "img_1789831529947_uktnt",
-                "src": "/uploads/test_art-1789831529947-83718179.jpg",
-                "filename": "test_art-1789831529947-83718179.jpg",
+                "id": "img_1789833136470_nho9x",
+                "src": "/uploads/test_art-1789833136470-806906842.jpg",
+                "filename": "test_art-1789833136470-806906842.jpg",
                 "originalName": "test_art.jpg",
                 "size": 38,
                 "title": "",
@@ -2776,7 +2780,7 @@
             {
               "id": "zDtInKolGlb0QdbY",
               "view": "shorttext-view",
-              "content": "Visual Artist",
+              "content": "Artista Visual & Escultora",
               "style": {
                 "align": "center",
                 "text-align": "center",
@@ -2789,7 +2793,7 @@
             {
               "id": "FpD1Kw8RWAviKkWb",
               "view": "header-view",
-              "content": "Max Doe",
+              "content": "Luana Silva",
               "style": {
                 "margin-bottom": "0",
                 "max-width": "800px"
@@ -2959,6 +2963,14 @@
                 "title": "Paper Botanica",
                 "subtitle": "Gallery",
                 "description": "Floral illustrations blending texture, balance, and calm rhythm through layered digital forms."
+              },
+              {
+                "id": "card_1789833136476_0jk",
+                "link": "/digital-art",
+                "src": "/uploads/about.jpg",
+                "title": "Digital Art",
+                "subtitle": "Gallery",
+                "description": ""
               }
             ]
           }
@@ -3056,7 +3068,7 @@
             {
               "id": "VQCN501Nr4OEB96H",
               "view": "header-view",
-              "content": "Max Doe",
+              "content": "Luana Silva",
               "style": {
                 "margin-bottom": "0.2em",
                 "max-width": "800px"
@@ -3068,7 +3080,7 @@
             {
               "id": "P1wNCwoAR2GDOG52",
               "view": "shorttext-view",
-              "content": "Visual Artist",
+              "content": "Artista Visual & Escultora",
               "style": {
                 "align": "center",
                 "text-align": "center"
@@ -3234,6 +3246,114 @@
               "settings": {
                 "animation": "fade-in",
                 "widthAdapt": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "page_1789833136476_5vln",
+      "url": "/digital-art",
+      "title": "Digital Art",
+      "isStartPage": false,
+      "sections": [
+        {
+          "id": "sec_head_1789833136476",
+          "viewType": "Text",
+          "viewId": "text2",
+          "elements": [
+            {
+              "id": "el_title_1789833136476",
+              "view": "header-view",
+              "content": "Digital Art",
+              "style": {
+                "margin-bottom": "0.7em",
+                "max-width": "800px"
+              }
+            },
+            {
+              "id": "el_desc_1789833136476",
+              "view": "longtext-view",
+              "content": "",
+              "style": {
+                "margin-bottom": "3em",
+                "max-width": "800px",
+                "text-align": "center"
+              }
+            },
+            {
+              "id": "el_tags_1789833136476",
+              "view": "list-view",
+              "content": [
+                {
+                  "Title": "Visuals"
+                },
+                {
+                  "Title": "Storytelling"
+                },
+                {
+                  "Title": "Brand"
+                }
+              ],
+              "style": {
+                "flex-direction": "row",
+                "align-items": "center",
+                "max-width": "800px",
+                "background-color": "#efefef",
+                "justify-content": "center"
+              }
+            }
+          ]
+        },
+        {
+          "id": "sec_gallery_1789833136476",
+          "viewType": "Gallery",
+          "viewId": "evenrows",
+          "gallery": {
+            "id": "gal_1789833136476",
+            "items": []
+          }
+        },
+        {
+          "id": "sec_footer_1789833136476",
+          "viewType": "Text",
+          "viewId": "submenubig",
+          "elements": [
+            {
+              "id": "el_sub_title_1789833136476",
+              "view": "shorttext-view",
+              "content": "Let's work together",
+              "style": {
+                "margin-bottom": "1.75em"
+              }
+            },
+            {
+              "id": "el_sub_links_1789833136476",
+              "view": "links-view",
+              "content": [
+                {
+                  "Title": "Portfolio",
+                  "Link": "/"
+                },
+                {
+                  "Title": "Services",
+                  "Link": "/services"
+                },
+                {
+                  "Title": "About",
+                  "Link": "/about"
+                },
+                {
+                  "Title": "Contact",
+                  "Link": "/contact"
+                }
+              ],
+              "style": {
+                "font-size": "4em",
+                "text-transform": "uppercase",
+                "line-height": "125%",
+                "flex-direction": "column"
               }
             }
           ]

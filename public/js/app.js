@@ -1,5 +1,6 @@
 /* ==========================================================================
-   APP.JS - CLIENT-SIDE SPA ROUTING & WIX-STYLE LIVE VISUAL CMS
+   APP.JS - CLIENT-SIDE SPA ROUTING, MULTI-LANGUAGE (PT-BR, PT-PT, EN)
+   & WIX-STYLE LIVE VISUAL CMS
    ========================================================================== */
 
 (function () {
@@ -7,6 +8,226 @@
   let isLiveAdmin = false;
   let hasPendingChanges = false;
   let currentActiveGalleryItems = [];
+
+  // Idioma Atual (padrão: pt-br)
+  let currentLang = localStorage.getItem('site_lang') || 'pt-br';
+
+  // -------------------------------------------------------------
+  // DICIONÁRIO MULTI-IDIOMA & LEXICOM AUTOMÁTICO
+  // -------------------------------------------------------------
+  const translations = {
+    'pt-br': {
+      // Menu / Nav
+      nav_portfolio: 'Portfólio',
+      nav_services: 'Serviços',
+      nav_about: 'Sobre',
+      nav_contact: 'Contato',
+      // Home / Hero
+      visual_artist: 'Artista Visual',
+      visual_artist_sculptor: 'Artista Visual & Escultor',
+      default_bio: 'Acredito em um design que emociona e transcende a função.',
+      gallery_badge: 'Galeria',
+      work_together: 'Vamos trabalhar juntos',
+      // Contact
+      contact_title: 'Contato',
+      contact_desc: 'Ficarei feliz em conversar. Envie dúvidas, ideias ou propostas de projetos e responderei o quanto antes.',
+      first_name_label: 'Nome',
+      first_name_placeholder: 'Seu primeiro nome',
+      last_name_label: 'Sobrenome',
+      last_name_placeholder: 'Seu sobrenome',
+      email_label: 'Seu E-mail',
+      email_placeholder: 'seu@email.com',
+      message_label: 'Sua Mensagem',
+      message_placeholder: 'Descreva seu projeto ou mensagem...',
+      btn_send_message: 'Enviar Mensagem',
+      sending_message: 'Enviando...',
+      contact_success: 'Obrigado pelo contato! Sua mensagem foi enviada com sucesso.',
+      phone_label: 'Telefone:',
+      // About
+      about_title: 'Sobre',
+      recognition: 'Reconhecimento',
+      selected_clients: 'Clientes Selecionados',
+      // Services
+      services_title: 'Serviços',
+      services_quote: '“Uma experiência fluida e profissional do início ao fim. Comunicação clara, ideias marcantes e um resultado que superou todas as expectativas.”',
+      // Footer
+      all_rights_reserved: 'Todos os direitos reservados.',
+      // Live Editor
+      live_mode_active: 'MODO EDIÇÃO VISUAL ATIVO',
+      btn_add_photos: 'Adicionar Fotos',
+      btn_new_gallery: 'Nova Galeria',
+      btn_menus: 'Menus',
+      btn_profile_bio: 'Perfil & Bio',
+      btn_save_changes: 'Salvar Alterações',
+      btn_saving: 'Gravando...',
+      btn_logout: 'Sair',
+      btn_dashboard: 'Painel',
+      page_label: 'Página:'
+    },
+    'pt-pt': {
+      // Menu / Nav
+      nav_portfolio: 'Portfólio',
+      nav_services: 'Serviços',
+      nav_about: 'Sobre',
+      nav_contact: 'Contacto',
+      // Home / Hero
+      visual_artist: 'Artista Visual',
+      visual_artist_sculptor: 'Artista Visual & Escultor',
+      default_bio: 'Acredito num design que emociona e transcende a função.',
+      gallery_badge: 'Galeria',
+      work_together: 'Vamos trabalhar juntos',
+      // Contact
+      contact_title: 'Contacto',
+      contact_desc: 'Terei todo o gosto em falar consigo. Envie dúvidas, ideias ou propostas de projetos e responderei com a maior brevidade.',
+      first_name_label: 'Primeiro Nome',
+      first_name_placeholder: 'O seu primeiro nome',
+      last_name_label: 'Apelido',
+      last_name_placeholder: 'O seu apelido',
+      email_label: 'O seu E-mail',
+      email_placeholder: 'o.seu@email.pt',
+      message_label: 'A sua Mensagem',
+      message_placeholder: 'Descreva o seu projeto ou mensagem...',
+      btn_send_message: 'Enviar Mensagem',
+      sending_message: 'A enviar...',
+      contact_success: 'Obrigado pelo contacto! A sua mensagem foi enviada com sucesso.',
+      phone_label: 'Telefone:',
+      // About
+      about_title: 'Sobre',
+      recognition: 'Reconhecimento',
+      selected_clients: 'Clientes Selecionados',
+      // Services
+      services_title: 'Serviços',
+      services_quote: '“Uma experiência fluida e profissional do início ao fim. Comunicação clara, ideias marcantes e um resultado que superou todas as expectativas.”',
+      // Footer
+      all_rights_reserved: 'Todos os direitos reservados.',
+      // Live Editor
+      live_mode_active: 'MODO EDIÇÃO VISUAL ATIVO',
+      btn_add_photos: 'Adicionar Fotos',
+      btn_new_gallery: 'Nova Galeria',
+      btn_menus: 'Menus',
+      btn_profile_bio: 'Perfil & Bio',
+      btn_save_changes: 'Guardar Alterações',
+      btn_saving: 'A gravar...',
+      btn_logout: 'Sair',
+      btn_dashboard: 'Painel',
+      page_label: 'Página:'
+    },
+    'en': {
+      // Menu / Nav
+      nav_portfolio: 'Portfolio',
+      nav_services: 'Services',
+      nav_about: 'About',
+      nav_contact: 'Contact',
+      // Home / Hero
+      visual_artist: 'Visual Artist',
+      visual_artist_sculptor: 'Visual Artist & Sculptor',
+      default_bio: 'I believe in design that feels, not just functions.',
+      gallery_badge: 'Gallery',
+      work_together: "Let's work together",
+      // Contact
+      contact_title: 'Contact',
+      contact_desc: 'I’m always happy to connect. Reach out with questions, ideas, or project inquiries, and I’ll get back to you as soon as possible.',
+      first_name_label: 'First Name',
+      first_name_placeholder: 'Your first name',
+      last_name_label: 'Last Name',
+      last_name_placeholder: 'Your last name',
+      email_label: 'Your Email',
+      email_placeholder: 'your@email.com',
+      message_label: 'Your Message',
+      message_placeholder: 'Describe your project or message...',
+      btn_send_message: 'Send Message',
+      sending_message: 'Sending...',
+      contact_success: 'Thank you! Your message has been sent successfully.',
+      phone_label: 'Phone:',
+      // About
+      about_title: 'About',
+      recognition: 'Recognition',
+      selected_clients: 'Selected Clients',
+      // Services
+      services_title: 'Services',
+      services_quote: '“A smooth and professional experience from start to finish. Clear communication, strong ideas, and a result that exceeded expectations.”',
+      // Footer
+      all_rights_reserved: 'All rights reserved.',
+      // Live Editor
+      live_mode_active: 'LIVE VISUAL EDITING ACTIVE',
+      btn_add_photos: 'Add Photos',
+      btn_new_gallery: 'New Gallery',
+      btn_menus: 'Menus',
+      btn_profile_bio: 'Profile & Bio',
+      btn_save_changes: 'Save Changes',
+      btn_saving: 'Saving...',
+      btn_logout: 'Logout',
+      btn_dashboard: 'Dashboard',
+      page_label: 'Page:'
+    }
+  };
+
+  // Dicionário Léxico Automático para traduzir menus, galerias e tags adicionadas
+  const lexicon = {
+    // Menu / Páginas
+    'portfolio': { 'pt-br': 'Portfólio', 'pt-pt': 'Portfólio', 'en': 'Portfolio' },
+    'portfólio': { 'pt-br': 'Portfólio', 'pt-pt': 'Portfólio', 'en': 'Portfolio' },
+    'services': { 'pt-br': 'Serviços', 'pt-pt': 'Serviços', 'en': 'Services' },
+    'serviços': { 'pt-br': 'Serviços', 'pt-pt': 'Serviços', 'en': 'Services' },
+    'about': { 'pt-br': 'Sobre', 'pt-pt': 'Sobre', 'en': 'About' },
+    'sobre': { 'pt-br': 'Sobre', 'pt-pt': 'Sobre', 'en': 'About' },
+    'contact': { 'pt-br': 'Contato', 'pt-pt': 'Contacto', 'en': 'Contact' },
+    'contato': { 'pt-br': 'Contato', 'pt-pt': 'Contacto', 'en': 'Contact' },
+    'contacto': { 'pt-br': 'Contato', 'pt-pt': 'Contacto', 'en': 'Contact' },
+    
+    // Profissões
+    'visual artist': { 'pt-br': 'Artista Visual', 'pt-pt': 'Artista Visual', 'en': 'Visual Artist' },
+    'artista visual': { 'pt-br': 'Artista Visual', 'pt-pt': 'Artista Visual', 'en': 'Visual Artist' },
+    'visual artist & sculptor': { 'pt-br': 'Artista Visual & Escultor', 'pt-pt': 'Artista Visual & Escultor', 'en': 'Visual Artist & Sculptor' },
+    'artista visual & escultor': { 'pt-br': 'Artista Visual & Escultor', 'pt-pt': 'Artista Visual & Escultor', 'en': 'Visual Artist & Sculptor' },
+    'sculptor': { 'pt-br': 'Escultor', 'pt-pt': 'Escultor', 'en': 'Sculptor' },
+    'escultor': { 'pt-br': 'Escultor', 'pt-pt': 'Escultor', 'en': 'Sculptor' },
+    'illustrator': { 'pt-br': 'Ilustrador', 'pt-pt': 'Ilustrador', 'en': 'Illustrator' },
+    'ilustrador': { 'pt-br': 'Ilustrador', 'pt-pt': 'Ilustrador', 'en': 'Illustrator' },
+    'designer': { 'pt-br': 'Designer', 'pt-pt': 'Designer', 'en': 'Designer' },
+
+    // Galerias e Tags Comuns
+    'creatures': { 'pt-br': 'Criaturas', 'pt-pt': 'Criaturas', 'en': 'Creatures' },
+    'criaturas': { 'pt-br': 'Criaturas', 'pt-pt': 'Criaturas', 'en': 'Creatures' },
+    'sculptures': { 'pt-br': 'Esculturas', 'pt-pt': 'Esculturas', 'en': 'Sculptures' },
+    'esculturas': { 'pt-br': 'Esculturas', 'pt-pt': 'Esculturas', 'en': 'Sculptures' },
+    'portraits': { 'pt-br': 'Retratos', 'pt-pt': 'Retratos', 'en': 'Portraits' },
+    'retratos': { 'pt-br': 'Retratos', 'pt-pt': 'Retratos', 'en': 'Portraits' },
+    'editorial': { 'pt-br': 'Editorial', 'pt-pt': 'Editorial', 'en': 'Editorial' },
+    'personal work': { 'pt-br': 'Trabalhos Pessoais', 'pt-pt': 'Trabalhos Pessoais', 'en': 'Personal Work' },
+    'trabalhos pessoais': { 'pt-br': 'Trabalhos Pessoais', 'pt-pt': 'Trabalhos Pessoais', 'en': 'Personal Work' },
+    'paintings': { 'pt-br': 'Pinturas', 'pt-pt': 'Pinturas', 'en': 'Paintings' },
+    'pinturas': { 'pt-br': 'Pinturas', 'pt-pt': 'Pinturas', 'en': 'Paintings' },
+    'drawings': { 'pt-br': 'Desenhos', 'pt-pt': 'Desenhos', 'en': 'Drawings' },
+    'desenhos': { 'pt-br': 'Desenhos', 'pt-pt': 'Desenhos', 'en': 'Drawings' },
+    'visuals': { 'pt-br': 'Visuais', 'pt-pt': 'Visuais', 'en': 'Visuals' },
+    'visuais': { 'pt-br': 'Visuais', 'pt-pt': 'Visuais', 'en': 'Visuals' },
+    'storytelling': { 'pt-br': 'Narrativa', 'pt-pt': 'Narrativa', 'en': 'Storytelling' },
+    'narrativa': { 'pt-br': 'Narrativa', 'pt-pt': 'Narrativa', 'en': 'Storytelling' },
+    'brand': { 'pt-br': 'Marca', 'pt-pt': 'Marca', 'en': 'Brand' },
+    'marca': { 'pt-br': 'Marca', 'pt-pt': 'Marca', 'en': 'Brand' },
+    'gallery': { 'pt-br': 'Galeria', 'pt-pt': 'Galeria', 'en': 'Gallery' },
+    'galeria': { 'pt-br': 'Galeria', 'pt-pt': 'Galeria', 'en': 'Gallery' },
+    'exhibitions': { 'pt-br': 'Exposições', 'pt-pt': 'Exposições', 'en': 'Exhibitions' },
+    'exposições': { 'pt-br': 'Exposições', 'pt-pt': 'Exposições', 'en': 'Exhibitions' },
+    'concept art': { 'pt-br': 'Arte Conceitual', 'pt-pt': 'Arte Conceptual', 'en': 'Concept Art' },
+    'arte conceitual': { 'pt-br': 'Arte Conceitual', 'pt-pt': 'Arte Conceptual', 'en': 'Concept Art' },
+    'arte conceptual': { 'pt-br': 'Arte Conceitual', 'pt-pt': 'Arte Conceptual', 'en': 'Concept Art' }
+  };
+
+  function t(key, fallback = '') {
+    const langDict = translations[currentLang] || translations['pt-br'];
+    return langDict[key] || fallback || key;
+  }
+
+  function autoTranslate(text) {
+    if (!text || typeof text !== 'string') return text;
+    const clean = text.trim().toLowerCase();
+    if (lexicon[clean] && lexicon[clean][currentLang]) {
+      return lexicon[clean][currentLang];
+    }
+    return text;
+  }
 
   // Elementos Principais do DOM
   const mainApp = document.getElementById('mainApp');
@@ -54,6 +275,7 @@
   // INICIALIZAÇÃO
   // -------------------------------------------------------------
   async function init() {
+    setupLangSwitcher();
     setupMobileMenu();
     setupSecretLock();
     setupLiveModals();
@@ -61,6 +283,32 @@
     await checkAdminAuth();
     setupRouter();
     renderCurrentRoute();
+  }
+
+  // -------------------------------------------------------------
+  // SELETOR DE IDIOMAS
+  // -------------------------------------------------------------
+  function setupLangSwitcher() {
+    const langBtns = document.querySelectorAll('.lang-btn');
+    langBtns.forEach(btn => {
+      const btnLang = btn.getAttribute('data-lang');
+      btn.classList.toggle('active', btnLang === currentLang);
+
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const selected = btn.getAttribute('data-lang');
+        if (selected && selected !== currentLang) {
+          currentLang = selected;
+          localStorage.setItem('site_lang', currentLang);
+
+          langBtns.forEach(b => b.classList.toggle('active', b.getAttribute('data-lang') === currentLang));
+
+          updateGlobalInfo();
+          renderNavigation();
+          renderCurrentRoute();
+        }
+      });
+    });
   }
 
   // -------------------------------------------------------------
@@ -141,6 +389,7 @@
 
     try {
       const res = await fetch('/api/admin/verify', {
+        method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await res.json();
@@ -159,7 +408,17 @@
   }
 
   function enableLiveEditorUI() {
-    if (liveAdminToolbar) liveAdminToolbar.style.display = 'flex';
+    if (liveAdminToolbar) {
+      liveAdminToolbar.style.display = 'flex';
+      const badge = liveAdminToolbar.querySelector('.live-badge');
+      if (badge) badge.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> ${t('live_mode_active')}`;
+      if (btnLiveAddPhoto) btnLiveAddPhoto.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i> ${t('btn_add_photos')}`;
+      if (btnLiveAddPage) btnLiveAddPage.innerHTML = `<i class="fa-solid fa-plus"></i> ${t('btn_new_gallery')}`;
+      if (btnLiveManageMenu) btnLiveManageMenu.innerHTML = `<i class="fa-solid fa-bars"></i> ${t('btn_menus')}`;
+      if (btnLiveEditProfile) btnLiveEditProfile.innerHTML = `<i class="fa-solid fa-user-gear"></i> ${t('btn_profile_bio')}`;
+      if (btnLiveSaveAll) btnLiveSaveAll.innerHTML = `<i class="fa-solid fa-check"></i> ${t('btn_save_changes')}`;
+      if (btnLiveLogout) btnLiveLogout.innerHTML = `<i class="fa-solid fa-lock"></i> ${t('btn_logout')}`;
+    }
   }
 
   function disableLiveEditorUI() {
@@ -186,8 +445,11 @@
 
   function updateGlobalInfo() {
     if (!siteData) return;
-    if (siteBrandLogo) siteBrandLogo.textContent = siteData.artistName || siteData.title || 'Max Doe';
-    if (footerCopyright) footerCopyright.innerHTML = `&copy; ${siteData.artistName || 'Max Doe'}. Todos os direitos reservados.`;
+    const name = siteData.artistName || 'Max Doe';
+    if (siteBrandLogo) siteBrandLogo.textContent = name;
+    if (footerCopyright) {
+      footerCopyright.innerHTML = `&copy; ${name}. ${t('all_rights_reserved')}`;
+    }
   }
 
   function setupMobileMenu() {
@@ -214,7 +476,8 @@
 
     menuItems.forEach(item => {
       const isActive = (item.url === '/' && currentPath === '/') || (item.url !== '/' && currentPath.startsWith(item.url));
-      navHtml += `<a href="${item.url}" class="nav-link ${isActive ? 'active' : ''}" data-nav>${item.title}</a>`;
+      const translatedTitle = autoTranslate(item.title);
+      navHtml += `<a href="${item.url}" class="nav-link ${isActive ? 'active' : ''}" data-nav>${translatedTitle}</a>`;
     });
 
     mainNav.innerHTML = navHtml;
@@ -236,8 +499,7 @@
     window.addEventListener('popstate', () => renderCurrentRoute());
 
     document.body.addEventListener('click', (e) => {
-      // Se clicou em botão ou elemento com contenteditable ou modal, não interfere
-      if (e.target.closest('.live-action-btn') || e.target.closest('.admin-modal-backdrop') || e.target.closest('#liveAdminToolbar') || e.target.hasAttribute('contenteditable')) {
+      if (e.target.closest('.live-action-btn') || e.target.closest('.admin-modal-backdrop') || e.target.closest('#liveAdminToolbar') || e.target.hasAttribute('contenteditable') || e.target.closest('.lang-switcher')) {
         return;
       }
 
@@ -253,26 +515,26 @@
   }
 
   function navigateTo(url) {
-    if (window.location.pathname === url) return;
-    window.history.pushState(null, '', url);
+    if (window.location.pathname !== url) {
+      window.history.pushState(null, null, url);
+    }
+    renderNavigation();
     renderCurrentRoute();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   // -------------------------------------------------------------
-  // RENDERIZAÇÃO DA ROTA ATUAL
+  // RENDERIZADOR DE ROTAS
   // -------------------------------------------------------------
   function renderCurrentRoute() {
     if (!siteData) return;
     const path = window.location.pathname;
 
-    renderNavigation();
+    mainApp.classList.add('page-loading');
 
     if (livePageIndicator) {
-      livePageIndicator.textContent = `Página: ${path === '/' ? 'Portfolio (Home)' : path}`;
+      livePageIndicator.textContent = `${t('page_label')} ${path === '/' || path === '/portfolio' ? 'Home' : path.replace('/', '').toUpperCase()}`;
     }
-
-    mainApp.classList.add('page-loading');
 
     setTimeout(() => {
       if (path === '/' || path === '/portfolio') {
@@ -292,38 +554,28 @@
         }
       }
 
-      // Se estiver no modo admin, torna elementos editáveis ao vivo
       if (isLiveAdmin) {
         attachLiveInlineEditing(path);
       }
 
       mainApp.classList.remove('page-loading');
-    }, 120);
+    }, 100);
   }
 
   // -------------------------------------------------------------
   // 1. PÁGINA HOME (PORTFOLIO)
   // -------------------------------------------------------------
   function renderHomePage() {
-    if (pageTitle) pageTitle.textContent = `${siteData.artistName || 'Max Doe'} — ${siteData.profession || 'Visual Artist'}`;
+    const artistName = siteData.artistName || 'Max Doe';
+    const profession = autoTranslate(siteData.profession || 'Visual Artist');
+    const bio = siteData.bio || t('default_bio');
 
-    const homePageData = siteData.pages.find(p => p.url === '/' || p.url === '/portfolio' || p.isStartPage);
-    let heroTitle = siteData.artistName || 'Max Doe';
-    let heroSubtitle = siteData.profession || 'Visual Artist';
-    let heroDesc = siteData.bio || 'I believe in design that feels, not just functions.';
+    if (pageTitle) pageTitle.textContent = `${artistName} — ${profession}`;
+
     let portfolioItems = [];
-
+    const homePageData = siteData.pages.find(p => p.url === '/' || p.url === '/portfolio' || p.isStartPage);
+    
     if (homePageData && homePageData.sections) {
-      const textSec = homePageData.sections.find(s => s.viewType === 'Text');
-      if (textSec && textSec.elements) {
-        const tEl = textSec.elements.find(e => e.view === 'header-view');
-        const subEl = textSec.elements.find(e => e.view === 'shorttext-view');
-        const descEl = textSec.elements.find(e => e.view === 'longtext-view');
-        if (tEl) heroTitle = tEl.content;
-        if (subEl) heroSubtitle = subEl.content;
-        if (descEl) heroDesc = descEl.content;
-      }
-
       const gridSec = homePageData.sections.find(s => s.gallery);
       if (gridSec && gridSec.gallery && gridSec.gallery.items) {
         portfolioItems = gridSec.gallery.items;
@@ -351,6 +603,8 @@
 
     let cardsHtml = '';
     portfolioItems.forEach((item, index) => {
+      const itemTitle = autoTranslate(item.title);
+      const itemSubtitle = autoTranslate(item.subtitle || 'Gallery');
       cardsHtml += `
         <div class="project-card fade-in" data-card-index="${index}" data-card-id="${item.id || ''}" ${isLiveAdmin ? 'draggable="true"' : ''}>
           ${isLiveAdmin ? `
@@ -361,11 +615,11 @@
             </div>
           ` : ''}
           <a href="${item.link || '#'}" class="card-img-wrapper" ${isLiveAdmin ? 'onclick="event.preventDefault();"' : ''}>
-            <img src="${item.src}" alt="${item.title || 'Projeto'}" class="card-img" loading="lazy" />
+            <img src="${item.src}" alt="${itemTitle || 'Projeto'}" class="card-img" loading="lazy" />
           </a>
           <div class="card-caption">
-            <h3 class="card-title ${isLiveAdmin ? 'editable-active' : ''}" data-field="card-title" data-index="${index}" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${item.title || 'Projeto'}</h3>
-            ${item.subtitle || isLiveAdmin ? `<div class="card-subtitle ${isLiveAdmin ? 'editable-active' : ''}" data-field="card-subtitle" data-index="${index}" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${item.subtitle || 'Gallery'}</div>` : ''}
+            <h3 class="card-title ${isLiveAdmin ? 'editable-active' : ''}" data-field="card-title" data-index="${index}" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${itemTitle || 'Projeto'}</h3>
+            ${item.subtitle || isLiveAdmin ? `<div class="card-subtitle ${isLiveAdmin ? 'editable-active' : ''}" data-field="card-subtitle" data-index="${index}" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${itemSubtitle}</div>` : ''}
             ${item.description || isLiveAdmin ? `<p class="card-description ${isLiveAdmin ? 'editable-active' : ''}" data-field="card-desc" data-index="${index}" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${item.description || ''}</p>` : ''}
           </div>
         </div>
@@ -374,9 +628,9 @@
 
     mainApp.innerHTML = `
       <section class="hero-section">
-        <span class="hero-subtitle ${isLiveAdmin ? 'editable-active' : ''}" id="liveHeroSubtitle" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${heroSubtitle}</span>
-        <h1 class="hero-title ${isLiveAdmin ? 'editable-active' : ''}" id="liveHeroTitle" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${heroTitle}</h1>
-        <p class="hero-desc ${isLiveAdmin ? 'editable-active' : ''}" id="liveHeroDesc" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${heroDesc}</p>
+        <span class="hero-subtitle ${isLiveAdmin ? 'editable-active' : ''}" id="liveHeroSubtitle" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${profession}</span>
+        <h1 class="hero-title ${isLiveAdmin ? 'editable-active' : ''}" id="liveHeroTitle" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${artistName}</h1>
+        <p class="hero-desc ${isLiveAdmin ? 'editable-active' : ''}" id="liveHeroDesc" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${bio}</p>
       </section>
 
       <section class="portfolio-grid" id="livePortfolioGrid">
@@ -399,7 +653,9 @@
   // 2. PÁGINA DE GALERIA INDIVIDUAL
   // -------------------------------------------------------------
   function renderGalleryPage(page) {
-    if (pageTitle) pageTitle.textContent = `${page.title} — ${siteData.artistName || 'Max Doe'}`;
+    const artistName = siteData.artistName || 'Max Doe';
+    const translatedPageTitle = autoTranslate(page.title);
+    if (pageTitle) pageTitle.textContent = `${translatedPageTitle} — ${artistName}`;
 
     let title = page.title;
     let description = '';
@@ -426,57 +682,68 @@
 
     currentActiveGalleryItems = galleryItems;
 
-    let tagsHtml = tags.map(tag => `<span class="tag-badge ${isLiveAdmin ? 'editable-active' : ''}" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${tag}</span>`).join('');
+    let tagsHtml = tags.map(tag => `<span class="tag-badge ${isLiveAdmin ? 'editable-active' : ''}" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${autoTranslate(tag)}</span>`).join('');
     
-    let galleryHtml = '';
-    galleryItems.forEach((item, index) => {
-      galleryHtml += `
-        <div class="gallery-item fade-in" data-gallery-index="${index}" data-gallery-id="${item.id || ''}" ${isLiveAdmin ? 'draggable="true"' : ''}>
-          ${isLiveAdmin ? `
-            <div class="live-item-controls">
-              <button class="live-action-btn btn-move-left" title="Mover para trás"><i class="fa-solid fa-arrow-left"></i></button>
-              <button class="live-action-btn btn-move-right" title="Mover para frente"><i class="fa-solid fa-arrow-right"></i></button>
-              <button class="live-action-btn btn-delete" title="Excluir foto"><i class="fa-solid fa-trash"></i></button>
-            </div>
-          ` : ''}
-          <img src="${item.src}" alt="${item.title || title}" loading="lazy" />
-          <div class="overlay-zoom-icon"><i class="fa-solid fa-magnifying-glass-plus"></i></div>
+    let galleryGridHtml = '';
+    if (galleryItems.length === 0) {
+      galleryGridHtml = `
+        <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: #888;">
+          <i class="fa-regular fa-image" style="font-size: 3rem; margin-bottom: 15px; display: block;"></i>
+          ${isLiveAdmin ? 'Esta galeria ainda não tem fotos. Clique em <strong>"Adicionar Fotos"</strong> na barra superior para enviar suas obras!' : 'Galeria em construção.'}
         </div>
       `;
-    });
+    } else {
+      galleryItems.forEach((item, index) => {
+        const itemTitle = autoTranslate(item.title);
+        const itemSubtitle = autoTranslate(item.subtitle || 'Gallery');
+        galleryGridHtml += `
+          <div class="gallery-item fade-in" data-card-index="${index}" data-card-id="${item.id || ''}" ${isLiveAdmin ? 'draggable="true"' : ''}>
+            ${isLiveAdmin ? `
+              <div class="live-item-controls">
+                <button class="live-action-btn btn-move-left" title="Mover para esquerda/cima"><i class="fa-solid fa-arrow-left"></i></button>
+                <button class="live-action-btn btn-move-right" title="Mover para direita/baixo"><i class="fa-solid fa-arrow-right"></i></button>
+                <button class="live-action-btn btn-delete" title="Excluir foto"><i class="fa-solid fa-trash"></i></button>
+              </div>
+            ` : ''}
+            <a href="${item.src}" class="gallery-lightbox-trigger" data-lightbox="gallery" data-title="${itemTitle}" data-subtitle="${itemSubtitle}" ${isLiveAdmin ? 'onclick="event.preventDefault();"' : ''}>
+              <img src="${item.src}" alt="${itemTitle || 'Foto'}" loading="lazy" />
+            </a>
+            ${(item.title || item.subtitle || isLiveAdmin) ? `
+              <div class="gallery-caption">
+                ${item.title || isLiveAdmin ? `<h4 class="item-title ${isLiveAdmin ? 'editable-active' : ''}" data-field="gallery-title" data-index="${index}" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${itemTitle || 'Título da Obra'}</h4>` : ''}
+                ${item.subtitle || isLiveAdmin ? `<span class="item-subtitle ${isLiveAdmin ? 'editable-active' : ''}" data-field="gallery-sub" data-index="${index}" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${itemSubtitle}</span>` : ''}
+              </div>
+            ` : ''}
+          </div>
+        `;
+      });
+    }
 
     mainApp.innerHTML = `
-      <section class="hero-section">
-        <h1 class="hero-title ${isLiveAdmin ? 'editable-active' : ''}" id="livePageTitle" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${title}</h1>
-        <p class="hero-desc ${isLiveAdmin ? 'editable-active' : ''}" id="livePageDesc" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${description ? description.replace(/\n/g, '<br>') : (isLiveAdmin ? 'Clique aqui para adicionar uma descrição à galeria...' : '')}</p>
-        <div class="tags-container" id="liveTagsContainer">${tagsHtml}</div>
-      </section>
+      <div class="gallery-page-container">
+        <section class="gallery-header-section">
+          <h1 class="gallery-title ${isLiveAdmin ? 'editable-active' : ''}" id="livePageTitle" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${autoTranslate(title)}</h1>
+          <p class="gallery-description ${isLiveAdmin ? 'editable-active' : ''}" id="livePageDesc" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${description || ''}</p>
+          <div class="gallery-tags" id="liveTagsContainer">
+            ${tagsHtml}
+          </div>
+        </section>
 
-      <section class="gallery-grid" id="projectGalleryGrid">
-        ${galleryHtml}
-      </section>
+        <section class="gallery-grid" id="liveGalleryGrid">
+          ${galleryGridHtml}
+        </section>
 
-      ${renderSubmenuBigSection([
-        { title: 'Portfolio', url: '/' },
-        { title: 'Services', url: '/services' },
-        { title: 'About', url: '/about' }
-      ])}
+        ${renderSubmenuBigSection([
+          { title: 'Portfolio', url: '/' },
+          { title: 'Services', url: '/services' },
+          { title: 'About', url: '/about' },
+          { title: 'Contact', url: '/contact' }
+        ])}
+      </div>
     `;
 
-    // Vincular Lightbox aos itens da galeria (se não estiver em modo edição)
-    const itemsDom = mainApp.querySelectorAll('#projectGalleryGrid .gallery-item');
-    itemsDom.forEach(el => {
-      el.addEventListener('click', (e) => {
-        if (isLiveAdmin && e.target.closest('.live-item-controls')) return;
-        const idx = parseInt(el.getAttribute('data-gallery-index'), 10);
-        if (window.lightboxInstance) {
-          window.lightboxInstance.open(galleryItems, idx);
-        }
-      });
-    });
-
     if (isLiveAdmin) {
-      setupCardsDragAndDrop('projectGalleryGrid');
+      setupCardsDragAndDrop('liveGalleryGrid');
     }
   }
 
@@ -484,44 +751,44 @@
   // 3. PÁGINA SERVICES
   // -------------------------------------------------------------
   function renderServicesPage() {
-    if (pageTitle) pageTitle.textContent = `Services — ${siteData.artistName || 'Max Doe'}`;
+    const artistName = siteData.artistName || 'Max Doe';
+    if (pageTitle) pageTitle.textContent = `${t('services_title')} — ${artistName}`;
 
     const services = [
       {
-        src: '/uploads/dreamlike-walkers.jpg',
-        title: 'Commissioned Paintings',
-        subtitle: 'Private & Public Collections',
-        desc: 'Bespoke works developed through conversation and site context. Each painting is an exploration of space, light, and emotion tailored to the environment it will inhabit.'
+        num: '01',
+        title: 'Creative Direction',
+        desc: 'Conceptualizing and guiding visual stories across mediums, ensuring cohesive and compelling narratives.'
       },
       {
-        src: '/uploads/no-print-simplifi-465099.jpg',
-        title: 'Limited Edition Prints',
-        subtitle: 'Studios & Collectors',
-        desc: 'A curated selection of hand-printed and mixed-media works produced in small runs, signed and numbered. Each print carries the trace of process — ink, pressure, and imperfection.'
+        num: '02',
+        title: 'Illustration & Concept Art',
+        desc: 'Creating custom visual worlds, characters, and environments for games, film, and editorial projects.'
       },
       {
-        src: '/uploads/layered-floral-design.jpg',
-        title: 'Collaborative Projects',
-        subtitle: 'Architects & Designers',
-        desc: 'Custom artworks and visual concepts developed for spatial or design contexts — murals, large-scale prints, and series responding to architecture and material environments.'
+        num: '03',
+        title: 'Sculpture & Digital 3D',
+        desc: 'Translating traditional tactile sculpting into high-resolution digital 3D models and installations.'
+      },
+      {
+        num: '04',
+        title: 'Brand Identity & Visuals',
+        desc: 'Crafting distinct identities and artistic assets for brands that want to stand out with authentic artistry.'
       }
     ];
 
-    let servicesHtml = services.map(s => `
+    const servicesHtml = services.map(s => `
       <div class="service-card fade-in">
-        <div class="card-img-wrapper">
-          <img src="${s.src}" alt="${s.title}" class="card-img" />
-        </div>
-        <h3 class="service-title ${isLiveAdmin ? 'editable-active' : ''}" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${s.title}</h3>
-        <div class="service-subtitle ${isLiveAdmin ? 'editable-active' : ''}" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${s.subtitle}</div>
-        <p class="service-desc ${isLiveAdmin ? 'editable-active' : ''}" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${s.desc}</p>
+        <span class="service-number">${s.num}</span>
+        <h3 class="service-title ${isLiveAdmin ? 'editable-active' : ''}" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${autoTranslate(s.title)}</h3>
+        <p class="service-description ${isLiveAdmin ? 'editable-active' : ''}" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${s.desc}</p>
       </div>
     `).join('');
 
     mainApp.innerHTML = `
       <div class="services-container">
         <section class="hero-section">
-          <h1 class="hero-title ${isLiveAdmin ? 'editable-active' : ''}" ${isLiveAdmin ? 'contenteditable="true"' : ''}>Services</h1>
+          <h1 class="hero-title ${isLiveAdmin ? 'editable-active' : ''}" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${t('services_title')}</h1>
         </section>
 
         <section class="services-grid">
@@ -530,7 +797,7 @@
 
         <section class="quote-section fade-in">
           <span class="quote-icon"><i class="fa-solid fa-quote-left"></i></span>
-          <p class="quote-text ${isLiveAdmin ? 'editable-active' : ''}" ${isLiveAdmin ? 'contenteditable="true"' : ''}>“A smooth and professional experience from start to finish. Clear communication, strong ideas, and a result that exceeded expectations.”</p>
+          <p class="quote-text ${isLiveAdmin ? 'editable-active' : ''}" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${t('services_quote')}</p>
           <div class="quote-author">
             <strong class="${isLiveAdmin ? 'editable-active' : ''}" ${isLiveAdmin ? 'contenteditable="true"' : ''}>James Henry</strong>
             <span class="${isLiveAdmin ? 'editable-active' : ''}" ${isLiveAdmin ? 'contenteditable="true"' : ''}>Story Well</span>
@@ -550,7 +817,9 @@
   // 4. PÁGINA ABOUT
   // -------------------------------------------------------------
   function renderAboutPage() {
-    if (pageTitle) pageTitle.textContent = `About — ${siteData.artistName || 'Max Doe'}`;
+    const artistName = siteData.artistName || 'Max Doe';
+    const profession = autoTranslate(siteData.profession || 'Visual Artist');
+    if (pageTitle) pageTitle.textContent = `${t('about_title')} — ${artistName}`;
 
     const recognition = [
       { title: 'Design Week', sub: 'Profiled' },
@@ -583,24 +852,24 @@
     mainApp.innerHTML = `
       <div class="about-container">
         <div class="about-avatar-wrapper fade-in">
-          <img src="${siteData.avatar || '/uploads/about.jpg'}" alt="${siteData.artistName || 'Max Doe'}" />
+          <img src="${siteData.avatar || '/uploads/about.jpg'}" alt="${artistName}" />
         </div>
         
-        <h1 class="hero-title ${isLiveAdmin ? 'editable-active' : ''}" id="liveAboutArtistName" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${siteData.artistName || 'Max Doe'}</h1>
-        <span class="hero-subtitle ${isLiveAdmin ? 'editable-active' : ''}" id="liveAboutProfession" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${siteData.profession || 'Visual Artist'}</span>
+        <h1 class="hero-title ${isLiveAdmin ? 'editable-active' : ''}" id="liveAboutArtistName" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${artistName}</h1>
+        <span class="hero-subtitle ${isLiveAdmin ? 'editable-active' : ''}" id="liveAboutProfession" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${profession}</span>
         <p class="hero-desc ${isLiveAdmin ? 'editable-active' : ''}" id="liveAboutBio" style="margin-top: 25px;" ${isLiveAdmin ? 'contenteditable="true"' : ''}>
           ${siteData.aboutLongBio || siteData.bio || 'My work explores the quiet rhythm between light, texture, and human presence.'}
         </p>
 
         <section class="about-columns-section">
           <div class="about-column fade-in">
-            <h2 class="about-col-title">Recognition</h2>
+            <h2 class="about-col-title">${t('recognition')}</h2>
             <ul class="about-list">
               ${recognitionHtml}
             </ul>
           </div>
           <div class="about-column fade-in">
-            <h2 class="about-col-title">Selected Clients</h2>
+            <h2 class="about-col-title">${t('selected_clients')}</h2>
             <ul class="about-list">
               ${clientsHtml}
             </ul>
@@ -620,7 +889,8 @@
   // 5. PÁGINA CONTACT
   // -------------------------------------------------------------
   function renderContactPage() {
-    if (pageTitle) pageTitle.textContent = `Contact — ${siteData.artistName || 'Max Doe'}`;
+    const artistName = siteData.artistName || 'Max Doe';
+    if (pageTitle) pageTitle.textContent = `${t('contact_title')} — ${artistName}`;
 
     const socialLinks = siteData.socialLinks || [
       { name: 'Instagram', url: 'https://www.instagram.com/portfoliobox', icon: 'instagram' },
@@ -637,42 +907,42 @@
     mainApp.innerHTML = `
       <div class="contact-container">
         <section class="hero-section">
-          <h1 class="hero-title ${isLiveAdmin ? 'editable-active' : ''}" ${isLiveAdmin ? 'contenteditable="true"' : ''}>Contact</h1>
+          <h1 class="hero-title ${isLiveAdmin ? 'editable-active' : ''}" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${t('contact_title')}</h1>
           <p class="hero-desc ${isLiveAdmin ? 'editable-active' : ''}" ${isLiveAdmin ? 'contenteditable="true"' : ''}>
-            I’m always happy to connect. Reach out with questions, ideas, or project inquiries, and I’ll get back to you as soon as possible.
+            ${t('contact_desc')}
           </p>
         </section>
 
         <form id="contactForm" class="contact-form fade-in">
           <div class="form-row">
             <div class="form-group">
-              <label for="firstName">First Name</label>
-              <input type="text" id="firstName" name="firstName" required placeholder="Seu nome" />
+              <label for="firstName">${t('first_name_label')}</label>
+              <input type="text" id="firstName" name="firstName" required placeholder="${t('first_name_placeholder')}" />
             </div>
             <div class="form-group">
-              <label for="lastName">Last Name</label>
-              <input type="text" id="lastName" name="lastName" placeholder="Sobrenome" />
+              <label for="lastName">${t('last_name_label')}</label>
+              <input type="text" id="lastName" name="lastName" placeholder="${t('last_name_placeholder')}" />
             </div>
           </div>
 
           <div class="form-group">
-            <label for="email">Your Email</label>
-            <input type="email" id="email" name="email" required placeholder="exemplo@email.com" />
+            <label for="email">${t('email_label')}</label>
+            <input type="email" id="email" name="email" required placeholder="${t('email_placeholder')}" />
           </div>
 
           <div class="form-group">
-            <label for="message">Your Message</label>
-            <textarea id="message" name="message" rows="5" required placeholder="Como posso te ajudar?"></textarea>
+            <label for="message">${t('message_label')}</label>
+            <textarea id="message" name="message" rows="5" required placeholder="${t('message_placeholder')}"></textarea>
           </div>
 
-          <button type="submit" class="form-btn" id="contactSubmitBtn">Submit</button>
+          <button type="submit" class="form-btn" id="contactSubmitBtn">${t('btn_send_message')}</button>
           <div id="contactFormStatus" style="margin-top: 15px; font-weight: 600;"></div>
         </form>
 
         <div class="contact-info-block fade-in">
-          <p><strong class="${isLiveAdmin ? 'editable-active' : ''}" id="liveContactName" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${siteData.artistName || 'Max Doe'}</strong></p>
+          <p><strong class="${isLiveAdmin ? 'editable-active' : ''}" id="liveContactName" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${artistName}</strong></p>
           <p class="${isLiveAdmin ? 'editable-active' : ''}" id="liveContactAddress" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${siteData.address || 'Gustavslundsv 99, 167 51 BROMMA'}</p>
-          <p>Phone: <span class="${isLiveAdmin ? 'editable-active' : ''}" id="liveContactPhone" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${siteData.phone || '+46 70 11 22 33'}</span></p>
+          <p>${t('phone_label')} <span class="${isLiveAdmin ? 'editable-active' : ''}" id="liveContactPhone" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${siteData.phone || '+46 70 11 22 33'}</span></p>
           <p><span class="${isLiveAdmin ? 'editable-active' : ''}" id="liveContactEmail" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${siteData.email || 'max.doe@gmail.com'}</span></p>
         </div>
 
@@ -687,7 +957,7 @@
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       submitBtn.disabled = true;
-      submitBtn.textContent = 'Enviando...';
+      submitBtn.textContent = t('sending_message');
       status.textContent = '';
 
       const payload = {
@@ -706,7 +976,7 @@
         const result = await res.json();
         if (result.success) {
           status.style.color = '#27ae60';
-          status.textContent = result.message || 'Mensagem enviada com sucesso!';
+          status.textContent = t('contact_success');
           form.reset();
         } else {
           status.style.color = '#e74c3c';
@@ -717,19 +987,37 @@
         status.textContent = 'Falha de comunicação com o servidor.';
       } finally {
         submitBtn.disabled = false;
-        submitBtn.textContent = 'Submit';
+        submitBtn.textContent = t('btn_send_message');
       }
     });
   }
 
+  // -------------------------------------------------------------
+  // 6. PÁGINA 404
+  // -------------------------------------------------------------
+  function render404Page() {
+    mainApp.innerHTML = `
+      <div style="text-align: center; padding: 120px 20px;">
+        <h1 style="font-size: 3rem; margin-bottom: 20px; font-family: var(--font-heading);">404</h1>
+        <p style="color: var(--text-muted); margin-bottom: 30px;">Página não encontrada.</p>
+        <a href="/" class="form-btn" style="display: inline-block;">Voltar ao Início</a>
+      </div>
+    `;
+  }
+
+  // -------------------------------------------------------------
+  // HELPER SUBMENU BIG (LET'S WORK TOGETHER)
+  // -------------------------------------------------------------
   function renderSubmenuBigSection(links) {
-    const linksHtml = links.map(l => `
-      <a href="${l.url}" class="submenu-big-link">${l.title}</a>
-    `).join('');
+    let linksHtml = '';
+    links.forEach(l => {
+      const title = autoTranslate(l.title);
+      linksHtml += `<a href="${l.url}" class="submenu-big-link">${title}</a>`;
+    });
 
     return `
       <section class="submenu-big-section fade-in">
-        <div class="submenu-big-subtitle">Let's work together</div>
+        <span class="submenu-big-title">${t('work_together')}</span>
         <div class="submenu-big-links">
           ${linksHtml}
         </div>
@@ -737,74 +1025,69 @@
     `;
   }
 
-  function render404Page() {
-    mainApp.innerHTML = `
-      <section class="hero-section">
-        <h1 class="hero-title">404</h1>
-        <p class="hero-desc">Página não encontrada.</p>
-        <a href="/" style="margin-top: 30px;" class="form-btn">Voltar para o Início</a>
-      </section>
-    `;
-  }
-
   // -------------------------------------------------------------
-  // WIX-STYLE LIVE EDITING & DRAG & DROP LOGIC
+  // RECURSOS DA BARRA DE EDIÇÃO VISUAL AO VIVO (WIX STYLE)
   // -------------------------------------------------------------
-  function attachLiveInlineEditing(currentPath) {
-    // Monitora alterações em elementos editáveis
+  function attachLiveInlineEditing(path) {
     document.querySelectorAll('[contenteditable="true"]').forEach(el => {
       el.addEventListener('input', () => {
         hasPendingChanges = true;
         btnLiveSaveAll.style.background = '#f59e0b';
-        btnLiveSaveAll.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Salvar Alterações *';
+        btnLiveSaveAll.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> ${t('btn_save_changes')} *`;
+
+        const field = el.getAttribute('data-field');
+        const index = parseInt(el.getAttribute('data-index'), 10);
+
+        if (!isNaN(index) && currentActiveGalleryItems[index]) {
+          if (field === 'card-title' || field === 'gallery-title') currentActiveGalleryItems[index].title = el.innerText;
+          if (field === 'card-subtitle' || field === 'gallery-sub') currentActiveGalleryItems[index].subtitle = el.innerText;
+          if (field === 'card-desc') currentActiveGalleryItems[index].description = el.innerText;
+        }
       });
     });
 
-    // Botões de ação nos itens (Mover / Excluir)
-    document.querySelectorAll('.live-item-controls .btn-move-left').forEach(btn => {
-      btn.onclick = (e) => {
+    document.querySelectorAll('.btn-move-left').forEach(btn => {
+      btn.addEventListener('click', (e) => {
         e.stopPropagation();
-        const card = btn.closest('[data-card-index], [data-gallery-index]');
-        const idx = parseInt(card.getAttribute('data-card-index') || card.getAttribute('data-gallery-index'), 10);
+        const card = btn.closest('[data-card-index]');
+        const idx = parseInt(card.getAttribute('data-card-index'), 10);
         if (idx > 0) {
           const temp = currentActiveGalleryItems[idx];
           currentActiveGalleryItems[idx] = currentActiveGalleryItems[idx - 1];
           currentActiveGalleryItems[idx - 1] = temp;
           hasPendingChanges = true;
           renderCurrentRoute();
-          showLiveToast('Item movido para trás. Clique em "Salvar Alterações" para confirmar.', 'success');
         }
-      };
+      });
     });
 
-    document.querySelectorAll('.live-item-controls .btn-move-right').forEach(btn => {
-      btn.onclick = (e) => {
+    document.querySelectorAll('.btn-move-right').forEach(btn => {
+      btn.addEventListener('click', (e) => {
         e.stopPropagation();
-        const card = btn.closest('[data-card-index], [data-gallery-index]');
-        const idx = parseInt(card.getAttribute('data-card-index') || card.getAttribute('data-gallery-index'), 10);
+        const card = btn.closest('[data-card-index]');
+        const idx = parseInt(card.getAttribute('data-card-index'), 10);
         if (idx < currentActiveGalleryItems.length - 1) {
           const temp = currentActiveGalleryItems[idx];
           currentActiveGalleryItems[idx] = currentActiveGalleryItems[idx + 1];
           currentActiveGalleryItems[idx + 1] = temp;
           hasPendingChanges = true;
           renderCurrentRoute();
-          showLiveToast('Item movido para frente. Clique em "Salvar Alterações" para confirmar.', 'success');
         }
-      };
+      });
     });
 
-    document.querySelectorAll('.live-item-controls .btn-delete').forEach(btn => {
-      btn.onclick = (e) => {
+    document.querySelectorAll('.btn-delete').forEach(btn => {
+      btn.addEventListener('click', (e) => {
         e.stopPropagation();
-        if (confirm('Deseja realmente remover esta foto da exibição?')) {
-          const card = btn.closest('[data-card-index], [data-gallery-index]');
-          const idx = parseInt(card.getAttribute('data-card-index') || card.getAttribute('data-gallery-index'), 10);
+        const card = btn.closest('[data-card-index]');
+        const idx = parseInt(card.getAttribute('data-card-index'), 10);
+        if (confirm('Deseja excluir este item?')) {
           currentActiveGalleryItems.splice(idx, 1);
           hasPendingChanges = true;
           renderCurrentRoute();
-          showLiveToast('Foto removida visualmente. Clique em "Salvar Alterações" para gravar.', 'success');
+          showLiveToast('Item removido! Clique em Salvar Alterações para confirmar.', 'success');
         }
-      };
+      });
     });
   }
 
@@ -814,130 +1097,156 @@
 
     let draggedEl = null;
 
-    container.querySelectorAll('.project-card, .gallery-item').forEach(card => {
-      card.addEventListener('dragstart', (e) => {
-        draggedEl = card;
-        card.classList.add('live-dragging');
-        const fromIdx = card.getAttribute('data-card-index') || card.getAttribute('data-gallery-index');
-        e.dataTransfer.setData('text/plain', fromIdx);
+    container.querySelectorAll('[draggable="true"]').forEach(item => {
+      item.addEventListener('dragstart', (e) => {
+        draggedEl = item;
+        item.classList.add('live-dragging');
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', item.getAttribute('data-card-index'));
       });
 
-      card.addEventListener('dragend', () => {
-        card.classList.remove('live-dragging');
-        container.querySelectorAll('.project-card, .gallery-item').forEach(c => c.classList.remove('live-drag-over'));
+      item.addEventListener('dragend', () => {
+        item.classList.remove('live-dragging');
+        container.querySelectorAll('[draggable="true"]').forEach(c => c.classList.remove('live-drag-over'));
       });
 
-      card.addEventListener('dragover', (e) => {
+      item.addEventListener('dragover', (e) => {
         e.preventDefault();
-        card.classList.add('live-drag-over');
+        item.classList.add('live-drag-over');
       });
 
-      card.addEventListener('dragleave', () => {
-        card.classList.remove('live-drag-over');
+      item.addEventListener('dragleave', () => {
+        item.classList.remove('live-drag-over');
       });
 
-      card.addEventListener('drop', (e) => {
+      item.addEventListener('drop', (e) => {
         e.preventDefault();
-        card.classList.remove('live-drag-over');
-        const fromIdx = parseInt(e.dataTransfer.getData('text/plain'), 10);
-        const toIdx = parseInt(card.getAttribute('data-card-index') || card.getAttribute('data-gallery-index'), 10);
+        item.classList.remove('live-drag-over');
+        if (draggedEl && draggedEl !== item) {
+          const fromIdx = parseInt(draggedEl.getAttribute('data-card-index'), 10);
+          const toIdx = parseInt(item.getAttribute('data-card-index'), 10);
 
-        if (!isNaN(fromIdx) && !isNaN(toIdx) && fromIdx !== toIdx) {
-          const item = currentActiveGalleryItems.splice(fromIdx, 1)[0];
-          currentActiveGalleryItems.splice(toIdx, 0, item);
+          const movedItem = currentActiveGalleryItems.splice(fromIdx, 1)[0];
+          currentActiveGalleryItems.splice(toIdx, 0, movedItem);
+
           hasPendingChanges = true;
           renderCurrentRoute();
-          showLiveToast(`Item reposicionado para #${toIdx + 1}! Clique em "Salvar Alterações" para fixar.`, 'success');
+          showLiveToast('Nova ordem definida! Clique em "Salvar Alterações" para gravar.', 'success');
         }
       });
     });
   }
 
-  // -------------------------------------------------------------
-  // MODAIS & BOTÕES DA TOOLBAR
-  // -------------------------------------------------------------
   function setupLiveModals() {
-    // 1. Botão Salvar Todas as Alterações
-    if (btnLiveSaveAll) {
-      btnLiveSaveAll.onclick = async () => {
-        await saveLiveChanges();
+    if (btnLiveAddPhoto) {
+      btnLiveAddPhoto.onclick = () => {
+        inlineUploadProgress.textContent = '';
+        inlineUploadModal.style.display = 'flex';
       };
     }
 
-    // 2. Botão Adicionar Fotos
-    if (btnLiveAddPhoto) {
-      btnLiveAddPhoto.onclick = () => {
-        inlineUploadModal.style.display = 'flex';
-        inlineUploadProgress.textContent = '';
-      };
-    }
     if (closeInlineUploadModal) {
       closeInlineUploadModal.onclick = () => inlineUploadModal.style.display = 'none';
     }
+
     if (inlineUploadDropzone) {
       inlineUploadDropzone.onclick = () => inlineFileInput.click();
-      inlineUploadDropzone.ondragover = (e) => { e.preventDefault(); inlineUploadDropzone.classList.add('dragover'); };
-      inlineUploadDropzone.ondragleave = () => inlineUploadDropzone.classList.remove('dragover');
-      inlineUploadDropzone.ondrop = (e) => {
-        e.preventDefault();
-        inlineUploadDropzone.classList.remove('dragover');
-        if (e.dataTransfer.files.length > 0) handleInlineFiles(e.dataTransfer.files);
-      };
       inlineFileInput.onchange = () => {
         if (inlineFileInput.files.length > 0) handleInlineFiles(inlineFileInput.files);
       };
-    }
-
-    // 3. Botão Nova Galeria
-    if (btnLiveAddPage) {
-      btnLiveAddPage.onclick = async () => {
-        const title = prompt('Digite o título da nova galeria (Ex: "Urban Reflections"):');
-        if (!title) return;
-        const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-        const url = prompt('Digite a URL da página:', `/${slug}`);
-        if (!url) return;
-        const desc = prompt('Digite uma descrição para a nova galeria:', 'Série de obras e estudos visuais.');
-
-        const token = localStorage.getItem('adm_token');
-        try {
-          const res = await fetch('/api/pages', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({ title, url, description: desc, tags: ['Visuals', 'Storytelling', 'Brand'] })
-          });
-          const data = await res.json();
-          if (data.success) {
-            showLiveToast(`Galeria "${title}" criada com sucesso!`, 'success');
-            await fetchSiteData();
-            navigateTo(url);
-          } else {
-            showLiveToast(data.error || 'Erro ao criar galeria.', 'error');
-          }
-        } catch (e) {
-          showLiveToast('Erro ao criar galeria.', 'error');
-        }
+      inlineUploadDropzone.ondragover = (e) => {
+        e.preventDefault();
+        inlineUploadDropzone.style.borderColor = 'var(--accent-color)';
+      };
+      inlineUploadDropzone.ondragleave = () => {
+        inlineUploadDropzone.style.borderColor = '#475569';
+      };
+      inlineUploadDropzone.ondrop = (e) => {
+        e.preventDefault();
+        inlineUploadDropzone.style.borderColor = '#475569';
+        if (e.dataTransfer.files.length > 0) handleInlineFiles(e.dataTransfer.files);
       };
     }
 
-    // 4. Botão Gerenciar Menus
     if (btnLiveManageMenu) {
-      btnLiveManageMenu.onclick = () => {
-        openInlineMenuModal();
-      };
+      btnLiveManageMenu.onclick = () => openInlineMenuModal();
     }
     if (closeInlineMenuModal) {
       closeInlineMenuModal.onclick = () => inlineMenuModal.style.display = 'none';
     }
 
-    // 5. Botão Perfil & Bio
+    if (btnLiveAddPage) {
+      btnLiveAddPage.onclick = () => {
+        const title = prompt('Título da nova galeria / página:');
+        if (!title) return;
+        const urlSlug = prompt('URL amigável (ex: /esculturas):', '/' + title.toLowerCase().replace(/[^a-z0-9]/g, '-'));
+        if (!urlSlug) return;
+        createNewPageLive(title, urlSlug);
+      };
+    }
+
     if (btnLiveEditProfile) {
       btnLiveEditProfile.onclick = () => {
-        navigateTo('/about');
-        showLiveToast('Edite seu nome, slogan ou biografia clicando diretamente nos textos!', 'success');
+        const newArtistName = prompt('Nome do Artista:', siteData.artistName || 'Max Doe');
+        if (newArtistName === null) return;
+        const newProfession = prompt('Profissão / Título (ex: Visual Artist):', siteData.profession || 'Visual Artist');
+        if (newProfession === null) return;
+        const newBio = prompt('Mini Bio do cabeçalho:', siteData.bio || '');
+        if (newBio === null) return;
+
+        saveProfileDataLive(newArtistName, newProfession, newBio);
       };
+    }
+
+    if (btnLiveSaveAll) {
+      btnLiveSaveAll.onclick = async () => {
+        await saveLiveChanges();
+      };
+    }
+  }
+
+  async function createNewPageLive(title, url) {
+    const token = localStorage.getItem('adm_token');
+    try {
+      const res = await fetch('/api/pages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ title, url })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showLiveToast(`Galeria "${title}" criada com sucesso!`, 'success');
+        await fetchSiteData();
+        navigateTo(url);
+      } else {
+        showLiveToast(data.error || 'Erro ao criar página.', 'error');
+      }
+    } catch (e) {
+      showLiveToast('Falha na comunicação com o servidor.', 'error');
+    }
+  }
+
+  async function saveProfileDataLive(artistName, profession, bio) {
+    const token = localStorage.getItem('adm_token');
+    try {
+      const res = await fetch('/api/site', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ artistName, profession, bio })
+      });
+      const data = await res.json();
+      if (data.success) {
+        siteData.artistName = artistName;
+        siteData.profession = profession;
+        siteData.bio = bio;
+        updateGlobalInfo();
+        renderCurrentRoute();
+        showLiveToast('Perfil e Nome do Artista atualizados com sucesso!', 'success');
+      } else {
+        showLiveToast(data.error || 'Erro ao atualizar perfil.', 'error');
+      }
+    } catch (e) {
+      showLiveToast('Erro ao conectar com o servidor.', 'error');
     }
   }
 
@@ -1018,8 +1327,8 @@
       const row = document.createElement('div');
       row.style.cssText = 'display: flex; gap: 8px; align-items: center; background: #0f172a; padding: 8px 12px; border-radius: 6px; border: 1px solid #334155;';
       row.innerHTML = `
-        <input type="text" class="menu-title-input" value="Novo Link" style="flex: 1; padding: 8px 12px; background: #1e293b; color: #fff; border: 1px solid #475569; border-radius: 4px;" />
-        <input type="text" class="menu-url-input" value="/" style="flex: 1; padding: 8px 12px; background: #1e293b; color: #fff; border: 1px solid #475569; border-radius: 4px;" />
+        <input type="text" class="menu-title-input" placeholder="Título do Menu" value="Nova Galeria" style="flex: 1; padding: 8px 12px; background: #1e293b; color: #fff; border: 1px solid #475569; border-radius: 4px;" />
+        <input type="text" class="menu-url-input" placeholder="/url-da-galeria" value="/nova-galeria" style="flex: 1; padding: 8px 12px; background: #1e293b; color: #fff; border: 1px solid #475569; border-radius: 4px;" />
         <button type="button" class="btn-del-menu" style="background: #ef4444; color: #fff; border: none; padding: 8px 10px; border-radius: 4px; cursor: pointer;"><i class="fa-solid fa-trash"></i></button>
       `;
       row.querySelector('.btn-del-menu').onclick = () => row.remove();
@@ -1030,8 +1339,8 @@
       const rows = inlineMenuList.querySelectorAll('div');
       const newMenu = [];
       rows.forEach(r => {
-        const title = r.querySelector('.menu-title-input').value.trim();
-        const url = r.querySelector('.menu-url-input').value.trim();
+        const title = r.querySelector('.menu-title-input')?.value?.trim();
+        const url = r.querySelector('.menu-url-input')?.value?.trim();
         if (title && url) newMenu.push({ title, url });
       });
 
@@ -1047,7 +1356,7 @@
         });
         const data = await res.json();
         if (data.success) {
-          showLiveToast('Menu atualizado com sucesso!', 'success');
+          showLiveToast('Menu e galerias atualizados com sucesso!', 'success');
           inlineMenuModal.style.display = 'none';
           await fetchSiteData();
         }
@@ -1066,7 +1375,7 @@
     const token = localStorage.getItem('adm_token');
     const path = window.location.pathname;
     btnLiveSaveAll.disabled = true;
-    btnLiveSaveAll.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Gravando...';
+    btnLiveSaveAll.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${t('btn_saving')}`;
 
     try {
       // 1. Se estiver na Home
@@ -1074,6 +1383,10 @@
         const heroTitle = document.getElementById('liveHeroTitle')?.innerText || siteData.artistName;
         const heroSubtitle = document.getElementById('liveHeroSubtitle')?.innerText || siteData.profession;
         const heroDesc = document.getElementById('liveHeroDesc')?.innerText || siteData.bio;
+
+        siteData.artistName = heroTitle;
+        siteData.profession = heroSubtitle;
+        siteData.bio = heroDesc;
 
         // Atualiza textos gerais do perfil
         await fetch('/api/site', {
@@ -1099,6 +1412,10 @@
         const profession = document.getElementById('liveAboutProfession')?.innerText || siteData.profession;
         const aboutBio = document.getElementById('liveAboutBio')?.innerText || siteData.aboutLongBio;
 
+        siteData.artistName = artistName;
+        siteData.profession = profession;
+        siteData.aboutLongBio = aboutBio;
+
         await fetch('/api/site', {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
@@ -1115,6 +1432,11 @@
         const address = document.getElementById('liveContactAddress')?.innerText || siteData.address;
         const phone = document.getElementById('liveContactPhone')?.innerText || siteData.phone;
         const email = document.getElementById('liveContactEmail')?.innerText || siteData.email;
+
+        siteData.artistName = name;
+        siteData.address = address;
+        siteData.phone = phone;
+        siteData.email = email;
 
         await fetch('/api/site', {
           method: 'PUT',
@@ -1150,13 +1472,14 @@
 
       hasPendingChanges = false;
       showLiveToast('Todas as alterações visuais foram salvas com sucesso!', 'success');
+      updateGlobalInfo();
       await fetchSiteData();
     } catch (e) {
       showLiveToast('Erro ao salvar alterações.', 'error');
     } finally {
       btnLiveSaveAll.disabled = false;
       btnLiveSaveAll.style.background = '#10b981';
-      btnLiveSaveAll.innerHTML = '<i class="fa-solid fa-check"></i> Salvar Alterações';
+      btnLiveSaveAll.innerHTML = `<i class="fa-solid fa-check"></i> ${t('btn_save_changes')}`;
     }
   }
 
