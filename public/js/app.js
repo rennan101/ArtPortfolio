@@ -433,6 +433,8 @@
   const btnSaveReceiverEmail = document.getElementById('btnSaveReceiverEmail');
   const globalHeadingFont = document.getElementById('globalHeadingFont');
   const globalBodyFont = document.getElementById('globalBodyFont');
+  const drawerSelectedActions = document.getElementById('drawerSelectedActions');
+  const btnDeleteSelectedBlock = document.getElementById('btnDeleteSelectedBlock');
 
   // Elemento de texto atualmente em foco/seleção para o Drawer
   let currentSelectedTextEl = null;
@@ -1409,6 +1411,11 @@
     currentSelectedTextEl = el;
     currentSelectedTextEl.style.outline = '2px dashed var(--accent-color)';
 
+    // Exibe botão de excluir o bloco selecionado no Drawer
+    if (drawerSelectedActions) {
+      drawerSelectedActions.style.display = 'block';
+    }
+
     // Atualiza o Drawer
     if (drawerTargetIndicator) {
       const tagName = el.tagName.toLowerCase();
@@ -1436,6 +1443,75 @@
 
     // Status dos botões de estilo
     updateStyleButtonStates(computed);
+  }
+
+  function deleteSelectedTextBlock() {
+    if (!currentSelectedTextEl) {
+      showLiveToast('Selecione ou clique no bloco de texto que deseja excluir primeiro.', 'info');
+      return;
+    }
+
+    const tagName = currentSelectedTextEl.tagName.toLowerCase();
+    const snippet = currentSelectedTextEl.innerText.trim().slice(0, 25) || 'este bloco';
+
+    if (!confirm(`Deseja realmente excluir <${tagName}> "${snippet}"?`)) {
+      return;
+    }
+
+    const el = currentSelectedTextEl;
+    const field = el.getAttribute('data-field');
+    const secIdx = parseInt(el.getAttribute('data-sec-idx'), 10);
+    const itemIdx = parseInt(el.getAttribute('data-item-idx'), 10);
+
+    // 1. Trata se for item da Seção Sobre
+    if (!isNaN(secIdx) && siteData.aboutSections && siteData.aboutSections[secIdx]) {
+      if (field === 'about-sec-title') {
+        siteData.aboutSections.splice(secIdx, 1);
+        renderCurrentRoute();
+      } else if (!isNaN(itemIdx) && siteData.aboutSections[secIdx].items) {
+        siteData.aboutSections[secIdx].items.splice(itemIdx, 1);
+        renderCurrentRoute();
+      } else {
+        el.remove();
+      }
+    }
+    // 2. Trata se for título, subtítulo ou bio principal do Header
+    else if (el.id === 'liveHeroTitle' || el.id === 'liveAboutArtistName') {
+      siteData.artistName = '';
+      el.innerText = '';
+      el.remove();
+    } else if (el.id === 'liveHeroSubtitle' || el.id === 'liveAboutProfession') {
+      siteData.profession = '';
+      el.innerText = '';
+      el.remove();
+    } else if (el.id === 'liveHeroDesc' || el.id === 'liveAboutBio') {
+      siteData.bio = '';
+      siteData.aboutLongBio = '';
+      el.innerText = '';
+      el.remove();
+    } else if (el.id === 'livePageTitle') {
+      el.innerText = '';
+      el.remove();
+    } else if (el.id === 'livePageDesc') {
+      el.innerText = '';
+      el.remove();
+    }
+    // 3. Bloco customizado ou qualquer outro elemento de texto
+    else {
+      el.remove();
+    }
+
+    currentSelectedTextEl = null;
+    if (drawerSelectedActions) drawerSelectedActions.style.display = 'none';
+    if (drawerTargetIndicator) drawerTargetIndicator.innerHTML = 'Nenhum texto selecionado. Selecione ou clique em qualquer texto para formatar.';
+
+    hasPendingChanges = true;
+    if (btnLiveSaveAll) {
+      btnLiveSaveAll.style.background = '#f59e0b';
+      btnLiveSaveAll.innerHTML = `<i class="fa-solid fa-floppy-disk"></i>`;
+      btnLiveSaveAll.title = `${t('btn_save_changes')} *`;
+    }
+    showLiveToast('Bloco de texto excluído com sucesso! Clique no botão de Salvar para gravar.', 'success');
   }
 
   function rgbToHex(rgbStr) {
@@ -2018,6 +2094,13 @@
         hasPendingChanges = true;
         btnLiveSaveAll.style.background = '#f59e0b';
         showLiveToast(`Fonte de textos alterada para ${font.split(',')[0]}!`, 'info');
+      };
+    }
+
+    // 11. Exclusão do Bloco / Texto Selecionado
+    if (btnDeleteSelectedBlock) {
+      btnDeleteSelectedBlock.onclick = () => {
+        deleteSelectedTextBlock();
       };
     }
   }

@@ -758,6 +758,49 @@ button {
   line-height: 1.4;
 }
 
+.drawer-delete-block-btn:hover {
+  background: #ef4444 !important;
+  color: #ffffff !important;
+  transform: translateY(-1px);
+}
+
+.text-block-wrapper {
+  position: relative;
+  display: block;
+}
+
+.text-block-wrapper:hover .text-block-delete-btn {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.text-block-delete-btn {
+  position: absolute;
+  top: -12px;
+  right: -12px;
+  background: #ef4444;
+  color: #ffffff;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.2s ease;
+  z-index: 60;
+}
+
+.text-block-delete-btn:hover {
+  background: #dc2626;
+  transform: scale(1.15);
+}
+
 .drawer-control-row {
   margin-bottom: 14px;
   display: flex;
