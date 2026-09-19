@@ -1138,14 +1138,26 @@ button {
   margin-top: 25px;
 }
 
+.footer-social {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 18px;
+}
+
 .social-icon-link {
-  font-size: 1.3rem;
+  font-size: 1.35rem;
   color: var(--text-main);
-  transition: color 0.2s ease;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .social-icon-link:hover {
   color: var(--accent-color);
+  transform: translateY(-2px);
 }
 
 /* ==========================================================================

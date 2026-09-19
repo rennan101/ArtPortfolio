@@ -597,6 +597,65 @@
   // ----------------------------------------------------------------
   // 7. PERFIL & BIO
   // ----------------------------------------------------------------
+  const SOCIAL_NETWORKS = [
+    { id: 'instagram', name: 'Instagram', icon: 'instagram', placeholder: 'https://instagram.com/usuario ou @usuario' },
+    { id: 'whatsapp', name: 'WhatsApp', icon: 'whatsapp', placeholder: 'https://wa.me/5511999999999 ou +55 11 99999-9999' },
+    { id: 'facebook', name: 'Facebook', icon: 'facebook', placeholder: 'https://facebook.com/pagina' },
+    { id: 'linkedin', name: 'LinkedIn', icon: 'linkedin', placeholder: 'https://linkedin.com/in/perfil' },
+    { id: 'x-twitter', name: 'Twitter / X', icon: 'x-twitter', placeholder: 'https://x.com/usuario' },
+    { id: 'youtube', name: 'YouTube', icon: 'youtube', placeholder: 'https://youtube.com/@canal' },
+    { id: 'tiktok', name: 'TikTok', icon: 'tiktok', placeholder: 'https://tiktok.com/@usuario' },
+    { id: 'behance', name: 'Behance', icon: 'behance', placeholder: 'https://behance.net/usuario' },
+    { id: 'artstation', name: 'ArtStation', icon: 'artstation', placeholder: 'https://artstation.com/usuario' },
+    { id: 'pinterest', name: 'Pinterest', icon: 'pinterest', placeholder: 'https://pinterest.com/usuario' },
+    { id: 'github', name: 'GitHub', icon: 'github', placeholder: 'https://github.com/usuario' }
+  ];
+
+  function formatSocialUrl(network, url) {
+    if (!url) return '';
+    let clean = url.trim();
+    if (network === 'whatsapp') {
+      if (!clean.startsWith('http')) {
+        const digits = clean.replace(/[^0-9]/g, '');
+        return digits ? `https://wa.me/${digits}` : clean;
+      }
+      return clean;
+    }
+    if (network === 'instagram') {
+      if (clean.startsWith('@')) return `https://instagram.com/${clean.replace('@', '')}`;
+      if (!clean.startsWith('http') && !clean.includes('/')) return `https://instagram.com/${clean}`;
+    }
+    if (!clean.startsWith('http://') && !clean.startsWith('https://')) {
+      return `https://${clean}`;
+    }
+    return clean;
+  }
+
+  function createSocialRow(socialItem = { name: 'Instagram', url: '', icon: 'instagram' }) {
+    const row = document.createElement('div');
+    row.className = 'admin-social-row';
+    row.style.cssText = 'display: flex; gap: 10px; align-items: center; background: var(--admin-card); padding: 10px 14px; border-radius: 6px; border: 1px solid var(--admin-border);';
+
+    let selectOptions = SOCIAL_NETWORKS.map(net => {
+      const selected = (net.name.toLowerCase() === (socialItem.name || '').toLowerCase() || net.icon === socialItem.icon) ? 'selected' : '';
+      return `<option value="${net.id}" data-name="${net.name}" data-icon="${net.icon}" ${selected}>${net.name}</option>`;
+    }).join('');
+
+    row.innerHTML = `
+      <select class="admin-input social-type-select" style="width: 160px;">
+        ${selectOptions}
+      </select>
+      <input type="text" class="admin-input social-url-input" value="${socialItem.url || ''}" placeholder="Link do perfil (ex: https://...)" style="flex: 1;" />
+      <button type="button" class="admin-btn small btn-del-social" style="background: #ef4444;" title="Excluir"><i class="fa-solid fa-trash"></i></button>
+    `;
+
+    row.querySelector('.btn-del-social').addEventListener('click', () => row.remove());
+    return row;
+  }
+
+  // ----------------------------------------------------------------
+  // 7. PERFIL & BIO
+  // ----------------------------------------------------------------
   function populateProfileTab() {
     if (!siteData) return;
     infoArtistName.value = siteData.artistName || '';
@@ -606,12 +665,54 @@
     infoEmail.value = siteData.email || '';
     infoPhone.value = siteData.phone || '';
     infoAddress.value = siteData.address || '';
+
+    // Preenche redes sociais
+    const adminSocialListContainer = document.getElementById('adminSocialListContainer');
+    if (adminSocialListContainer) {
+      adminSocialListContainer.innerHTML = '';
+      const list = siteData.socialLinks && siteData.socialLinks.length > 0 ? siteData.socialLinks : [
+        { name: 'Instagram', url: 'https://www.instagram.com', icon: 'instagram' },
+        { name: 'WhatsApp', url: '', icon: 'whatsapp' },
+        { name: 'Facebook', url: '', icon: 'facebook' },
+        { name: 'LinkedIn', url: '', icon: 'linkedin' }
+      ];
+
+      list.forEach(item => {
+        adminSocialListContainer.appendChild(createSocialRow(item));
+      });
+    }
   }
 
   function setupProfileControls() {
+    const btnAdminAddSocial = document.getElementById('btnAdminAddSocial');
+    const adminSocialListContainer = document.getElementById('adminSocialListContainer');
+
+    if (btnAdminAddSocial && adminSocialListContainer) {
+      btnAdminAddSocial.addEventListener('click', () => {
+        adminSocialListContainer.appendChild(createSocialRow());
+      });
+    }
+
     btnSaveSiteInfo.addEventListener('click', async () => {
       btnSaveSiteInfo.disabled = true;
       const token = localStorage.getItem('adm_token');
+
+      // Coleta redes sociais
+      const socialLinks = [];
+      if (adminSocialListContainer) {
+        adminSocialListContainer.querySelectorAll('.admin-social-row').forEach(row => {
+          const select = row.querySelector('.social-type-select');
+          const opt = select.options[select.selectedIndex];
+          const name = opt.getAttribute('data-name') || select.value;
+          const icon = opt.getAttribute('data-icon') || select.value;
+          const rawUrl = row.querySelector('.social-url-input').value.trim();
+          const url = formatSocialUrl(icon, rawUrl);
+
+          if (url) {
+            socialLinks.push({ name, url, icon });
+          }
+        });
+      }
 
       const payload = {
         artistName: infoArtistName.value,
@@ -620,7 +721,8 @@
         aboutLongBio: infoAboutLongBio.value,
         email: infoEmail.value,
         phone: infoPhone.value,
-        address: infoAddress.value
+        address: infoAddress.value,
+        socialLinks
       };
 
       try {
@@ -634,7 +736,7 @@
         });
         const data = await res.json();
         if (data.success) {
-          showToast('Perfil e biografia salvos com sucesso!', 'success');
+          showToast('Perfil, biografia e redes sociais salvos com sucesso!', 'success');
           await loadSiteData();
         } else {
           showToast(data.error || 'Erro ao salvar perfil.', 'error');

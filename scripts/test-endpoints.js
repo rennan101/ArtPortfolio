@@ -96,10 +96,35 @@ const server = app.listen(PORT, async () => {
     const namePersisted = siteAfterData.artistName === 'Luana Silva';
     console.log('7. Name Persistence Test ("Luana Silva"):', namePersisted ? 'PASSED ✅' : 'FAILED ❌', `(Current: ${siteAfterData.artistName})`);
 
+    // 8. Auto-create Gallery Page for Menu Test
     const autoPageRes = await fetch(`http://127.0.0.1:${PORT}/api/pages/digital-art`);
     const autoPageData = await autoPageRes.json();
     const galleryCreated = autoPageData.title === 'Digital Art' && autoPageData.sections.some(s => s.gallery);
     console.log('8. Auto-create Gallery Page for Menu Test:', galleryCreated ? 'PASSED ✅' : 'FAILED ❌', `(Page Title: ${autoPageData.title})`);
+
+    // 9. Test Update Social Links (Instagram, WhatsApp, Facebook, LinkedIn)
+    const socialLinksPayload = [
+      { name: 'Instagram', url: 'https://instagram.com/luanasilva.art', icon: 'instagram' },
+      { name: 'WhatsApp', url: 'https://wa.me/5511999887766', icon: 'whatsapp' },
+      { name: 'Facebook', url: 'https://facebook.com/luanasilva.art', icon: 'facebook' },
+      { name: 'LinkedIn', url: 'https://linkedin.com/in/luanasilva', icon: 'linkedin' }
+    ];
+
+    const updateSocialRes = await fetch(`http://127.0.0.1:${PORT}/api/site`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ socialLinks: socialLinksPayload })
+    });
+    const updateSocialData = await updateSocialRes.json();
+    console.log('9. Update Social Links Test:', updateSocialData.success ? 'PASSED ✅' : 'FAILED ❌');
+
+    const checkSocialRes = await fetch(`http://127.0.0.1:${PORT}/api/site`);
+    const checkSocialData = await checkSocialRes.json();
+    const socialMatches = checkSocialData.socialLinks && checkSocialData.socialLinks.length === 4 && checkSocialData.socialLinks.some(s => s.name === 'WhatsApp');
+    console.log('10. Social Links Persistence Test (Instagram, WhatsApp, FB, LinkedIn):', socialMatches ? 'PASSED ✅' : 'FAILED ❌');
 
     console.log('\n🎉 ALL ADVANCED TESTS PASSED SUCCESSFULLY!');
   } catch (err) {

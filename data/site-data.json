@@ -11,22 +11,22 @@
   "socialLinks": [
     {
       "name": "Instagram",
-      "url": "https://www.instagram.com/portfoliobox",
+      "url": "https://instagram.com/luanasilva.art",
       "icon": "instagram"
     },
     {
-      "name": "Twitter",
-      "url": "https://twitter.com",
-      "icon": "twitter"
+      "name": "WhatsApp",
+      "url": "https://wa.me/5511999887766",
+      "icon": "whatsapp"
     },
     {
       "name": "Facebook",
-      "url": "",
+      "url": "https://facebook.com/luanasilva.art",
       "icon": "facebook"
     },
     {
       "name": "LinkedIn",
-      "url": "",
+      "url": "https://linkedin.com/in/luanasilva",
       "icon": "linkedin"
     }
   ],
@@ -1886,9 +1886,9 @@
             },
             "items": [
               {
-                "id": "img_1789833136470_nho9x",
-                "src": "/uploads/test_art-1789833136470-806906842.jpg",
-                "filename": "test_art-1789833136470-806906842.jpg",
+                "id": "img_1789833465784_l4tl1",
+                "src": "/uploads/test_art-1789833465784-132426466.jpg",
+                "filename": "test_art-1789833465784-132426466.jpg",
                 "originalName": "test_art.jpg",
                 "size": 38,
                 "title": "",

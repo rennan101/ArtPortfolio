@@ -179,9 +179,14 @@
               <input type="text" id="infoPhone" class="admin-input" />
             </div>
 
-            <div class="admin-form-group" style="grid-column: span 2;">
-              <label>Endereço / Localização</label>
-              <input type="text" id="infoAddress" class="admin-input" />
+            <div class="admin-form-group" style="grid-column: span 2; margin-top: 15px; border-top: 1px solid var(--admin-border); padding-top: 20px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <label style="margin: 0; font-size: 1.05rem; font-weight: 700;"><i class="fa-solid fa-share-nodes"></i> Redes Sociais (Instagram, WhatsApp, Facebook, LinkedIn...)</label>
+                <button type="button" id="btnAdminAddSocial" class="admin-btn small secondary"><i class="fa-solid fa-plus"></i> Adicionar Rede</button>
+              </div>
+              <div id="adminSocialListContainer" style="display: flex; flex-direction: column; gap: 10px;">
+                <!-- Itens de redes sociais gerenciáveis -->
+              </div>
             </div>
           </form>
         </div>

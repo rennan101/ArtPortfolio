@@ -749,10 +749,102 @@ app.post('/api/contact', async (req, res) => {
     } catch (e) {}
   }
 
-  res.json({ success: true, message: 'Obrigado pelo contato! Sua mensagem foi enviada com sucesso.' });
+  res.json({ success: true, message: 'Mensagem enviada com sucesso!' });
 });
 
-// 10. Fallback para o SPA e rotas diretas
+// 10. Rota de Tradução Automática em Tempo Real (Google Translate Engine + Cache Redis)
+async function performTranslate(text, targetLang) {
+  if (!text || typeof text !== 'string' || !text.trim()) return text;
+  
+  const cleanTarget = targetLang.toLowerCase().startsWith('pt') ? 'pt' : targetLang.toLowerCase();
+  
+  try {
+    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${cleanTarget}&dt=t&q=${encodeURIComponent(text.trim())}`;
+    const response = await fetch(url);
+    const data = await response.json();
+    let translated = text;
+    if (data && data[0]) {
+      translated = data[0].map(item => item[0]).join('');
+    }
+
+    // Se o destino for PT-PT, aplica adaptações ortográficas
+    if (targetLang === 'pt-pt') {
+      translated = translated
+        .replace(/\bcontato\b/gi, 'contacto')
+        .replace(/\bcontatos\b/gi, 'contactos')
+        .replace(/\bfato\b/gi, 'facto')
+        .replace(/\bfatos\b/gi, 'factos')
+        .replace(/\bprojeto\b/gi, 'projecto')
+        .replace(/\bprojetos\b/gi, 'projectos')
+        .replace(/\bequipe\b/gi, 'equipa')
+        .replace(/\bequipes\b/gi, 'equipas')
+        .replace(/\bconosco\b/gi, 'connosco')
+        .replace(/\bvocê\b/gi, 'consigo')
+        .replace(/\bcelular\b/gi, 'telemóvel');
+    }
+
+    return translated;
+  } catch (err) {
+    console.warn('Falha na API de tradução:', err.message);
+    return text;
+  }
+}
+
+app.post('/api/translate', async (req, res) => {
+  const { text, texts, target } = req.body;
+  const targetLang = target || 'en';
+
+  try {
+    if (Array.isArray(texts)) {
+      const results = [];
+      for (const t of texts) {
+        if (!t) {
+          results.push('');
+          continue;
+        }
+        const cacheKey = `trans_${targetLang}_${Buffer.from(t).toString('base64').substring(0, 40)}`;
+        if (redisClient) {
+          try {
+            const cached = await redisClient.get(cacheKey);
+            if (cached) {
+              results.push(cached);
+              continue;
+            }
+          } catch (e) {}
+        }
+        const translated = await performTranslate(t, targetLang);
+        if (redisClient) {
+          try { await redisClient.set(cacheKey, translated); } catch (e) {}
+        }
+        results.push(translated);
+      }
+      return res.json({ success: true, translations: results });
+    }
+
+    if (text) {
+      const cacheKey = `trans_${targetLang}_${Buffer.from(text).toString('base64').substring(0, 40)}`;
+      if (redisClient) {
+        try {
+          const cached = await redisClient.get(cacheKey);
+          if (cached) {
+            return res.json({ success: true, translation: cached, cached: true });
+          }
+        } catch (e) {}
+      }
+      const translated = await performTranslate(text, targetLang);
+      if (redisClient) {
+        try { await redisClient.set(cacheKey, translated); } catch (e) {}
+      }
+      return res.json({ success: true, translation: translated });
+    }
+
+    return res.status(400).json({ error: 'Nenhum texto informado para tradução.' });
+  } catch (err) {
+    res.status(500).json({ error: 'Erro ao processar tradução: ' + err.message });
+  }
+});
+
+// 11. Fallback para o SPA e rotas diretas
 app.use((req, res) => {
   if (req.path.startsWith('/admin')) {
     return res.sendFile(path.join(__dirname, 'public', 'admin.html'));

@@ -1,6 +1,6 @@
 /* ==========================================================================
-   APP.JS - CLIENT-SIDE SPA ROUTING, MULTI-LANGUAGE (PT-BR, PT-PT, EN)
-   & WIX-STYLE LIVE VISUAL CMS
+   APP.JS - CLIENT-SIDE SPA ROUTING, MULTI-LANGUAGE (PT-BR, PT-PT, EN),
+   SOCIAL LINKS MANAGEMENT & WIX-STYLE LIVE VISUAL CMS
    ========================================================================== */
 
 (function () {
@@ -57,6 +57,7 @@
       btn_add_photos: 'Adicionar Fotos',
       btn_new_gallery: 'Nova Galeria',
       btn_menus: 'Menus',
+      btn_socials: 'Redes Sociais',
       btn_profile_bio: 'Perfil & Bio',
       btn_save_changes: 'Salvar Alterações',
       btn_saving: 'Gravando...',
@@ -105,6 +106,7 @@
       btn_add_photos: 'Adicionar Fotos',
       btn_new_gallery: 'Nova Galeria',
       btn_menus: 'Menus',
+      btn_socials: 'Redes Sociais',
       btn_profile_bio: 'Perfil & Bio',
       btn_save_changes: 'Guardar Alterações',
       btn_saving: 'A gravar...',
@@ -153,6 +155,7 @@
       btn_add_photos: 'Add Photos',
       btn_new_gallery: 'New Gallery',
       btn_menus: 'Menus',
+      btn_socials: 'Social Networks',
       btn_profile_bio: 'Profile & Bio',
       btn_save_changes: 'Save Changes',
       btn_saving: 'Saving...',
@@ -220,13 +223,108 @@
     return langDict[key] || fallback || key;
   }
 
+  // Cache local em memória e localStorage para traduções dinâmicas
+  const dynamicTranslationCache = {};
+
   function autoTranslate(text) {
     if (!text || typeof text !== 'string') return text;
     const clean = text.trim().toLowerCase();
     if (lexicon[clean] && lexicon[clean][currentLang]) {
       return lexicon[clean][currentLang];
     }
+    // Verifica se já temos tradução em cache local
+    const cacheKey = `${currentLang}_${text.trim()}`;
+    if (dynamicTranslationCache[cacheKey]) {
+      return dynamicTranslationCache[cacheKey];
+    }
+    const stored = localStorage.getItem(`tr_${cacheKey}`);
+    if (stored) {
+      dynamicTranslationCache[cacheKey] = stored;
+      return stored;
+    }
     return text;
+  }
+
+  // Função para traduzir elementos de texto arbitrário do usuário em segundo plano
+  async function translateDynamicElement(el, originalText) {
+    if (!el || !originalText || typeof originalText !== 'string' || originalText.trim().length < 2) return;
+    const clean = originalText.trim();
+    if (lexicon[clean.toLowerCase()]) return; // Já tratado pelo léxico instantâneo
+
+    const targetLang = currentLang;
+    const cacheKey = `${targetLang}_${clean}`;
+
+    if (dynamicTranslationCache[cacheKey]) {
+      el.textContent = dynamicTranslationCache[cacheKey];
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/translate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text: clean,
+          target: targetLang
+        })
+      });
+      const data = await res.json();
+      const translated = data.translation || data.translatedText;
+      if (translated && translated !== clean) {
+        dynamicTranslationCache[cacheKey] = translated;
+        try { localStorage.setItem(`tr_${cacheKey}`, translated); } catch (e) {}
+        if (currentLang === targetLang) {
+          el.textContent = translated;
+        }
+      }
+    } catch (e) {
+      // Em caso de falha de rede silenciosa, preserva o texto original
+    }
+  }
+
+  // -------------------------------------------------------------
+  // SUPORTE E NORMALIZAÇÃO DE REDES SOCIAIS
+  // -------------------------------------------------------------
+  const SOCIAL_PLATFORMS = [
+    { id: 'instagram', name: 'Instagram', icon: 'instagram', prefix: 'https://instagram.com/' },
+    { id: 'whatsapp', name: 'WhatsApp', icon: 'whatsapp', prefix: 'https://wa.me/' },
+    { id: 'facebook', name: 'Facebook', icon: 'facebook', prefix: 'https://facebook.com/' },
+    { id: 'linkedin', name: 'LinkedIn', icon: 'linkedin', prefix: 'https://linkedin.com/in/' },
+    { id: 'x-twitter', name: 'Twitter / X', icon: 'x-twitter', prefix: 'https://x.com/' },
+    { id: 'youtube', name: 'YouTube', icon: 'youtube', prefix: 'https://youtube.com/@' },
+    { id: 'tiktok', name: 'TikTok', icon: 'tiktok', prefix: 'https://tiktok.com/@' },
+    { id: 'behance', name: 'Behance', icon: 'behance', prefix: 'https://behance.net/' },
+    { id: 'artstation', name: 'ArtStation', icon: 'artstation', prefix: 'https://artstation.com/' },
+    { id: 'pinterest', name: 'Pinterest', icon: 'pinterest', prefix: 'https://pinterest.com/' },
+    { id: 'github', name: 'GitHub', icon: 'github', prefix: 'https://github.com/' }
+  ];
+
+  function formatSocialUrl(network, url) {
+    if (!url) return '';
+    let clean = url.trim();
+    if (network === 'whatsapp') {
+      if (!clean.startsWith('http')) {
+        const digits = clean.replace(/[^0-9]/g, '');
+        return digits ? `https://wa.me/${digits}` : clean;
+      }
+      return clean;
+    }
+    if (network === 'instagram') {
+      if (clean.startsWith('@')) return `https://instagram.com/${clean.replace('@', '')}`;
+      if (!clean.startsWith('http') && !clean.includes('/')) return `https://instagram.com/${clean}`;
+    }
+    if (!clean.startsWith('http://') && !clean.startsWith('https://')) {
+      return `https://${clean}`;
+    }
+    return clean;
+  }
+
+  function getSocialIconClass(iconName) {
+    if (!iconName) return 'fa-solid fa-link';
+    const lower = iconName.toLowerCase();
+    if (lower === 'twitter' || lower === 'x' || lower === 'x-twitter') return 'fa-brands fa-x-twitter';
+    if (lower === 'facebook') return 'fa-brands fa-facebook';
+    return `fa-brands fa-${lower}`;
   }
 
   // Elementos Principais do DOM
@@ -236,6 +334,7 @@
   const siteBrandLogo = document.getElementById('siteBrandLogo');
   const pageTitle = document.getElementById('pageTitle');
   const footerCopyright = document.getElementById('footerCopyright');
+  const footerSocialIcons = document.getElementById('footerSocialIcons');
   
   // Toolbar de Edição Visual (Wix-Style)
   const liveAdminToolbar = document.getElementById('liveAdminToolbar');
@@ -243,6 +342,7 @@
   const btnLiveAddPhoto = document.getElementById('btnLiveAddPhoto');
   const btnLiveAddPage = document.getElementById('btnLiveAddPage');
   const btnLiveManageMenu = document.getElementById('btnLiveManageMenu');
+  const btnLiveManageSocial = document.getElementById('btnLiveManageSocial');
   const btnLiveEditProfile = document.getElementById('btnLiveEditProfile');
   const btnLiveSaveAll = document.getElementById('btnLiveSaveAll');
   const btnLiveLogout = document.getElementById('btnLiveLogout');
@@ -270,6 +370,13 @@
   const inlineMenuList = document.getElementById('inlineMenuList');
   const btnInlineAddMenuItem = document.getElementById('btnInlineAddMenuItem');
   const btnInlineSaveMenu = document.getElementById('btnInlineSaveMenu');
+
+  // Modal Redes Sociais Inline
+  const inlineSocialModal = document.getElementById('inlineSocialModal');
+  const closeInlineSocialModal = document.getElementById('closeInlineSocialModal');
+  const inlineSocialList = document.getElementById('inlineSocialList');
+  const btnInlineAddSocialItem = document.getElementById('btnInlineAddSocialItem');
+  const btnInlineSaveSocial = document.getElementById('btnInlineSaveSocial');
 
   // -------------------------------------------------------------
   // INICIALIZAÇÃO
@@ -415,6 +522,7 @@
       if (btnLiveAddPhoto) btnLiveAddPhoto.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i> ${t('btn_add_photos')}`;
       if (btnLiveAddPage) btnLiveAddPage.innerHTML = `<i class="fa-solid fa-plus"></i> ${t('btn_new_gallery')}`;
       if (btnLiveManageMenu) btnLiveManageMenu.innerHTML = `<i class="fa-solid fa-bars"></i> ${t('btn_menus')}`;
+      if (btnLiveManageSocial) btnLiveManageSocial.innerHTML = `<i class="fa-solid fa-share-nodes"></i> ${t('btn_socials')}`;
       if (btnLiveEditProfile) btnLiveEditProfile.innerHTML = `<i class="fa-solid fa-user-gear"></i> ${t('btn_profile_bio')}`;
       if (btnLiveSaveAll) btnLiveSaveAll.innerHTML = `<i class="fa-solid fa-check"></i> ${t('btn_save_changes')}`;
       if (btnLiveLogout) btnLiveLogout.innerHTML = `<i class="fa-solid fa-lock"></i> ${t('btn_logout')}`;
@@ -449,6 +557,23 @@
     if (siteBrandLogo) siteBrandLogo.textContent = name;
     if (footerCopyright) {
       footerCopyright.innerHTML = `&copy; ${name}. ${t('all_rights_reserved')}`;
+    }
+
+    // Renderiza ícones de redes sociais no rodapé
+    if (footerSocialIcons) {
+      const socialList = siteData.socialLinks || [];
+      const activeSocials = socialList.filter(s => s.url && s.url.trim());
+      if (activeSocials.length > 0) {
+        footerSocialIcons.innerHTML = activeSocials.map(s => {
+          const iconCls = getSocialIconClass(s.icon || s.name);
+          const url = formatSocialUrl(s.icon || s.name, s.url);
+          return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="social-icon-link" aria-label="${s.name}" title="${s.name}"><i class="${iconCls}"></i></a>`;
+        }).join('');
+        footerSocialIcons.style.display = 'flex';
+      } else {
+        footerSocialIcons.innerHTML = '';
+        footerSocialIcons.style.display = 'none';
+      }
     }
   }
 
@@ -558,8 +683,44 @@
         attachLiveInlineEditing(path);
       }
 
+      // Dispara tradução automática de conteúdos dinâmicos / novos inseridos pelo usuário
+      triggerDynamicPageTranslations();
+
       mainApp.classList.remove('page-loading');
     }, 100);
+  }
+
+  function triggerDynamicPageTranslations() {
+    if (!siteData) return;
+    
+    // Traduz bio principal
+    const heroDesc = document.getElementById('liveHeroDesc');
+    if (heroDesc && siteData.bio) {
+      translateDynamicElement(heroDesc, siteData.bio);
+    }
+
+    // Traduz bio da página About
+    const aboutBio = document.getElementById('liveAboutBio');
+    if (aboutBio && (siteData.aboutLongBio || siteData.bio)) {
+      translateDynamicElement(aboutBio, siteData.aboutLongBio || siteData.bio);
+    }
+
+    // Traduz descrição de páginas de galeria
+    const pageDesc = document.getElementById('livePageDesc');
+    if (pageDesc && pageDesc.textContent.trim()) {
+      translateDynamicElement(pageDesc, pageDesc.textContent.trim());
+    }
+
+    // Traduz títulos e descrições de cartões/itens
+    document.querySelectorAll('.card-description, .card-title, .item-title').forEach(el => {
+      const orig = el.getAttribute('data-original-text') || el.textContent.trim();
+      if (orig && !el.hasAttribute('data-original-text')) {
+        el.setAttribute('data-original-text', orig);
+      }
+      if (orig) {
+        translateDynamicElement(el, orig);
+      }
+    });
   }
 
   // -------------------------------------------------------------
@@ -893,15 +1054,19 @@
     if (pageTitle) pageTitle.textContent = `${t('contact_title')} — ${artistName}`;
 
     const socialLinks = siteData.socialLinks || [
-      { name: 'Instagram', url: 'https://www.instagram.com/portfoliobox', icon: 'instagram' },
-      { name: 'Twitter', url: 'https://twitter.com', icon: 'twitter' },
+      { name: 'Instagram', url: 'https://www.instagram.com', icon: 'instagram' },
+      { name: 'WhatsApp', url: '', icon: 'whatsapp' },
       { name: 'Facebook', url: '', icon: 'facebook' },
       { name: 'LinkedIn', url: '', icon: 'linkedin' }
     ];
 
     let socialIconsHtml = socialLinks
-      .filter(s => s.url)
-      .map(s => `<a href="${s.url}" target="_blank" rel="noopener noreferrer" class="social-icon-link" aria-label="${s.name}"><i class="fa-brands fa-${s.icon}"></i></a>`)
+      .filter(s => s.url && s.url.trim())
+      .map(s => {
+        const iconCls = getSocialIconClass(s.icon || s.name);
+        const url = formatSocialUrl(s.icon || s.name, s.url);
+        return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="social-icon-link" aria-label="${s.name}" title="${s.name}"><i class="${iconCls}"></i></a>`;
+      })
       .join('');
 
     mainApp.innerHTML = `
@@ -1175,6 +1340,14 @@
       closeInlineMenuModal.onclick = () => inlineMenuModal.style.display = 'none';
     }
 
+    // Modal de Redes Sociais
+    if (btnLiveManageSocial) {
+      btnLiveManageSocial.onclick = () => openInlineSocialModal();
+    }
+    if (closeInlineSocialModal) {
+      closeInlineSocialModal.onclick = () => inlineSocialModal.style.display = 'none';
+    }
+
     if (btnLiveAddPage) {
       btnLiveAddPage.onclick = () => {
         const title = prompt('Título da nova galeria / página:');
@@ -1203,6 +1376,91 @@
         await saveLiveChanges();
       };
     }
+  }
+
+  // -------------------------------------------------------------
+  // MODAL DE GERENCIAMENTO DE REDES SOCIAIS (INLINE LIVE CMS)
+  // -------------------------------------------------------------
+  function openInlineSocialModal() {
+    inlineSocialList.innerHTML = '';
+    const socialList = siteData.socialLinks && siteData.socialLinks.length > 0 ? siteData.socialLinks : [
+      { name: 'Instagram', url: 'https://www.instagram.com', icon: 'instagram' },
+      { name: 'WhatsApp', url: '', icon: 'whatsapp' },
+      { name: 'Facebook', url: '', icon: 'facebook' },
+      { name: 'LinkedIn', url: '', icon: 'linkedin' }
+    ];
+
+    socialList.forEach(item => {
+      inlineSocialList.appendChild(createInlineSocialRow(item));
+    });
+
+    btnInlineAddSocialItem.onclick = () => {
+      inlineSocialList.appendChild(createInlineSocialRow({ name: 'Instagram', url: '', icon: 'instagram' }));
+    };
+
+    btnInlineSaveSocial.onclick = async () => {
+      const rows = inlineSocialList.querySelectorAll('.inline-social-row');
+      const newSocialLinks = [];
+
+      rows.forEach(r => {
+        const select = r.querySelector('.social-select');
+        const opt = select.options[select.selectedIndex];
+        const name = opt.getAttribute('data-name') || select.value;
+        const icon = opt.getAttribute('data-icon') || select.value;
+        const rawUrl = r.querySelector('.social-url-input').value.trim();
+        const url = formatSocialUrl(icon, rawUrl);
+
+        if (url) {
+          newSocialLinks.push({ name, url, icon });
+        }
+      });
+
+      const token = localStorage.getItem('adm_token');
+      try {
+        const res = await fetch('/api/site', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ socialLinks: newSocialLinks })
+        });
+        const data = await res.json();
+        if (data.success) {
+          siteData.socialLinks = newSocialLinks;
+          showLiveToast('Redes sociais atualizadas com sucesso!', 'success');
+          inlineSocialModal.style.display = 'none';
+          updateGlobalInfo();
+          renderCurrentRoute();
+        }
+      } catch (e) {
+        showLiveToast('Erro ao salvar redes sociais.', 'error');
+      }
+    };
+
+    inlineSocialModal.style.display = 'flex';
+  }
+
+  function createInlineSocialRow(socialItem) {
+    const row = document.createElement('div');
+    row.className = 'inline-social-row';
+    row.style.cssText = 'display: flex; gap: 8px; align-items: center; background: #0f172a; padding: 8px 12px; border-radius: 6px; border: 1px solid #334155;';
+
+    let selectOptions = SOCIAL_PLATFORMS.map(net => {
+      const selected = (net.name.toLowerCase() === (socialItem.name || '').toLowerCase() || net.icon === socialItem.icon) ? 'selected' : '';
+      return `<option value="${net.id}" data-name="${net.name}" data-icon="${net.icon}" ${selected}>${net.name}</option>`;
+    }).join('');
+
+    row.innerHTML = `
+      <select class="social-select" style="padding: 8px 10px; background: #1e293b; color: #fff; border: 1px solid #475569; border-radius: 4px; font-weight: 600; width: 140px;">
+        ${selectOptions}
+      </select>
+      <input type="text" class="social-url-input" value="${socialItem.url || ''}" placeholder="Link / Usuário / WhatsApp" style="flex: 1; padding: 8px 12px; background: #1e293b; color: #fff; border: 1px solid #475569; border-radius: 4px;" />
+      <button type="button" class="btn-del-social" style="background: #ef4444; color: #fff; border: none; padding: 8px 10px; border-radius: 4px; cursor: pointer;" title="Excluir"><i class="fa-solid fa-trash"></i></button>
+    `;
+
+    row.querySelector('.btn-del-social').onclick = () => row.remove();
+    return row;
   }
 
   async function createNewPageLive(title, url) {
