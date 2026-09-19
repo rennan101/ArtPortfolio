@@ -41,7 +41,7 @@ async function runTests() {
   const loginRes = await request('http://localhost:3000/api/admin/login', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' }
-  }, { password: 'admin123' });
+  }, { password: 'Rennan0712@' });
   const loginJson = JSON.parse(loginRes.data);
   console.log(`4. POST /api/admin/login: Status ${loginRes.statusCode} - Token gerado: ${loginJson.token ? 'SIM' : 'NÃO'}`);
 

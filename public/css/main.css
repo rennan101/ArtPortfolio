@@ -66,39 +66,430 @@ button {
 }
 
 /* ==========================================================================
-   LIVE ADMIN BAR (QUANDO LOGADO COMO ADMIN)
+   LIVE WIX-STYLE EDITOR TOOLBAR & VISUAL EDITING
    ========================================================================== */
-#adminQuickBar {
-  background: #111111;
-  color: #ffffff;
-  padding: 8px 24px;
-  font-size: 0.85rem;
+.live-editor-bar {
+  background: #111827;
+  color: #f9fafb;
+  padding: 10px 24px;
   font-family: var(--font-heading);
   display: flex;
   align-items: center;
   justify-content: space-between;
   position: sticky;
   top: 0;
-  z-index: 1000;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 9000;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+  border-bottom: 2px solid var(--accent-color);
+  animation: slideDown 0.3s ease;
 }
 
-#adminQuickBar a, #adminQuickBar button {
+@keyframes slideDown {
+  from { transform: translateY(-100%); }
+  to { transform: translateY(0); }
+}
+
+.live-editor-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.live-badge {
   background: var(--accent-color);
   color: #ffffff;
-  padding: 4px 12px;
+  padding: 3px 10px;
   border-radius: 4px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  text-transform: uppercase;
+  font-size: 0.75rem;
+  font-weight: 700;
   letter-spacing: 0.5px;
   display: inline-flex;
   align-items: center;
   gap: 6px;
 }
 
-#adminQuickBar a:hover, #adminQuickBar button:hover {
+.live-page-indicator {
+  color: #9ca3af;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.live-editor-center {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.live-editor-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.live-tool-btn {
+  background: #1f2937;
+  color: #f3f4f6;
+  padding: 6px 14px;
+  border-radius: 5px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+  border: 1px solid #374151;
+}
+
+.live-tool-btn:hover {
+  background: #374151;
+  color: #ffffff;
+  border-color: #4b5563;
+}
+
+.live-tool-btn.secondary {
+  background: #374151;
+}
+
+.live-tool-btn.danger {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.live-tool-btn.danger:hover {
+  background: #ef4444;
+  color: #ffffff;
+}
+
+.live-save-btn {
+  background: #10b981;
+  color: #ffffff;
+  padding: 6px 16px;
+  border-radius: 5px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.2s ease, transform 0.1s ease;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+.live-save-btn:hover {
+  background: #059669;
+  transform: translateY(-1px);
+}
+
+/* ==========================================================================
+   ELEMENTOS EDITÁVEIS INLINE NA PÁGINA (ESTILO WIX)
+   ========================================================================== */
+.editable-active {
+  position: relative;
+  outline: 2px dashed rgba(223, 47, 60, 0.5) !important;
+  outline-offset: 4px;
+  cursor: text;
+  border-radius: 4px;
+  transition: outline 0.2s ease, background-color 0.2s ease;
+}
+
+.editable-active:hover {
+  outline: 2px solid var(--accent-color) !important;
+  background-color: rgba(223, 47, 60, 0.04);
+}
+
+.editable-active:focus {
+  outline: 2px solid var(--accent-color) !important;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 4px rgba(223, 47, 60, 0.15);
+}
+
+/* Controles Flutuantes nos Cards e Galerias no modo Edição */
+.live-item-controls {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  gap: 4px;
+  z-index: 50;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: all 0.2s ease;
+}
+
+.gallery-item:hover .live-item-controls,
+.project-card:hover .live-item-controls {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.live-action-btn {
+  background: rgba(17, 24, 39, 0.85);
+  color: #ffffff;
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.2s ease;
+}
+
+.live-action-btn:hover {
+  background: var(--accent-color);
+  transform: scale(1.1);
+}
+
+.live-action-btn.btn-delete:hover {
+  background: #dc2626;
+}
+
+/* Drag & Drop Visual no Site Público */
+.gallery-item.live-dragging,
+.project-card.live-dragging {
+  opacity: 0.35;
+  outline: 2px dashed var(--accent-color) !important;
+  transform: scale(0.97);
+}
+
+.gallery-item.live-drag-over,
+.project-card.live-drag-over {
+  border-left: 4px solid var(--accent-color);
+  transform: scale(1.02);
+}
+
+/* ==========================================================================
+   CADEADO DISCRETO PROFISSIONAL & RODAPÉ
+   ========================================================================== */
+.footer-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  max-width: var(--container-max);
+  margin: 0 auto;
+}
+
+.discreet-lock-btn {
+  background: transparent;
+  border: none;
+  color: #c5c5c5;
+  padding: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 14px;
+  opacity: 0.35;
+  cursor: pointer;
+  transition: opacity 0.3s ease, color 0.3s ease, transform 0.2s ease;
+}
+
+.discreet-lock-btn:hover {
+  opacity: 1;
+  color: var(--accent-color);
+  transform: scale(1.15);
+}
+
+/* ==========================================================================
+   MODAIS DE ADMIN / WIX STYLE
+   ========================================================================== */
+.admin-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: modalFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.admin-modal-card {
+  background: #1e293b;
+  color: #f8fafc;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 36px 32px;
+  width: 100%;
+  max-width: 440px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  position: relative;
+  text-align: center;
+  font-family: var(--font-heading);
+}
+
+.admin-modal-close {
+  position: absolute;
+  top: 14px;
+  right: 18px;
+  background: transparent;
+  color: #94a3b8;
+  font-size: 1.6rem;
+  cursor: pointer;
+  line-height: 1;
+  transition: color 0.2s;
+}
+
+.admin-modal-close:hover {
+  color: #ffffff;
+}
+
+.admin-modal-header h3 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  margin-top: 12px;
+  margin-bottom: 4px;
+}
+
+.admin-modal-header p {
+  color: #94a3b8;
+  font-size: 0.88rem;
+  margin-bottom: 22px;
+  font-family: var(--font-body);
+}
+
+.lock-circle-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(223, 47, 60, 0.1);
+  border: 1px solid rgba(223, 47, 60, 0.3);
+  color: var(--accent-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+.form-group-modal {
+  margin-bottom: 18px;
+}
+
+.form-group-modal input {
+  width: 100%;
+  padding: 13px 16px;
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 0.95rem;
+  font-family: var(--font-body);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-group-modal input:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px rgba(223, 47, 60, 0.25);
+}
+
+.modal-submit-btn {
+  background: var(--accent-color);
+  color: #ffffff;
+  width: 100%;
+  padding: 13px 20px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+  font-family: var(--font-heading);
+}
+
+.modal-submit-btn:hover {
   background: var(--accent-hover);
+  transform: translateY(-1px);
+}
+
+.modal-secondary-btn {
+  background: #334155;
+  color: #ffffff;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  transition: background 0.2s;
+}
+
+.modal-secondary-btn:hover {
+  background: #475569;
+}
+
+.modal-error-msg {
+  color: #f87171;
+  font-size: 0.85rem;
+  margin-top: 12px;
+  font-family: var(--font-body);
+}
+
+/* Zona de Upload no Modal */
+.inline-upload-dropzone {
+  border: 2px dashed #475569;
+  border-radius: 10px;
+  padding: 30px 20px;
+  background: #0f172a;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.inline-upload-dropzone:hover,
+.inline-upload-dropzone.dragover {
+  border-color: var(--accent-color);
+  background: rgba(223, 47, 60, 0.05);
+}
+
+/* Toast de Edição Visual */
+.live-toast {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  background: #1e293b;
+  color: #ffffff;
+  padding: 12px 22px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+  border-left: 4px solid #10b981;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 999999;
+  transform: translateY(100px);
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  font-family: var(--font-heading);
+}
+
+.live-toast.show {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.live-toast.error {
+  border-left-color: #ef4444;
 }
 
 /* ==========================================================================

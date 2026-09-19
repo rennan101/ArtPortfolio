@@ -20,14 +20,24 @@
 </head>
 <body>
 
-  <!-- Barra Rápida de Administração (Aparece se estiver logado como admin) -->
-  <div id="adminQuickBar" style="display: none;">
-    <div>
-      <i class="fa-solid fa-lock-open"></i> <strong>Modo Administrador Ativo</strong> &bull; <span id="adminQuickPage">Página: Home</span>
+  <!-- BARRA DE EDIÇÃO VISUAL / LIVE WIX-STYLE EDITOR BAR (VISÍVEL QUANDO LOGADO) -->
+  <div id="liveAdminToolbar" class="live-editor-bar" style="display: none;">
+    <div class="live-editor-left">
+      <div class="live-badge"><i class="fa-solid fa-wand-magic-sparkles"></i> MODO EDIÇÃO VISUAL ATIVO</div>
+      <span class="live-page-indicator" id="livePageIndicator">Página: Home</span>
     </div>
-    <div style="display: flex; gap: 10px;">
-      <a href="/admin.html" id="btnAdminPanel"><i class="fa-solid fa-sliders"></i> Abrir Painel ADM</a>
-      <button id="btnAdminLogout"><i class="fa-solid fa-right-from-bracket"></i> Sair</button>
+    
+    <div class="live-editor-center">
+      <button class="live-tool-btn" id="btnLiveAddPhoto" title="Adicionar Nova Foto"><i class="fa-solid fa-cloud-arrow-up"></i> Adicionar Fotos</button>
+      <button class="live-tool-btn" id="btnLiveAddPage" title="Nova Galeria / Página"><i class="fa-solid fa-plus"></i> Nova Galeria</button>
+      <button class="live-tool-btn" id="btnLiveManageMenu" title="Editar Menus"><i class="fa-solid fa-bars"></i> Menus</button>
+      <button class="live-tool-btn" id="btnLiveEditProfile" title="Editar Perfil & Contato"><i class="fa-solid fa-user-gear"></i> Perfil & Bio</button>
+    </div>
+
+    <div class="live-editor-right">
+      <button class="live-save-btn" id="btnLiveSaveAll"><i class="fa-solid fa-check"></i> Salvar Alterações</button>
+      <a href="/admin.html" class="live-tool-btn secondary" target="_blank" title="Abrir Painel Completo"><i class="fa-solid fa-sliders"></i> Painel</a>
+      <button class="live-tool-btn danger" id="btnLiveLogout" title="Sair do Modo Edição"><i class="fa-solid fa-lock"></i> Sair</button>
     </div>
   </div>
 
@@ -51,8 +61,87 @@
 
   <!-- Rodapé -->
   <footer class="site-footer" id="siteFooter">
-    <p id="footerCopyright">&copy; Max Doe. Todos os direitos reservados.</p>
+    <div class="footer-content">
+      <p id="footerCopyright">&copy; Max Doe. Todos os direitos reservados.</p>
+      
+      <!-- Ícone Cadeado SVG Discreto e Profissional para Acesso ao Painel ADM -->
+      <button id="secretAdminTrigger" class="discreet-lock-btn" title="Área Restrita" aria-label="Painel de Edição">
+        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+      </button>
+    </div>
   </footer>
+
+  <!-- MODAL DE LOGIN ADMIN DISCRETO -->
+  <div id="adminLoginModal" class="admin-modal-backdrop" style="display: none;">
+    <div class="admin-modal-card">
+      <button class="admin-modal-close" id="closeAdminLoginModal">&times;</button>
+      <div class="admin-modal-header">
+        <div class="lock-circle-icon">
+          <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+        </div>
+        <h3>Modo de Edição Visual</h3>
+        <p>Insira sua credencial de administrador</p>
+      </div>
+
+      <form id="inlineLoginForm">
+        <div class="form-group-modal">
+          <input type="password" id="inlineAdminPassword" placeholder="Senha do Administrador" required autocomplete="current-password" />
+        </div>
+        <button type="submit" class="modal-submit-btn" id="btnSubmitInlineLogin">
+          <span>Acessar Modo Edição</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </button>
+        <div id="inlineLoginError" class="modal-error-msg"></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL DE UPLOAD DE FOTOS DIRETO NA PÁGINA (WIX STYLE) -->
+  <div id="inlineUploadModal" class="admin-modal-backdrop" style="display: none;">
+    <div class="admin-modal-card upload-modal-card">
+      <button class="admin-modal-close" id="closeInlineUploadModal">&times;</button>
+      <div class="admin-modal-header">
+        <div class="lock-circle-icon" style="color: var(--accent-color); border-color: rgba(223,47,60,0.3);">
+          <i class="fa-solid fa-cloud-arrow-up"></i>
+        </div>
+        <h3>Adicionar Fotos nesta Galeria</h3>
+        <p>Arraste fotos ou selecione do computador</p>
+      </div>
+      
+      <div class="inline-upload-dropzone" id="inlineUploadDropzone">
+        <input type="file" id="inlineFileInput" multiple accept="image/*" style="display: none;" />
+        <i class="fa-solid fa-images" style="font-size: 2.2rem; margin-bottom: 12px; color: #888;"></i>
+        <p><strong>Clique ou arraste as fotos aqui</strong></p>
+        <span style="font-size: 0.8rem; color: #999;">Formatos: JPG, PNG, WEBP</span>
+      </div>
+      <div id="inlineUploadProgress" style="margin-top: 15px; font-size: 0.9rem; font-weight: 600;"></div>
+    </div>
+  </div>
+
+  <!-- MODAL DE GERENCIAMENTO DE MENUS (WIX STYLE) -->
+  <div id="inlineMenuModal" class="admin-modal-backdrop" style="display: none;">
+    <div class="admin-modal-card" style="max-width: 500px;">
+      <button class="admin-modal-close" id="closeInlineMenuModal">&times;</button>
+      <div class="admin-modal-header">
+        <h3>Gerenciar Links do Menu</h3>
+        <p>Adicione, renomeie ou remova itens de navegação</p>
+      </div>
+      <div id="inlineMenuList" style="display: flex; flex-direction: column; gap: 10px; max-height: 350px; overflow-y: auto; padding: 10px 0;"></div>
+      <div style="display: flex; gap: 10px; margin-top: 15px;">
+        <button type="button" class="modal-secondary-btn" id="btnInlineAddMenuItem"><i class="fa-solid fa-plus"></i> Novo Item</button>
+        <button type="button" class="modal-submit-btn" id="btnInlineSaveMenu" style="margin-top: 0;">Salvar Menu</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="liveToast" class="live-toast"></div>
 
   <!-- Scripts da Aplicação -->
   <script src="/js/lightbox.js"></script>

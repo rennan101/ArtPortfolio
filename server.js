@@ -77,6 +77,8 @@ function saveData(data) {
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static(uploadsDir));
 
+const bcrypt = require('bcryptjs');
+
 /* ============================================================
    ROTAS DE AUTENTICAÇÃO
    ============================================================ */
@@ -87,7 +89,18 @@ app.post('/api/admin/login', (req, res) => {
   const { password } = req.body;
   const data = readData();
 
-  if (password === data.adminPasswordHash) {
+  if (!password) {
+    return res.status(400).json({ success: false, message: 'Senha é obrigatória.' });
+  }
+
+  // Verifica se a senha confere com o hash bcrypt (ou string legada se houver)
+  const isMatch = data.adminPasswordHash && (
+    (data.adminPasswordHash.startsWith('$2b$') || data.adminPasswordHash.startsWith('$2a$'))
+      ? bcrypt.compareSync(password, data.adminPasswordHash)
+      : password === data.adminPasswordHash
+  );
+
+  if (isMatch) {
     currentAdminToken = 'adm_token_' + Date.now() + '_' + Math.random().toString(36).substring(2);
     return res.json({ success: true, token: currentAdminToken });
   }
@@ -112,15 +125,21 @@ app.post('/api/admin/change-password', (req, res) => {
   const { currentPassword, newPassword } = req.body;
   const data = readData();
 
-  if (currentPassword !== data.adminPasswordHash) {
+  const isCurrentMatch = data.adminPasswordHash && (
+    (data.adminPasswordHash.startsWith('$2b$') || data.adminPasswordHash.startsWith('$2a$'))
+      ? bcrypt.compareSync(currentPassword, data.adminPasswordHash)
+      : currentPassword === data.adminPasswordHash
+  );
+
+  if (!isCurrentMatch) {
     return res.status(400).json({ error: 'Senha atual incorreta.' });
   }
 
-  if (!newPassword || newPassword.length < 4) {
-    return res.status(400).json({ error: 'Nova senha deve ter pelo menos 4 caracteres.' });
+  if (!newPassword || newPassword.length < 6) {
+    return res.status(400).json({ error: 'Nova senha deve ter pelo menos 6 caracteres.' });
   }
 
-  data.adminPasswordHash = newPassword;
+  data.adminPasswordHash = bcrypt.hashSync(newPassword, 10);
   saveData(data);
   return res.json({ success: true, message: 'Senha atualizada com sucesso!' });
 });

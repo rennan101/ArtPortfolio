@@ -1,33 +1,141 @@
 /* ==========================================================================
-   APP.JS - CLIENT-SIDE SPA ROUTING & RENDERING
+   APP.JS - CLIENT-SIDE SPA ROUTING & WIX-STYLE LIVE VISUAL CMS
    ========================================================================== */
 
 (function () {
   let siteData = null;
+  let isLiveAdmin = false;
+  let hasPendingChanges = false;
+  let currentActiveGalleryItems = [];
+
+  // Elementos Principais do DOM
   const mainApp = document.getElementById('mainApp');
   const mainNav = document.getElementById('mainNav');
   const mobileMenuBtn = document.getElementById('mobileMenuBtn');
   const siteBrandLogo = document.getElementById('siteBrandLogo');
   const pageTitle = document.getElementById('pageTitle');
   const footerCopyright = document.getElementById('footerCopyright');
-  const adminQuickBar = document.getElementById('adminQuickBar');
-  const adminQuickPage = document.getElementById('adminQuickPage');
-  const btnAdminLogout = document.getElementById('btnAdminLogout');
+  
+  // Toolbar de Edição Visual (Wix-Style)
+  const liveAdminToolbar = document.getElementById('liveAdminToolbar');
+  const livePageIndicator = document.getElementById('livePageIndicator');
+  const btnLiveAddPhoto = document.getElementById('btnLiveAddPhoto');
+  const btnLiveAddPage = document.getElementById('btnLiveAddPage');
+  const btnLiveManageMenu = document.getElementById('btnLiveManageMenu');
+  const btnLiveEditProfile = document.getElementById('btnLiveEditProfile');
+  const btnLiveSaveAll = document.getElementById('btnLiveSaveAll');
+  const btnLiveLogout = document.getElementById('btnLiveLogout');
+  const liveToast = document.getElementById('liveToast');
 
-  // Inicialização
+  // Modal Login Discreto
+  const secretAdminTrigger = document.getElementById('secretAdminTrigger');
+  const adminLoginModal = document.getElementById('adminLoginModal');
+  const closeAdminLoginModal = document.getElementById('closeAdminLoginModal');
+  const inlineLoginForm = document.getElementById('inlineLoginForm');
+  const inlineAdminPassword = document.getElementById('inlineAdminPassword');
+  const inlineLoginError = document.getElementById('inlineLoginError');
+  const btnSubmitInlineLogin = document.getElementById('btnSubmitInlineLogin');
+
+  // Modal Upload Inline
+  const inlineUploadModal = document.getElementById('inlineUploadModal');
+  const closeInlineUploadModal = document.getElementById('closeInlineUploadModal');
+  const inlineUploadDropzone = document.getElementById('inlineUploadDropzone');
+  const inlineFileInput = document.getElementById('inlineFileInput');
+  const inlineUploadProgress = document.getElementById('inlineUploadProgress');
+
+  // Modal Menu Inline
+  const inlineMenuModal = document.getElementById('inlineMenuModal');
+  const closeInlineMenuModal = document.getElementById('closeInlineMenuModal');
+  const inlineMenuList = document.getElementById('inlineMenuList');
+  const btnInlineAddMenuItem = document.getElementById('btnInlineAddMenuItem');
+  const btnInlineSaveMenu = document.getElementById('btnInlineSaveMenu');
+
+  // -------------------------------------------------------------
+  // INICIALIZAÇÃO
+  // -------------------------------------------------------------
   async function init() {
     setupMobileMenu();
-    setupAdminBar();
+    setupSecretLock();
+    setupLiveModals();
     await fetchSiteData();
+    await checkAdminAuth();
     setupRouter();
     renderCurrentRoute();
   }
 
-  // Verificar se o usuário está logado como admin
-  async function setupAdminBar() {
+  // -------------------------------------------------------------
+  // AUTENTICAÇÃO DO ADMIN DISCRETO
+  // -------------------------------------------------------------
+  function setupSecretLock() {
+    if (secretAdminTrigger) {
+      secretAdminTrigger.addEventListener('click', () => {
+        if (isLiveAdmin) {
+          showLiveToast('Você já está no modo de edição visual!', 'success');
+          return;
+        }
+        adminLoginModal.style.display = 'flex';
+        inlineAdminPassword.value = '';
+        inlineLoginError.textContent = '';
+        inlineAdminPassword.focus();
+      });
+    }
+
+    if (closeAdminLoginModal) {
+      closeAdminLoginModal.addEventListener('click', () => {
+        adminLoginModal.style.display = 'none';
+      });
+    }
+
+    if (inlineLoginForm) {
+      inlineLoginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const password = inlineAdminPassword.value;
+        btnSubmitInlineLogin.disabled = true;
+        btnSubmitInlineLogin.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Verificando...';
+        inlineLoginError.textContent = '';
+
+        try {
+          const res = await fetch('/api/admin/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ password })
+          });
+          const data = await res.json();
+          if (data.success && data.token) {
+            localStorage.setItem('adm_token', data.token);
+            isLiveAdmin = true;
+            adminLoginModal.style.display = 'none';
+            enableLiveEditorUI();
+            renderCurrentRoute();
+            showLiveToast('Modo de Edição Visual Ativado! Clique nos textos ou fotos para editar ao vivo.', 'success');
+          } else {
+            inlineLoginError.textContent = data.message || 'Senha incorreta.';
+          }
+        } catch (err) {
+          inlineLoginError.textContent = 'Erro ao conectar ao servidor.';
+        } finally {
+          btnSubmitInlineLogin.disabled = false;
+          btnSubmitInlineLogin.innerHTML = '<span>Acessar Modo Edição</span><i class="fa-solid fa-arrow-right"></i>';
+        }
+      });
+    }
+
+    if (btnLiveLogout) {
+      btnLiveLogout.addEventListener('click', () => {
+        localStorage.removeItem('adm_token');
+        isLiveAdmin = false;
+        disableLiveEditorUI();
+        renderCurrentRoute();
+        showLiveToast('Sessão encerrada com segurança.', 'success');
+      });
+    }
+  }
+
+  async function checkAdminAuth() {
     const token = localStorage.getItem('adm_token');
     if (!token) {
-      if (adminQuickBar) adminQuickBar.style.display = 'none';
+      isLiveAdmin = false;
+      disableLiveEditorUI();
       return;
     }
 
@@ -37,34 +145,30 @@
       });
       const data = await res.json();
       if (data.authenticated) {
-        if (adminQuickBar) adminQuickBar.style.display = 'flex';
-        if (btnAdminLogout) {
-          btnAdminLogout.addEventListener('click', () => {
-            localStorage.removeItem('adm_token');
-            window.location.reload();
-          });
-        }
+        isLiveAdmin = true;
+        enableLiveEditorUI();
       } else {
         localStorage.removeItem('adm_token');
-        if (adminQuickBar) adminQuickBar.style.display = 'none';
+        isLiveAdmin = false;
+        disableLiveEditorUI();
       }
     } catch (e) {
-      console.warn('Erro ao verificar sessão admin:', e);
+      isLiveAdmin = false;
+      disableLiveEditorUI();
     }
   }
 
-  // Menu Mobile Toggle
-  function setupMobileMenu() {
-    if (mobileMenuBtn && mainNav) {
-      mobileMenuBtn.addEventListener('click', () => {
-        mainNav.classList.toggle('open');
-        const isOpen = mainNav.classList.contains('open');
-        mobileMenuBtn.innerHTML = isOpen ? '<i class="fa-solid fa-xmark"></i>' : '<i class="fa-solid fa-bars"></i>';
-      });
-    }
+  function enableLiveEditorUI() {
+    if (liveAdminToolbar) liveAdminToolbar.style.display = 'flex';
   }
 
-  // Buscar dados da API
+  function disableLiveEditorUI() {
+    if (liveAdminToolbar) liveAdminToolbar.style.display = 'none';
+  }
+
+  // -------------------------------------------------------------
+  // BUSCA DE DADOS & NAVEGAÇÃO
+  // -------------------------------------------------------------
   async function fetchSiteData() {
     try {
       const res = await fetch('/api/site');
@@ -80,14 +184,22 @@
     }
   }
 
-  // Atualizar dados globais (Logo, Título, Rodapé)
   function updateGlobalInfo() {
     if (!siteData) return;
     if (siteBrandLogo) siteBrandLogo.textContent = siteData.artistName || siteData.title || 'Max Doe';
     if (footerCopyright) footerCopyright.innerHTML = `&copy; ${siteData.artistName || 'Max Doe'}. Todos os direitos reservados.`;
   }
 
-  // Renderizar itens de navegação do menu
+  function setupMobileMenu() {
+    if (mobileMenuBtn && mainNav) {
+      mobileMenuBtn.addEventListener('click', () => {
+        mainNav.classList.toggle('open');
+        const isOpen = mainNav.classList.contains('open');
+        mobileMenuBtn.innerHTML = isOpen ? '<i class="fa-solid fa-xmark"></i>' : '<i class="fa-solid fa-bars"></i>';
+      });
+    }
+  }
+
   function renderNavigation() {
     if (!siteData || !mainNav) return;
     const currentPath = window.location.pathname;
@@ -107,7 +219,6 @@
 
     mainNav.innerHTML = navHtml;
 
-    // Vincular cliques para navegação SPA
     mainNav.querySelectorAll('a[data-nav]').forEach(link => {
       link.addEventListener('click', (e) => {
         e.preventDefault();
@@ -121,13 +232,15 @@
     });
   }
 
-  // Configuração do roteador client-side SPA
   function setupRouter() {
-    window.addEventListener('popstate', () => {
-      renderCurrentRoute();
-    });
+    window.addEventListener('popstate', () => renderCurrentRoute());
 
     document.body.addEventListener('click', (e) => {
+      // Se clicou em botão ou elemento com contenteditable ou modal, não interfere
+      if (e.target.closest('.live-action-btn') || e.target.closest('.admin-modal-backdrop') || e.target.closest('#liveAdminToolbar') || e.target.hasAttribute('contenteditable')) {
+        return;
+      }
+
       const link = e.target.closest('a');
       if (link && link.href && link.host === window.location.host && !link.target && !link.hasAttribute('download') && !link.getAttribute('href').startsWith('/admin')) {
         const path = link.getAttribute('href');
@@ -146,40 +259,31 @@
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  // Renderizar a página da rota atual
+  // -------------------------------------------------------------
+  // RENDERIZAÇÃO DA ROTA ATUAL
+  // -------------------------------------------------------------
   function renderCurrentRoute() {
     if (!siteData) return;
     const path = window.location.pathname;
 
-    // Atualizar menu ativo
     renderNavigation();
 
-    // Atualizar barra admin rápida
-    if (adminQuickPage) {
-      adminQuickPage.textContent = `Página: ${path === '/' ? 'Portfolio (Home)' : path}`;
+    if (livePageIndicator) {
+      livePageIndicator.textContent = `Página: ${path === '/' ? 'Portfolio (Home)' : path}`;
     }
 
     mainApp.classList.add('page-loading');
 
     setTimeout(() => {
-      // 1. Rota Home / Portfolio
       if (path === '/' || path === '/portfolio') {
         renderHomePage();
-      }
-      // 2. Rota Services
-      else if (path === '/services') {
+      } else if (path === '/services') {
         renderServicesPage();
-      }
-      // 3. Rota About
-      else if (path === '/about') {
+      } else if (path === '/about') {
         renderAboutPage();
-      }
-      // 4. Rota Contact
-      else if (path === '/contact') {
+      } else if (path === '/contact') {
         renderContactPage();
-      }
-      // 5. Rota de Galeria de Projeto Individual
-      else {
+      } else {
         const page = siteData.pages.find(p => p.url === path);
         if (page) {
           renderGalleryPage(page);
@@ -188,8 +292,13 @@
         }
       }
 
+      // Se estiver no modo admin, torna elementos editáveis ao vivo
+      if (isLiveAdmin) {
+        attachLiveInlineEditing(path);
+      }
+
       mainApp.classList.remove('page-loading');
-    }, 150);
+    }, 120);
   }
 
   // -------------------------------------------------------------
@@ -205,7 +314,6 @@
     let portfolioItems = [];
 
     if (homePageData && homePageData.sections) {
-      // Procura seção de texto
       const textSec = homePageData.sections.find(s => s.viewType === 'Text');
       if (textSec && textSec.elements) {
         const tEl = textSec.elements.find(e => e.view === 'header-view');
@@ -216,14 +324,12 @@
         if (descEl) heroDesc = descEl.content;
       }
 
-      // Procura grid do portfolio
       const gridSec = homePageData.sections.find(s => s.gallery);
       if (gridSec && gridSec.gallery && gridSec.gallery.items) {
         portfolioItems = gridSec.gallery.items;
       }
     }
 
-    // Se não tiver items explícitos no grid do portfolio, lista as páginas de galeria
     if (portfolioItems.length === 0) {
       siteData.pages
         .filter(p => !p.isStartPage && p.url !== '/' && p.url !== '/services' && p.url !== '/about' && p.url !== '/contact')
@@ -231,6 +337,7 @@
           const galSec = p.sections.find(s => s.gallery);
           const firstImg = (galSec && galSec.gallery.items && galSec.gallery.items[0]) ? galSec.gallery.items[0].src : '/uploads/about.jpg';
           portfolioItems.push({
+            id: 'item_' + p.id,
             link: p.url,
             src: firstImg,
             title: p.title,
@@ -240,30 +347,39 @@
         });
     }
 
+    currentActiveGalleryItems = portfolioItems;
+
     let cardsHtml = '';
-    portfolioItems.forEach(item => {
+    portfolioItems.forEach((item, index) => {
       cardsHtml += `
-        <a href="${item.link || '#'}" class="project-card fade-in">
-          <div class="card-img-wrapper">
+        <div class="project-card fade-in" data-card-index="${index}" data-card-id="${item.id || ''}" ${isLiveAdmin ? 'draggable="true"' : ''}>
+          ${isLiveAdmin ? `
+            <div class="live-item-controls">
+              <button class="live-action-btn btn-move-left" title="Mover para esquerda/cima"><i class="fa-solid fa-arrow-left"></i></button>
+              <button class="live-action-btn btn-move-right" title="Mover para direita/baixo"><i class="fa-solid fa-arrow-right"></i></button>
+              <button class="live-action-btn btn-delete" title="Remover item"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          ` : ''}
+          <a href="${item.link || '#'}" class="card-img-wrapper" ${isLiveAdmin ? 'onclick="event.preventDefault();"' : ''}>
             <img src="${item.src}" alt="${item.title || 'Projeto'}" class="card-img" loading="lazy" />
-          </div>
+          </a>
           <div class="card-caption">
-            <h3 class="card-title">${item.title || 'Projeto'}</h3>
-            ${item.subtitle ? `<div class="card-subtitle">${item.subtitle}</div>` : ''}
-            ${item.description ? `<p class="card-description">${item.description}</p>` : ''}
+            <h3 class="card-title ${isLiveAdmin ? 'editable-active' : ''}" data-field="card-title" data-index="${index}" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${item.title || 'Projeto'}</h3>
+            ${item.subtitle || isLiveAdmin ? `<div class="card-subtitle ${isLiveAdmin ? 'editable-active' : ''}" data-field="card-subtitle" data-index="${index}" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${item.subtitle || 'Gallery'}</div>` : ''}
+            ${item.description || isLiveAdmin ? `<p class="card-description ${isLiveAdmin ? 'editable-active' : ''}" data-field="card-desc" data-index="${index}" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${item.description || ''}</p>` : ''}
           </div>
-        </a>
+        </div>
       `;
     });
 
     mainApp.innerHTML = `
       <section class="hero-section">
-        <span class="hero-subtitle">${heroSubtitle}</span>
-        <h1 class="hero-title">${heroTitle}</h1>
-        <p class="hero-desc">${heroDesc}</p>
+        <span class="hero-subtitle ${isLiveAdmin ? 'editable-active' : ''}" id="liveHeroSubtitle" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${heroSubtitle}</span>
+        <h1 class="hero-title ${isLiveAdmin ? 'editable-active' : ''}" id="liveHeroTitle" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${heroTitle}</h1>
+        <p class="hero-desc ${isLiveAdmin ? 'editable-active' : ''}" id="liveHeroDesc" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${heroDesc}</p>
       </section>
 
-      <section class="portfolio-grid">
+      <section class="portfolio-grid" id="livePortfolioGrid">
         ${cardsHtml}
       </section>
 
@@ -273,6 +389,10 @@
         { title: 'Contact', url: '/contact' }
       ])}
     `;
+
+    if (isLiveAdmin) {
+      setupCardsDragAndDrop('livePortfolioGrid');
+    }
   }
 
   // -------------------------------------------------------------
@@ -304,12 +424,21 @@
       }
     });
 
-    let tagsHtml = tags.map(tag => `<span class="tag-badge">${tag}</span>`).join('');
+    currentActiveGalleryItems = galleryItems;
+
+    let tagsHtml = tags.map(tag => `<span class="tag-badge ${isLiveAdmin ? 'editable-active' : ''}" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${tag}</span>`).join('');
     
     let galleryHtml = '';
     galleryItems.forEach((item, index) => {
       galleryHtml += `
-        <div class="gallery-item fade-in" data-gallery-index="${index}">
+        <div class="gallery-item fade-in" data-gallery-index="${index}" data-gallery-id="${item.id || ''}" ${isLiveAdmin ? 'draggable="true"' : ''}>
+          ${isLiveAdmin ? `
+            <div class="live-item-controls">
+              <button class="live-action-btn btn-move-left" title="Mover para trás"><i class="fa-solid fa-arrow-left"></i></button>
+              <button class="live-action-btn btn-move-right" title="Mover para frente"><i class="fa-solid fa-arrow-right"></i></button>
+              <button class="live-action-btn btn-delete" title="Excluir foto"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          ` : ''}
           <img src="${item.src}" alt="${item.title || title}" loading="lazy" />
           <div class="overlay-zoom-icon"><i class="fa-solid fa-magnifying-glass-plus"></i></div>
         </div>
@@ -318,9 +447,9 @@
 
     mainApp.innerHTML = `
       <section class="hero-section">
-        <h1 class="hero-title">${title}</h1>
-        ${description ? `<p class="hero-desc">${description.replace(/\n/g, '<br>')}</p>` : ''}
-        ${tags.length > 0 ? `<div class="tags-container">${tagsHtml}</div>` : ''}
+        <h1 class="hero-title ${isLiveAdmin ? 'editable-active' : ''}" id="livePageTitle" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${title}</h1>
+        <p class="hero-desc ${isLiveAdmin ? 'editable-active' : ''}" id="livePageDesc" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${description ? description.replace(/\n/g, '<br>') : (isLiveAdmin ? 'Clique aqui para adicionar uma descrição à galeria...' : '')}</p>
+        <div class="tags-container" id="liveTagsContainer">${tagsHtml}</div>
       </section>
 
       <section class="gallery-grid" id="projectGalleryGrid">
@@ -334,16 +463,21 @@
       ])}
     `;
 
-    // Vincular Lightbox aos itens da galeria
+    // Vincular Lightbox aos itens da galeria (se não estiver em modo edição)
     const itemsDom = mainApp.querySelectorAll('#projectGalleryGrid .gallery-item');
     itemsDom.forEach(el => {
-      el.addEventListener('click', () => {
+      el.addEventListener('click', (e) => {
+        if (isLiveAdmin && e.target.closest('.live-item-controls')) return;
         const idx = parseInt(el.getAttribute('data-gallery-index'), 10);
         if (window.lightboxInstance) {
           window.lightboxInstance.open(galleryItems, idx);
         }
       });
     });
+
+    if (isLiveAdmin) {
+      setupCardsDragAndDrop('projectGalleryGrid');
+    }
   }
 
   // -------------------------------------------------------------
@@ -378,16 +512,16 @@
         <div class="card-img-wrapper">
           <img src="${s.src}" alt="${s.title}" class="card-img" />
         </div>
-        <h3 class="service-title">${s.title}</h3>
-        <div class="service-subtitle">${s.subtitle}</div>
-        <p class="service-desc">${s.desc}</p>
+        <h3 class="service-title ${isLiveAdmin ? 'editable-active' : ''}" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${s.title}</h3>
+        <div class="service-subtitle ${isLiveAdmin ? 'editable-active' : ''}" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${s.subtitle}</div>
+        <p class="service-desc ${isLiveAdmin ? 'editable-active' : ''}" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${s.desc}</p>
       </div>
     `).join('');
 
     mainApp.innerHTML = `
       <div class="services-container">
         <section class="hero-section">
-          <h1 class="hero-title">Services</h1>
+          <h1 class="hero-title ${isLiveAdmin ? 'editable-active' : ''}" ${isLiveAdmin ? 'contenteditable="true"' : ''}>Services</h1>
         </section>
 
         <section class="services-grid">
@@ -396,10 +530,10 @@
 
         <section class="quote-section fade-in">
           <span class="quote-icon"><i class="fa-solid fa-quote-left"></i></span>
-          <p class="quote-text">“A smooth and professional experience from start to finish. Clear communication, strong ideas, and a result that exceeded expectations.”</p>
+          <p class="quote-text ${isLiveAdmin ? 'editable-active' : ''}" ${isLiveAdmin ? 'contenteditable="true"' : ''}>“A smooth and professional experience from start to finish. Clear communication, strong ideas, and a result that exceeded expectations.”</p>
           <div class="quote-author">
-            <strong>James Henry</strong>
-            <span>Story Well</span>
+            <strong class="${isLiveAdmin ? 'editable-active' : ''}" ${isLiveAdmin ? 'contenteditable="true"' : ''}>James Henry</strong>
+            <span class="${isLiveAdmin ? 'editable-active' : ''}" ${isLiveAdmin ? 'contenteditable="true"' : ''}>Story Well</span>
           </div>
         </section>
 
@@ -434,15 +568,15 @@
 
     const recognitionHtml = recognition.map(r => `
       <li class="about-list-item">
-        <span class="item-title">${r.title}</span>
-        <span class="item-subtitle">${r.sub}</span>
+        <span class="item-title ${isLiveAdmin ? 'editable-active' : ''}" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${r.title}</span>
+        <span class="item-subtitle ${isLiveAdmin ? 'editable-active' : ''}" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${r.sub}</span>
       </li>
     `).join('');
 
     const clientsHtml = clients.map(c => `
       <li class="about-list-item">
-        <span class="item-title">${c.title}</span>
-        <span class="item-subtitle">${c.sub}</span>
+        <span class="item-title ${isLiveAdmin ? 'editable-active' : ''}" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${c.title}</span>
+        <span class="item-subtitle ${isLiveAdmin ? 'editable-active' : ''}" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${c.sub}</span>
       </li>
     `).join('');
 
@@ -452,9 +586,9 @@
           <img src="${siteData.avatar || '/uploads/about.jpg'}" alt="${siteData.artistName || 'Max Doe'}" />
         </div>
         
-        <h1 class="hero-title">${siteData.artistName || 'Max Doe'}</h1>
-        <span class="hero-subtitle">${siteData.profession || 'Visual Artist'}</span>
-        <p class="hero-desc" style="margin-top: 25px;">
+        <h1 class="hero-title ${isLiveAdmin ? 'editable-active' : ''}" id="liveAboutArtistName" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${siteData.artistName || 'Max Doe'}</h1>
+        <span class="hero-subtitle ${isLiveAdmin ? 'editable-active' : ''}" id="liveAboutProfession" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${siteData.profession || 'Visual Artist'}</span>
+        <p class="hero-desc ${isLiveAdmin ? 'editable-active' : ''}" id="liveAboutBio" style="margin-top: 25px;" ${isLiveAdmin ? 'contenteditable="true"' : ''}>
           ${siteData.aboutLongBio || siteData.bio || 'My work explores the quiet rhythm between light, texture, and human presence.'}
         </p>
 
@@ -503,8 +637,8 @@
     mainApp.innerHTML = `
       <div class="contact-container">
         <section class="hero-section">
-          <h1 class="hero-title">Contact</h1>
-          <p class="hero-desc">
+          <h1 class="hero-title ${isLiveAdmin ? 'editable-active' : ''}" ${isLiveAdmin ? 'contenteditable="true"' : ''}>Contact</h1>
+          <p class="hero-desc ${isLiveAdmin ? 'editable-active' : ''}" ${isLiveAdmin ? 'contenteditable="true"' : ''}>
             I’m always happy to connect. Reach out with questions, ideas, or project inquiries, and I’ll get back to you as soon as possible.
           </p>
         </section>
@@ -536,17 +670,16 @@
         </form>
 
         <div class="contact-info-block fade-in">
-          <p><strong>${siteData.artistName || 'Max Doe'}</strong></p>
-          <p>${siteData.address || 'Gustavslundsv 99, 167 51 BROMMA'}</p>
-          <p>Phone: ${siteData.phone || '+46 70 11 22 33'}</p>
-          <p><a href="mailto:${siteData.email || 'max.doe@gmail.com'}">${siteData.email || 'max.doe@gmail.com'}</a></p>
+          <p><strong class="${isLiveAdmin ? 'editable-active' : ''}" id="liveContactName" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${siteData.artistName || 'Max Doe'}</strong></p>
+          <p class="${isLiveAdmin ? 'editable-active' : ''}" id="liveContactAddress" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${siteData.address || 'Gustavslundsv 99, 167 51 BROMMA'}</p>
+          <p>Phone: <span class="${isLiveAdmin ? 'editable-active' : ''}" id="liveContactPhone" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${siteData.phone || '+46 70 11 22 33'}</span></p>
+          <p><span class="${isLiveAdmin ? 'editable-active' : ''}" id="liveContactEmail" ${isLiveAdmin ? 'contenteditable="true"' : ''}>${siteData.email || 'max.doe@gmail.com'}</span></p>
         </div>
 
         ${socialIconsHtml ? `<div class="contact-social-icons">${socialIconsHtml}</div>` : ''}
       </div>
     `;
 
-    // Formulário de contato AJAX
     const form = document.getElementById('contactForm');
     const status = document.getElementById('contactFormStatus');
     const submitBtn = document.getElementById('contactSubmitBtn');
@@ -556,7 +689,6 @@
       submitBtn.disabled = true;
       submitBtn.textContent = 'Enviando...';
       status.textContent = '';
-      status.style.color = '#333333';
 
       const payload = {
         firstName: form.firstName.value,
@@ -590,9 +722,6 @@
     });
   }
 
-  // -------------------------------------------------------------
-  // 6. SEÇÃO LET'S WORK TOGETHER (SUBMENU BIG)
-  // -------------------------------------------------------------
   function renderSubmenuBigSection(links) {
     const linksHtml = links.map(l => `
       <a href="${l.url}" class="submenu-big-link">${l.title}</a>
@@ -608,9 +737,6 @@
     `;
   }
 
-  // -------------------------------------------------------------
-  // 7. PÁGINA 404
-  // -------------------------------------------------------------
   function render404Page() {
     mainApp.innerHTML = `
       <section class="hero-section">
@@ -621,6 +747,414 @@
     `;
   }
 
-  // Inicia a aplicação
+  // -------------------------------------------------------------
+  // WIX-STYLE LIVE EDITING & DRAG & DROP LOGIC
+  // -------------------------------------------------------------
+  function attachLiveInlineEditing(currentPath) {
+    // Monitora alterações em elementos editáveis
+    document.querySelectorAll('[contenteditable="true"]').forEach(el => {
+      el.addEventListener('input', () => {
+        hasPendingChanges = true;
+        btnLiveSaveAll.style.background = '#f59e0b';
+        btnLiveSaveAll.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Salvar Alterações *';
+      });
+    });
+
+    // Botões de ação nos itens (Mover / Excluir)
+    document.querySelectorAll('.live-item-controls .btn-move-left').forEach(btn => {
+      btn.onclick = (e) => {
+        e.stopPropagation();
+        const card = btn.closest('[data-card-index], [data-gallery-index]');
+        const idx = parseInt(card.getAttribute('data-card-index') || card.getAttribute('data-gallery-index'), 10);
+        if (idx > 0) {
+          const temp = currentActiveGalleryItems[idx];
+          currentActiveGalleryItems[idx] = currentActiveGalleryItems[idx - 1];
+          currentActiveGalleryItems[idx - 1] = temp;
+          hasPendingChanges = true;
+          renderCurrentRoute();
+          showLiveToast('Item movido para trás. Clique em "Salvar Alterações" para confirmar.', 'success');
+        }
+      };
+    });
+
+    document.querySelectorAll('.live-item-controls .btn-move-right').forEach(btn => {
+      btn.onclick = (e) => {
+        e.stopPropagation();
+        const card = btn.closest('[data-card-index], [data-gallery-index]');
+        const idx = parseInt(card.getAttribute('data-card-index') || card.getAttribute('data-gallery-index'), 10);
+        if (idx < currentActiveGalleryItems.length - 1) {
+          const temp = currentActiveGalleryItems[idx];
+          currentActiveGalleryItems[idx] = currentActiveGalleryItems[idx + 1];
+          currentActiveGalleryItems[idx + 1] = temp;
+          hasPendingChanges = true;
+          renderCurrentRoute();
+          showLiveToast('Item movido para frente. Clique em "Salvar Alterações" para confirmar.', 'success');
+        }
+      };
+    });
+
+    document.querySelectorAll('.live-item-controls .btn-delete').forEach(btn => {
+      btn.onclick = (e) => {
+        e.stopPropagation();
+        if (confirm('Deseja realmente remover esta foto da exibição?')) {
+          const card = btn.closest('[data-card-index], [data-gallery-index]');
+          const idx = parseInt(card.getAttribute('data-card-index') || card.getAttribute('data-gallery-index'), 10);
+          currentActiveGalleryItems.splice(idx, 1);
+          hasPendingChanges = true;
+          renderCurrentRoute();
+          showLiveToast('Foto removida visualmente. Clique em "Salvar Alterações" para gravar.', 'success');
+        }
+      };
+    });
+  }
+
+  function setupCardsDragAndDrop(containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    let draggedEl = null;
+
+    container.querySelectorAll('.project-card, .gallery-item').forEach(card => {
+      card.addEventListener('dragstart', (e) => {
+        draggedEl = card;
+        card.classList.add('live-dragging');
+        const fromIdx = card.getAttribute('data-card-index') || card.getAttribute('data-gallery-index');
+        e.dataTransfer.setData('text/plain', fromIdx);
+      });
+
+      card.addEventListener('dragend', () => {
+        card.classList.remove('live-dragging');
+        container.querySelectorAll('.project-card, .gallery-item').forEach(c => c.classList.remove('live-drag-over'));
+      });
+
+      card.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        card.classList.add('live-drag-over');
+      });
+
+      card.addEventListener('dragleave', () => {
+        card.classList.remove('live-drag-over');
+      });
+
+      card.addEventListener('drop', (e) => {
+        e.preventDefault();
+        card.classList.remove('live-drag-over');
+        const fromIdx = parseInt(e.dataTransfer.getData('text/plain'), 10);
+        const toIdx = parseInt(card.getAttribute('data-card-index') || card.getAttribute('data-gallery-index'), 10);
+
+        if (!isNaN(fromIdx) && !isNaN(toIdx) && fromIdx !== toIdx) {
+          const item = currentActiveGalleryItems.splice(fromIdx, 1)[0];
+          currentActiveGalleryItems.splice(toIdx, 0, item);
+          hasPendingChanges = true;
+          renderCurrentRoute();
+          showLiveToast(`Item reposicionado para #${toIdx + 1}! Clique em "Salvar Alterações" para fixar.`, 'success');
+        }
+      });
+    });
+  }
+
+  // -------------------------------------------------------------
+  // MODAIS & BOTÕES DA TOOLBAR
+  // -------------------------------------------------------------
+  function setupLiveModals() {
+    // 1. Botão Salvar Todas as Alterações
+    if (btnLiveSaveAll) {
+      btnLiveSaveAll.onclick = async () => {
+        await saveLiveChanges();
+      };
+    }
+
+    // 2. Botão Adicionar Fotos
+    if (btnLiveAddPhoto) {
+      btnLiveAddPhoto.onclick = () => {
+        inlineUploadModal.style.display = 'flex';
+        inlineUploadProgress.textContent = '';
+      };
+    }
+    if (closeInlineUploadModal) {
+      closeInlineUploadModal.onclick = () => inlineUploadModal.style.display = 'none';
+    }
+    if (inlineUploadDropzone) {
+      inlineUploadDropzone.onclick = () => inlineFileInput.click();
+      inlineUploadDropzone.ondragover = (e) => { e.preventDefault(); inlineUploadDropzone.classList.add('dragover'); };
+      inlineUploadDropzone.ondragleave = () => inlineUploadDropzone.classList.remove('dragover');
+      inlineUploadDropzone.ondrop = (e) => {
+        e.preventDefault();
+        inlineUploadDropzone.classList.remove('dragover');
+        if (e.dataTransfer.files.length > 0) handleInlineFiles(e.dataTransfer.files);
+      };
+      inlineFileInput.onchange = () => {
+        if (inlineFileInput.files.length > 0) handleInlineFiles(inlineFileInput.files);
+      };
+    }
+
+    // 3. Botão Nova Galeria
+    if (btnLiveAddPage) {
+      btnLiveAddPage.onclick = async () => {
+        const title = prompt('Digite o título da nova galeria (Ex: "Urban Reflections"):');
+        if (!title) return;
+        const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        const url = prompt('Digite a URL da página:', `/${slug}`);
+        if (!url) return;
+        const desc = prompt('Digite uma descrição para a nova galeria:', 'Série de obras e estudos visuais.');
+
+        const token = localStorage.getItem('adm_token');
+        try {
+          const res = await fetch('/api/pages', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ title, url, description: desc, tags: ['Visuals', 'Storytelling', 'Brand'] })
+          });
+          const data = await res.json();
+          if (data.success) {
+            showLiveToast(`Galeria "${title}" criada com sucesso!`, 'success');
+            await fetchSiteData();
+            navigateTo(url);
+          } else {
+            showLiveToast(data.error || 'Erro ao criar galeria.', 'error');
+          }
+        } catch (e) {
+          showLiveToast('Erro ao criar galeria.', 'error');
+        }
+      };
+    }
+
+    // 4. Botão Gerenciar Menus
+    if (btnLiveManageMenu) {
+      btnLiveManageMenu.onclick = () => {
+        openInlineMenuModal();
+      };
+    }
+    if (closeInlineMenuModal) {
+      closeInlineMenuModal.onclick = () => inlineMenuModal.style.display = 'none';
+    }
+
+    // 5. Botão Perfil & Bio
+    if (btnLiveEditProfile) {
+      btnLiveEditProfile.onclick = () => {
+        navigateTo('/about');
+        showLiveToast('Edite seu nome, slogan ou biografia clicando diretamente nos textos!', 'success');
+      };
+    }
+  }
+
+  async function handleInlineFiles(files) {
+    const formData = new FormData();
+    for (let i = 0; i < files.length; i++) formData.append('photos', files[i]);
+
+    const token = localStorage.getItem('adm_token');
+    inlineUploadProgress.style.color = '#38bdf8';
+    inlineUploadProgress.textContent = `Enviando ${files.length} foto(s)...`;
+
+    try {
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` },
+        body: formData
+      });
+      const data = await res.json();
+      if (data.success && data.files) {
+        data.files.forEach(f => {
+          currentActiveGalleryItems.push({
+            id: f.id,
+            src: f.src,
+            title: '',
+            subtitle: 'Gallery',
+            description: ''
+          });
+        });
+        inlineUploadModal.style.display = 'none';
+        hasPendingChanges = true;
+        renderCurrentRoute();
+        showLiveToast(`${data.files.length} foto(s) adicionada(s)! Clique em "Salvar Alterações" no topo.`, 'success');
+      } else {
+        inlineUploadProgress.style.color = '#f87171';
+        inlineUploadProgress.textContent = data.error || 'Erro no upload.';
+      }
+    } catch (e) {
+      inlineUploadProgress.style.color = '#f87171';
+      inlineUploadProgress.textContent = 'Erro ao conectar com o servidor.';
+    } finally {
+      inlineFileInput.value = '';
+    }
+  }
+
+  function openInlineMenuModal() {
+    inlineMenuList.innerHTML = '';
+    const menu = siteData.menu || [];
+
+    menu.forEach(item => {
+      const row = document.createElement('div');
+      row.style.cssText = 'display: flex; gap: 8px; align-items: center; background: #0f172a; padding: 8px 12px; border-radius: 6px; border: 1px solid #334155;';
+      row.innerHTML = `
+        <input type="text" class="menu-title-input" value="${item.title}" style="flex: 1; padding: 8px 12px; background: #1e293b; color: #fff; border: 1px solid #475569; border-radius: 4px;" />
+        <input type="text" class="menu-url-input" value="${item.url}" style="flex: 1; padding: 8px 12px; background: #1e293b; color: #fff; border: 1px solid #475569; border-radius: 4px;" />
+        <button type="button" class="btn-del-menu" style="background: #ef4444; color: #fff; border: none; padding: 8px 10px; border-radius: 4px; cursor: pointer;"><i class="fa-solid fa-trash"></i></button>
+      `;
+      row.querySelector('.btn-del-menu').onclick = () => row.remove();
+      inlineMenuList.appendChild(row);
+    });
+
+    btnInlineAddMenuItem.onclick = () => {
+      const row = document.createElement('div');
+      row.style.cssText = 'display: flex; gap: 8px; align-items: center; background: #0f172a; padding: 8px 12px; border-radius: 6px; border: 1px solid #334155;';
+      row.innerHTML = `
+        <input type="text" class="menu-title-input" value="Novo Link" style="flex: 1; padding: 8px 12px; background: #1e293b; color: #fff; border: 1px solid #475569; border-radius: 4px;" />
+        <input type="text" class="menu-url-input" value="/" style="flex: 1; padding: 8px 12px; background: #1e293b; color: #fff; border: 1px solid #475569; border-radius: 4px;" />
+        <button type="button" class="btn-del-menu" style="background: #ef4444; color: #fff; border: none; padding: 8px 10px; border-radius: 4px; cursor: pointer;"><i class="fa-solid fa-trash"></i></button>
+      `;
+      row.querySelector('.btn-del-menu').onclick = () => row.remove();
+      inlineMenuList.appendChild(row);
+    };
+
+    btnInlineSaveMenu.onclick = async () => {
+      const rows = inlineMenuList.querySelectorAll('div');
+      const newMenu = [];
+      rows.forEach(r => {
+        const title = r.querySelector('.menu-title-input').value.trim();
+        const url = r.querySelector('.menu-url-input').value.trim();
+        if (title && url) newMenu.push({ title, url });
+      });
+
+      const token = localStorage.getItem('adm_token');
+      try {
+        const res = await fetch('/api/site', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ menu: newMenu })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showLiveToast('Menu atualizado com sucesso!', 'success');
+          inlineMenuModal.style.display = 'none';
+          await fetchSiteData();
+        }
+      } catch (e) {
+        showLiveToast('Erro ao salvar menu.', 'error');
+      }
+    };
+
+    inlineMenuModal.style.display = 'flex';
+  }
+
+  // -------------------------------------------------------------
+  // SALVAR ALTERAÇÕES VISUAIS DA PÁGINA ATUAL
+  // -------------------------------------------------------------
+  async function saveLiveChanges() {
+    const token = localStorage.getItem('adm_token');
+    const path = window.location.pathname;
+    btnLiveSaveAll.disabled = true;
+    btnLiveSaveAll.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Gravando...';
+
+    try {
+      // 1. Se estiver na Home
+      if (path === '/' || path === '/portfolio') {
+        const heroTitle = document.getElementById('liveHeroTitle')?.innerText || siteData.artistName;
+        const heroSubtitle = document.getElementById('liveHeroSubtitle')?.innerText || siteData.profession;
+        const heroDesc = document.getElementById('liveHeroDesc')?.innerText || siteData.bio;
+
+        // Atualiza textos gerais do perfil
+        await fetch('/api/site', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({
+            artistName: heroTitle,
+            profession: heroSubtitle,
+            bio: heroDesc
+          })
+        });
+
+        // Atualiza itens do grid da Home
+        await fetch('/api/pages/home/items', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({ items: currentActiveGalleryItems })
+        });
+      }
+      // 2. Se estiver no About
+      else if (path === '/about') {
+        const artistName = document.getElementById('liveAboutArtistName')?.innerText || siteData.artistName;
+        const profession = document.getElementById('liveAboutProfession')?.innerText || siteData.profession;
+        const aboutBio = document.getElementById('liveAboutBio')?.innerText || siteData.aboutLongBio;
+
+        await fetch('/api/site', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({
+            artistName,
+            profession,
+            aboutLongBio: aboutBio
+          })
+        });
+      }
+      // 3. Se estiver no Contact
+      else if (path === '/contact') {
+        const name = document.getElementById('liveContactName')?.innerText || siteData.artistName;
+        const address = document.getElementById('liveContactAddress')?.innerText || siteData.address;
+        const phone = document.getElementById('liveContactPhone')?.innerText || siteData.phone;
+        const email = document.getElementById('liveContactEmail')?.innerText || siteData.email;
+
+        await fetch('/api/site', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({ artistName: name, address, phone, email })
+        });
+      }
+      // 4. Se for uma Galeria de Projeto
+      else {
+        const cleanUrl = path.replace('/', '');
+        const pageTitle = document.getElementById('livePageTitle')?.innerText;
+        const pageDesc = document.getElementById('livePageDesc')?.innerText;
+        const tags = Array.from(document.querySelectorAll('#liveTagsContainer .tag-badge')).map(t => t.innerText.trim()).filter(Boolean);
+
+        // Atualiza textos da galeria
+        await fetch(`/api/pages/${cleanUrl}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({
+            title: pageTitle,
+            description: pageDesc,
+            tags: tags
+          })
+        });
+
+        // Atualiza fotos da galeria
+        await fetch(`/api/pages/${cleanUrl}/items`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({ items: currentActiveGalleryItems })
+        });
+      }
+
+      hasPendingChanges = false;
+      showLiveToast('Todas as alterações visuais foram salvas com sucesso!', 'success');
+      await fetchSiteData();
+    } catch (e) {
+      showLiveToast('Erro ao salvar alterações.', 'error');
+    } finally {
+      btnLiveSaveAll.disabled = false;
+      btnLiveSaveAll.style.background = '#10b981';
+      btnLiveSaveAll.innerHTML = '<i class="fa-solid fa-check"></i> Salvar Alterações';
+    }
+  }
+
+  // -------------------------------------------------------------
+  // TOAST FEEDBACK VISUAL
+  // -------------------------------------------------------------
+  function showLiveToast(msg, type = 'success') {
+    if (!liveToast) return;
+    liveToast.textContent = msg;
+    liveToast.className = `live-toast show ${type}`;
+    setTimeout(() => {
+      liveToast.classList.remove('show');
+    }, 4000);
+  }
+
   window.addEventListener('DOMContentLoaded', init);
 })();
