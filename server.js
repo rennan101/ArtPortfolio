@@ -513,12 +513,16 @@ app.use((req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Inicialização do servidor
-app.listen(PORT, () => {
-  console.log(`====================================================`);
-  console.log(` 🚀 Art Portfolio Server rodando na porta ${PORT}`);
-  console.log(` 👉 Site Público: http://localhost:${PORT}`);
-  console.log(` 🔑 Painel ADM:   http://localhost:${PORT}/admin.html`);
-  console.log(` 🔐 Senha Padrão: admin123`);
-  console.log(`====================================================`);
-});
+// Inicialização do servidor (apenas se executado diretamente, não no Vercel serverless)
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`====================================================`);
+    console.log(` 🚀 Art Portfolio Server rodando na porta ${PORT}`);
+    console.log(` 👉 Site Público: http://localhost:${PORT}`);
+    console.log(` 🔑 Painel ADM:   http://localhost:${PORT}/admin.html`);
+    console.log(` 🔐 Senha Padrão: admin123`);
+    console.log(`====================================================`);
+  });
+}
+
+module.exports = app;
