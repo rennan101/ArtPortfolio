@@ -406,8 +406,20 @@ app.delete('/api/pages/:url', (req, res) => {
   res.json({ success: true, message: 'Página removida com sucesso!' });
 });
 
-// 8. Rota de upload de fotos (Multer)
-app.post('/api/upload', upload.array('photos', 20), (req, res) => {
+// Configuração opcional do Cloudinary para deploy em nuvem (Vercel/Render)
+const cloudinary = require('cloudinary').v2;
+if (process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET) {
+  cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+    secure: true
+  });
+  console.log('☁️ Armazenamento em nuvem Cloudinary configurado e ativo.');
+}
+
+// 8. Rota de upload de fotos (Local ou Cloudinary)
+app.post('/api/upload', upload.array('photos', 20), async (req, res) => {
   const token = req.headers['authorization']?.replace('Bearer ', '');
   if (!token || token !== currentAdminToken) {
     return res.status(401).json({ error: 'Não autorizado.' });
@@ -417,18 +429,56 @@ app.post('/api/upload', upload.array('photos', 20), (req, res) => {
     return res.status(400).json({ error: 'Nenhum arquivo enviado.' });
   }
 
-  const uploadedFiles = req.files.map(file => ({
-    id: 'img_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
-    src: `/uploads/${file.filename}`,
-    filename: file.filename,
-    originalName: file.originalname,
-    size: file.size,
-    title: '',
-    subtitle: '',
-    description: ''
-  }));
+  const isCloudinaryActive = Boolean(process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET);
 
-  res.json({ success: true, files: uploadedFiles });
+  try {
+    const uploadedFiles = [];
+
+    for (const file of req.files) {
+      const fileId = 'img_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7);
+
+      if (isCloudinaryActive) {
+        // Upload para Cloudinary
+        const uploadResult = await cloudinary.uploader.upload(file.path, {
+          folder: 'art_portfolio',
+          resource_type: 'image'
+        });
+
+        // Remove o arquivo temporário local se existir
+        if (fs.existsSync(file.path)) {
+          fs.unlinkSync(file.path);
+        }
+
+        uploadedFiles.push({
+          id: fileId,
+          src: uploadResult.secure_url,
+          filename: uploadResult.public_id,
+          originalName: file.originalname,
+          size: uploadResult.bytes,
+          title: '',
+          subtitle: 'Gallery',
+          description: ''
+        });
+      } else {
+        // Armazenamento local
+        uploadedFiles.push({
+          id: fileId,
+          src: `/uploads/${file.filename}`,
+          filename: file.filename,
+          originalName: file.originalname,
+          size: file.size,
+          title: '',
+          subtitle: 'Gallery',
+          description: ''
+        });
+      }
+    }
+
+    res.json({ success: true, files: uploadedFiles });
+  } catch (err) {
+    console.error('Erro no upload:', err);
+    res.status(500).json({ error: 'Falha no processamento do upload.' });
+  }
 });
 
 // 9. Envio do formulário de contato
