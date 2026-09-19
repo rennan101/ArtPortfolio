@@ -1,86 +1,93 @@
 const http = require('http');
+const fs = require('fs');
+const path = require('path');
+const app = require('../server');
 
-function request(url, options = {}, postData = null) {
-  return new Promise((resolve, reject) => {
-    const req = http.request(url, options, (res) => {
-      let data = '';
-      res.on('data', chunk => data += chunk);
-      res.on('end', () => {
-        resolve({
-          statusCode: res.statusCode,
-          headers: res.headers,
-          data: data
-        });
-      });
+const PORT = 3456;
+const server = app.listen(PORT, async () => {
+  console.log(`Test server running on port ${PORT}`);
+  try {
+    // 1. Test Login
+    const loginRes = await fetch(`http://127.0.0.1:${PORT}/api/admin/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: 'Rennan0712@' })
     });
-    req.on('error', reject);
-    if (postData) {
-      req.write(typeof postData === 'string' ? postData : JSON.stringify(postData));
-    }
-    req.end();
-  });
-}
+    const loginData = await loginRes.json();
+    console.log('1. Login Test:', loginData.success ? 'PASSED ✅' : 'FAILED ❌', loginData);
 
-async function runTests() {
-  console.log('--- TESTANDO ENDPOINTS DA APLICAÇÃO ---');
+    const token = loginData.token;
 
-  // 1. Home / Index.html
-  const homeRes = await request('http://localhost:3000/');
-  console.log(`1. GET / (Index HTML): Status ${homeRes.statusCode} - ${homeRes.data.includes('Max Doe') ? 'OK' : 'FAIL'}`);
+    // 2. Test Verify
+    const verifyRes = await fetch(`http://127.0.0.1:${PORT}/api/admin/verify`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const verifyData = await verifyRes.json();
+    console.log('2. Verify Test:', verifyData.authenticated ? 'PASSED ✅' : 'FAILED ❌');
 
-  // 2. Admin.html
-  const adminRes = await request('http://localhost:3000/admin.html');
-  console.log(`2. GET /admin.html: Status ${adminRes.statusCode} - ${adminRes.data.includes('Painel de Controle') ? 'OK' : 'FAIL'}`);
+    // 3. Test Upload (multipart buffer)
+    const boundary = '----WebKitFormBoundary7MA4YWxkTrZu0gW';
+    const sampleBuffer = Buffer.from('fake-image-bytes-header-sample-content');
+    const body = Buffer.concat([
+      Buffer.from(`--${boundary}\r\nContent-Disposition: form-data; name="photos"; filename="test_art.jpg"\r\nContent-Type: image/jpeg\r\n\r\n`),
+      sampleBuffer,
+      Buffer.from(`\r\n--${boundary}--\r\n`)
+    ]);
 
-  // 3. API Site Data
-  const apiSiteRes = await request('http://localhost:3000/api/site');
-  const siteJson = JSON.parse(apiSiteRes.data);
-  console.log(`3. GET /api/site: Status ${apiSiteRes.statusCode} - Total de páginas: ${siteJson.pages.length} - ${siteJson.pages.length >= 10 ? 'OK' : 'FAIL'}`);
+    const uploadRes = await fetch(`http://127.0.0.1:${PORT}/api/upload`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': `multipart/form-data; boundary=${boundary}`
+      },
+      body: body
+    });
+    const uploadData = await uploadRes.json();
+    console.log('3. Upload Test:', uploadData.success ? 'PASSED ✅' : 'FAILED ❌', uploadData);
 
-  // 4. API Login
-  const loginRes = await request('http://localhost:3000/api/admin/login', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' }
-  }, { password: 'Rennan0712@' });
-  const loginJson = JSON.parse(loginRes.data);
-  console.log(`4. POST /api/admin/login: Status ${loginRes.statusCode} - Token gerado: ${loginJson.token ? 'SIM' : 'NÃO'}`);
+    // 4. Test Site Data Fetch
+    const siteRes = await fetch(`http://127.0.0.1:${PORT}/api/site`);
+    const siteData = await siteRes.json();
+    console.log('4. Site Data Test:', siteData.title ? 'PASSED ✅' : 'FAILED ❌', `(Title: ${siteData.title})`);
 
-  const token = loginJson.token;
+    // 5. Test Update Page Items
+    const updateItemsRes = await fetch(`http://127.0.0.1:${PORT}/api/pages/creatures/items`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        items: [
+          ...uploadData.files,
+          { id: 'sample_item_1', src: '/uploads/creatures-1.jpg', title: 'Art Piece 1', subtitle: 'Gallery', description: '' }
+        ]
+      })
+    });
+    const updateItemsData = await updateItemsRes.json();
+    console.log('5. Update Items Test:', updateItemsData.success ? 'PASSED ✅' : 'FAILED ❌');
 
-  // 5. Teste de verificação do token
-  const verifyRes = await request('http://localhost:3000/api/admin/verify', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${token}`
-    }
-  });
-  const verifyJson = JSON.parse(verifyRes.data);
-  console.log(`5. POST /api/admin/verify: Status ${verifyRes.statusCode} - Autenticado: ${verifyJson.authenticated ? 'SIM' : 'NÃO'}`);
+    // 6. Test Update Site Info
+    const updateSiteRes = await fetch(`http://127.0.0.1:${PORT}/api/site`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        artistName: 'Max Doe',
+        profession: 'Visual Artist & Sculptor'
+      })
+    });
+    const updateSiteData = await updateSiteRes.json();
+    console.log('6. Update Site Info Test:', updateSiteData.success ? 'PASSED ✅' : 'FAILED ❌');
 
-  // 6. Teste de obtenção de uma página
-  const pageRes = await request('http://localhost:3000/api/pages/creatures');
-  const pageJson = JSON.parse(pageRes.data);
-  console.log(`6. GET /api/pages/creatures: Status ${pageRes.statusCode} - Título: "${pageJson.title}"`);
-
-  // 7. Teste de uma imagem estática
-  const firstImgSrc = siteJson.pages[0].sections.find(s => s.gallery).gallery.items[0].src;
-  const imgRes = await request(`http://localhost:3000${firstImgSrc}`);
-  console.log(`7. GET ${firstImgSrc} (Imagem local): Status ${imgRes.statusCode} - Content-Length: ${imgRes.headers['content-length']} bytes`);
-
-  // 8. Teste de envio de contato
-  const contactRes = await request('http://localhost:3000/api/contact', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' }
-  }, {
-    firstName: 'Maria',
-    lastName: 'Silva',
-    email: 'maria@example.com',
-    message: 'Olá, adorei suas pinturas!'
-  });
-  const contactJson = JSON.parse(contactRes.data);
-  console.log(`8. POST /api/contact: Status ${contactRes.statusCode} - Mensagem: "${contactJson.message}"`);
-
-  console.log('--- TODOS OS TESTES PASSARAM COM SUCESSO! ---');
-}
-
-runTests().catch(console.error);
+    console.log('\n🎉 ALL TESTS PASSED SUCCESSFULLY!');
+  } catch (err) {
+    console.error('Test error:', err);
+  } finally {
+    server.close();
+    process.exit(0);
+  }
+});

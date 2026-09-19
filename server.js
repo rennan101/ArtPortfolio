@@ -3,35 +3,22 @@ const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const cloudinary = require('cloudinary').v2;
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const JWT_SECRET = process.env.JWT_SECRET || 'art_portfolio_secret_jwt_key_2026_@rennansite';
 
 // Configuração do JSON e CORS
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
-// Armazenamento de uploads com Multer
-const uploadsDir = path.join(__dirname, 'public', 'uploads');
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-}
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadsDir);
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    const ext = path.extname(file.originalname).toLowerCase();
-    const cleanBase = path.basename(file.originalname, ext).replace(/[^a-zA-Z0-9_-]/g, '_');
-    cb(null, `${cleanBase}-${uniqueSuffix}${ext}`);
-  }
-});
-
+// Armazenamento de uploads com Multer em Memória (Essencial para Vercel Serverless)
 const upload = multer({
-  storage,
+  storage: multer.memoryStorage(),
   limits: { fileSize: 25 * 1024 * 1024 }, // 25MB max
   fileFilter: (req, file, cb) => {
     if (file.mimetype.startsWith('image/')) {
@@ -42,26 +29,59 @@ const upload = multer({
   }
 });
 
-// Armazenamento em Nuvem / Local Híbrido
+// Diretório local para uploads quando rodando fora do serverless
+const uploadsDir = path.join(__dirname, 'public', 'uploads');
+if (!process.env.VERCEL) {
+  try {
+    if (!fs.existsSync(uploadsDir)) {
+      fs.mkdirSync(uploadsDir, { recursive: true });
+    }
+  } catch (e) {}
+}
+
+// Configuração do Cloudinary
+const cloudinaryUrl = process.env.CLOUDINARY_URL;
+const cloudName = process.env.CLOUDINARY_CLOUD_NAME || process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+const apiKey = process.env.CLOUDINARY_API_KEY;
+const apiSecret = process.env.CLOUDINARY_API_SECRET;
+
+let isCloudinaryConfigured = false;
+if (cloudinaryUrl) {
+  cloudinary.config({ url: cloudinaryUrl });
+  isCloudinaryConfigured = true;
+  console.log('☁️ Cloudinary configurado via CLOUDINARY_URL.');
+} else if (cloudName && apiKey && apiSecret) {
+  cloudinary.config({
+    cloud_name: cloudName,
+    api_key: apiKey,
+    api_secret: apiSecret,
+    secure: true
+  });
+  isCloudinaryConfigured = true;
+  console.log('☁️ Cloudinary configurado com sucesso via credenciais separadas.');
+} else {
+  console.log('ℹ️ Cloudinary não configurado. Usando fallback de armazenamento local / Base64.');
+}
+
+// Armazenamento em Nuvem / Local Híbrido (Upstash Redis / Vercel KV)
 const dbPath = path.join(__dirname, 'data', 'site-data.json');
 let inMemoryCache = null;
 
-// Inicializa cliente Upstash Redis se configurado
 let redisClient = null;
-if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
-  const { Redis } = require('@upstash/redis');
-  redisClient = new Redis({
-    url: process.env.KV_REST_API_URL,
-    token: process.env.KV_REST_API_TOKEN,
-  });
-  console.log('⚡ Upstash Redis / Vercel KV conectado para persistência em nuvem.');
-} else if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) {
-  const { Redis } = require('@upstash/redis');
-  redisClient = new Redis({
-    url: process.env.UPSTASH_REDIS_REST_URL,
-    token: process.env.UPSTASH_REDIS_REST_TOKEN,
-  });
-  console.log('⚡ Upstash Redis conectado para persistência em nuvem.');
+const redisUrl = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
+const redisToken = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+
+if (redisUrl && redisToken) {
+  try {
+    const { Redis } = require('@upstash/redis');
+    redisClient = new Redis({
+      url: redisUrl,
+      token: redisToken,
+    });
+    console.log('⚡ Upstash Redis / Vercel KV conectado para persistência em nuvem.');
+  } catch (e) {
+    console.error('Erro ao instanciar Redis:', e.message);
+  }
 }
 
 // Helper síncrono para leitura inicial
@@ -114,7 +134,6 @@ async function readData() {
 async function saveData(data) {
   inMemoryCache = data;
 
-  // Grava na nuvem se Redis estiver conectado
   if (redisClient) {
     try {
       await redisClient.set('site_data', JSON.stringify(data));
@@ -124,27 +143,35 @@ async function saveData(data) {
     }
   }
 
-  // Tenta gravar no disco local se tiver permissão (fora do serverless)
+  // Grava no disco local quando suportado
   try {
     if (fs.existsSync(path.dirname(dbPath))) {
       fs.writeFileSync(dbPath, JSON.stringify(data, null, 2), 'utf-8');
     }
-  } catch (e) {
-    // Em ambientes serverless read-only, silencia erro de gravação em disco
-  }
+  } catch (e) {}
 }
 
 // Servir arquivos estáticos
 app.use(express.static(path.join(__dirname, 'public')));
-app.use('/uploads', express.static(uploadsDir));
-
-const bcrypt = require('bcryptjs');
+if (fs.existsSync(uploadsDir)) {
+  app.use('/uploads', express.static(uploadsDir));
+}
 
 /* ============================================================
-   ROTAS DE AUTENTICAÇÃO
+   AUTENTICAÇÃO STATELESS (JWT)
    ============================================================ */
-// Token simples para sessão admin
-let currentAdminToken = null;
+function isAuthenticated(req) {
+  try {
+    const authHeader = req.headers['authorization'];
+    if (!authHeader) return false;
+    const token = authHeader.replace('Bearer ', '').trim();
+    if (!token) return false;
+    const decoded = jwt.verify(token, JWT_SECRET);
+    return decoded && decoded.role === 'admin';
+  } catch (err) {
+    return false;
+  }
+}
 
 app.post('/api/admin/login', async (req, res) => {
   const { password } = req.body;
@@ -154,42 +181,44 @@ app.post('/api/admin/login', async (req, res) => {
     return res.status(400).json({ success: false, message: 'Senha é obrigatória.' });
   }
 
-  // Verifica se a senha confere com o hash bcrypt (ou string legada se houver)
-  const isMatch = data.adminPasswordHash && (
-    (data.adminPasswordHash.startsWith('$2b$') || data.adminPasswordHash.startsWith('$2a$'))
-      ? bcrypt.compareSync(password, data.adminPasswordHash)
-      : password === data.adminPasswordHash
+  // Verifica se a senha confere com o hash bcrypt ou fallback padrão
+  const defaultHash = "$2b$10$8Oy52wLdi4ZwUOTna.1/1ugK0jwPg.y3rSj5ODWnn8etOsIDjbtaO"; // Rennan0712@
+  const currentHash = data.adminPasswordHash || defaultHash;
+
+  const isMatch = (
+    (currentHash.startsWith('$2b$') || currentHash.startsWith('$2a$'))
+      ? bcrypt.compareSync(password, currentHash)
+      : password === currentHash || password === 'Rennan0712@'
   );
 
   if (isMatch) {
-    currentAdminToken = 'adm_token_' + Date.now() + '_' + Math.random().toString(36).substring(2);
-    return res.json({ success: true, token: currentAdminToken });
+    const token = jwt.sign({ role: 'admin', time: Date.now() }, JWT_SECRET, { expiresIn: '30d' });
+    return res.json({ success: true, token });
   }
 
   return res.status(401).json({ success: false, message: 'Senha incorreta.' });
 });
 
 app.post('/api/admin/verify', (req, res) => {
-  const token = req.headers['authorization']?.replace('Bearer ', '');
-  if (token && token === currentAdminToken) {
+  if (isAuthenticated(req)) {
     return res.json({ authenticated: true });
   }
   return res.json({ authenticated: false });
 });
 
 app.post('/api/admin/change-password', async (req, res) => {
-  const token = req.headers['authorization']?.replace('Bearer ', '');
-  if (!token || token !== currentAdminToken) {
+  if (!isAuthenticated(req)) {
     return res.status(401).json({ error: 'Não autorizado.' });
   }
 
   const { currentPassword, newPassword } = req.body;
   const data = await readData();
+  const currentHash = data.adminPasswordHash || "$2b$10$8Oy52wLdi4ZwUOTna.1/1ugK0jwPg.y3rSj5ODWnn8etOsIDjbtaO";
 
-  const isCurrentMatch = data.adminPasswordHash && (
-    (data.adminPasswordHash.startsWith('$2b$') || data.adminPasswordHash.startsWith('$2a$'))
-      ? bcrypt.compareSync(currentPassword, data.adminPasswordHash)
-      : currentPassword === data.adminPasswordHash
+  const isCurrentMatch = (
+    (currentHash.startsWith('$2b$') || currentHash.startsWith('$2a$'))
+      ? bcrypt.compareSync(currentPassword, currentHash)
+      : currentPassword === currentHash
   );
 
   if (!isCurrentMatch) {
@@ -211,7 +240,6 @@ app.post('/api/admin/change-password', async (req, res) => {
 
 // 1. Obter dados completos do site
 app.get('/api/site', async (req, res) => {
-  // Evitar cache no navegador dos visitantes para refletir atualizações na hora
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
   res.setHeader('Pragma', 'no-cache');
   res.setHeader('Expires', '0');
@@ -222,10 +250,9 @@ app.get('/api/site', async (req, res) => {
   res.json(safeData);
 });
 
-// 2. Atualizar informações gerais do site (perfil, bio, redes, footer, menu)
+// 2. Atualizar informações gerais do site
 app.put('/api/site', async (req, res) => {
-  const token = req.headers['authorization']?.replace('Bearer ', '');
-  if (!token || token !== currentAdminToken) {
+  if (!isAuthenticated(req)) {
     return res.status(401).json({ error: 'Não autorizado.' });
   }
 
@@ -264,8 +291,7 @@ app.get('/api/pages/:url', async (req, res) => {
 
 // 4. Criar nova página/galeria
 app.post('/api/pages', async (req, res) => {
-  const token = req.headers['authorization']?.replace('Bearer ', '');
-  if (!token || token !== currentAdminToken) {
+  if (!isAuthenticated(req)) {
     return res.status(401).json({ error: 'Não autorizado.' });
   }
 
@@ -377,10 +403,9 @@ app.post('/api/pages', async (req, res) => {
   res.json({ success: true, page: newPage });
 });
 
-// 5. Atualizar detalhes de uma página (título, descrição, tags)
+// 5. Atualizar detalhes de uma página
 app.put('/api/pages/:url', async (req, res) => {
-  const token = req.headers['authorization']?.replace('Bearer ', '');
-  if (!token || token !== currentAdminToken) {
+  if (!isAuthenticated(req)) {
     return res.status(401).json({ error: 'Não autorizado.' });
   }
 
@@ -413,10 +438,9 @@ app.put('/api/pages/:url', async (req, res) => {
   res.json({ success: true, page });
 });
 
-// 6. Atualizar itens/fotos de uma galeria (adicionar, reordenar, apagar)
+// 6. Atualizar itens/fotos de uma galeria
 app.put('/api/pages/:url/items', async (req, res) => {
-  const token = req.headers['authorization']?.replace('Bearer ', '');
-  if (!token || token !== currentAdminToken) {
+  if (!isAuthenticated(req)) {
     return res.status(401).json({ error: 'Não autorizado.' });
   }
 
@@ -454,8 +478,7 @@ app.put('/api/pages/:url/items', async (req, res) => {
 
 // 7. Excluir uma página
 app.delete('/api/pages/:url', async (req, res) => {
-  const token = req.headers['authorization']?.replace('Bearer ', '');
-  if (!token || token !== currentAdminToken) {
+  if (!isAuthenticated(req)) {
     return res.status(401).json({ error: 'Não autorizado.' });
   }
 
@@ -486,30 +509,32 @@ app.delete('/api/pages/:url', async (req, res) => {
   res.json({ success: true, message: 'Página removida com sucesso!' });
 });
 
-// Configuração opcional do Cloudinary para deploy em nuvem (Vercel/Render)
-const cloudinary = require('cloudinary').v2;
-if (process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET) {
-  cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
-    secure: true
+// Helper para upload de buffer para o Cloudinary via Stream
+function uploadBufferToCloudinary(buffer, originalname) {
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      {
+        folder: 'art_portfolio',
+        resource_type: 'image'
+      },
+      (error, result) => {
+        if (error) return reject(error);
+        resolve(result);
+      }
+    );
+    stream.end(buffer);
   });
-  console.log('☁️ Armazenamento em nuvem Cloudinary configurado e ativo.');
 }
 
-// 8. Rota de upload de fotos (Local ou Cloudinary)
+// 8. Rota de upload de fotos resiliente (Cloudinary / Local / Base64 fallback)
 app.post('/api/upload', upload.array('photos', 20), async (req, res) => {
-  const token = req.headers['authorization']?.replace('Bearer ', '');
-  if (!token || token !== currentAdminToken) {
-    return res.status(401).json({ error: 'Não autorizado.' });
+  if (!isAuthenticated(req)) {
+    return res.status(401).json({ error: 'Sessão expirada ou não autorizada. Faça login novamente.' });
   }
 
   if (!req.files || req.files.length === 0) {
     return res.status(400).json({ error: 'Nenhum arquivo enviado.' });
   }
-
-  const isCloudinaryActive = Boolean(process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET);
 
   try {
     const uploadedFiles = [];
@@ -517,70 +542,108 @@ app.post('/api/upload', upload.array('photos', 20), async (req, res) => {
     for (const file of req.files) {
       const fileId = 'img_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7);
 
-      if (isCloudinaryActive) {
-        // Upload para Cloudinary
-        const uploadResult = await cloudinary.uploader.upload(file.path, {
-          folder: 'art_portfolio',
-          resource_type: 'image'
-        });
-
-        // Remove o arquivo temporário local se existir
-        if (fs.existsSync(file.path)) {
-          fs.unlinkSync(file.path);
+      if (isCloudinaryConfigured) {
+        try {
+          const result = await uploadBufferToCloudinary(file.buffer, file.originalname);
+          uploadedFiles.push({
+            id: fileId,
+            src: result.secure_url,
+            filename: result.public_id,
+            originalName: file.originalname,
+            size: result.bytes,
+            title: '',
+            subtitle: 'Gallery',
+            description: ''
+          });
+          continue;
+        } catch (cloudErr) {
+          console.error('Erro no upload do Cloudinary:', cloudErr.message);
+          // Continua para o fallback
         }
-
-        uploadedFiles.push({
-          id: fileId,
-          src: uploadResult.secure_url,
-          filename: uploadResult.public_id,
-          originalName: file.originalname,
-          size: uploadResult.bytes,
-          title: '',
-          subtitle: 'Gallery',
-          description: ''
-        });
-      } else {
-        // Armazenamento local
-        uploadedFiles.push({
-          id: fileId,
-          src: `/uploads/${file.filename}`,
-          filename: file.filename,
-          originalName: file.originalname,
-          size: file.size,
-          title: '',
-          subtitle: 'Gallery',
-          description: ''
-        });
       }
+
+      // Se não estiver no Vercel (rodando localmente com permissão de escrita)
+      if (!process.env.VERCEL) {
+        try {
+          const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+          const ext = path.extname(file.originalname).toLowerCase() || '.jpg';
+          const cleanBase = path.basename(file.originalname, ext).replace(/[^a-zA-Z0-9_-]/g, '_');
+          const localFileName = `${cleanBase}-${uniqueSuffix}${ext}`;
+          const localFilePath = path.join(uploadsDir, localFileName);
+          
+          fs.writeFileSync(localFilePath, file.buffer);
+          
+          uploadedFiles.push({
+            id: fileId,
+            src: `/uploads/${localFileName}`,
+            filename: localFileName,
+            originalName: file.originalname,
+            size: file.size,
+            title: '',
+            subtitle: 'Gallery',
+            description: ''
+          });
+          continue;
+        } catch (localWriteErr) {
+          console.warn('Fallback local falhou:', localWriteErr.message);
+        }
+      }
+
+      // Fallback supremo: Base64 Data URI (nunca falha, persiste no Redis e no navegador)
+      const base64Data = `data:${file.mimetype};base64,${file.buffer.toString('base64')}`;
+      uploadedFiles.push({
+        id: fileId,
+        src: base64Data,
+        filename: file.originalname,
+        originalName: file.originalname,
+        size: file.size,
+        title: '',
+        subtitle: 'Gallery',
+        description: ''
+      });
     }
 
     res.json({ success: true, files: uploadedFiles });
   } catch (err) {
-    console.error('Erro no upload:', err);
-    res.status(500).json({ error: 'Falha no processamento do upload.' });
+    console.error('Erro no processamento do upload:', err);
+    res.status(500).json({ error: 'Falha no processamento do upload: ' + (err.message || 'Erro desconhecido') });
   }
 });
 
 // 9. Envio do formulário de contato
-app.post('/api/contact', (req, res) => {
+app.post('/api/contact', async (req, res) => {
   const { firstName, lastName, email, message } = req.body;
-  console.log(`[Mensagem de Contato Recebida] De: ${firstName} ${lastName} <${email}>\nMensagem: ${message}`);
+  console.log(`[Mensagem de Contato] De: ${firstName} ${lastName} <${email}>\nMensagem: ${message}`);
   
-  // Salvar mensagem recebida em arquivo de log/leads
-  const leadsPath = path.join(__dirname, 'data', 'messages.json');
-  let messages = [];
-  if (fs.existsSync(leadsPath)) {
-    try { messages = JSON.parse(fs.readFileSync(leadsPath, 'utf-8')); } catch (e) {}
-  }
-  messages.push({
+  const newMsg = {
     id: 'msg_' + Date.now(),
     date: new Date().toISOString(),
     firstName,
     lastName,
     email,
     message
-  });
-  fs.writeFileSync(leadsPath, JSON.stringify(messages, null, 2), 'utf-8');
+  };
+
+  if (redisClient) {
+    try {
+      const existing = await redisClient.get('contact_messages') || [];
+      const msgList = typeof existing === 'string' ? JSON.parse(existing) : existing;
+      msgList.push(newMsg);
+      await redisClient.set('contact_messages', JSON.stringify(msgList));
+    } catch (e) {}
+  }
+
+  if (!process.env.VERCEL) {
+    try {
+      const leadsPath = path.join(__dirname, 'data', 'messages.json');
+      let messages = [];
+      if (fs.existsSync(leadsPath)) {
+        try { messages = JSON.parse(fs.readFileSync(leadsPath, 'utf-8')); } catch (e) {}
+      }
+      messages.push(newMsg);
+      fs.writeFileSync(leadsPath, JSON.stringify(messages, null, 2), 'utf-8');
+    } catch (e) {}
+  }
 
   res.json({ success: true, message: 'Obrigado pelo contato! Sua mensagem foi enviada com sucesso.' });
 });
@@ -593,14 +656,14 @@ app.use((req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Inicialização do servidor (apenas se executado diretamente, não no Vercel serverless)
+// Inicialização do servidor
 if (!process.env.VERCEL) {
   app.listen(PORT, () => {
     console.log(`====================================================`);
     console.log(` 🚀 Art Portfolio Server rodando na porta ${PORT}`);
     console.log(` 👉 Site Público: http://localhost:${PORT}`);
     console.log(` 🔑 Painel ADM:   http://localhost:${PORT}/admin.html`);
-    console.log(` 🔐 Senha Padrão: admin123`);
+    console.log(` 🔐 Senha ADM:    Rennan0712@`);
     console.log(`====================================================`);
   });
 }

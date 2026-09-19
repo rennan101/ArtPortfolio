@@ -946,6 +946,12 @@
     for (let i = 0; i < files.length; i++) formData.append('photos', files[i]);
 
     const token = localStorage.getItem('adm_token');
+    if (!token) {
+      inlineUploadProgress.style.color = '#f87171';
+      inlineUploadProgress.textContent = 'Você precisa estar logado como administrador para enviar fotos.';
+      return;
+    }
+
     inlineUploadProgress.style.color = '#38bdf8';
     inlineUploadProgress.textContent = `Enviando ${files.length} foto(s)...`;
 
@@ -955,8 +961,15 @@
         headers: { 'Authorization': `Bearer ${token}` },
         body: formData
       });
-      const data = await res.json();
-      if (data.success && data.files) {
+
+      let data;
+      try {
+        data = await res.json();
+      } catch (err) {
+        data = { error: `Erro HTTP ${res.status}: ${res.statusText}` };
+      }
+
+      if (res.ok && data.success && data.files) {
         data.files.forEach(f => {
           currentActiveGalleryItems.push({
             id: f.id,
@@ -972,11 +985,14 @@
         showLiveToast(`${data.files.length} foto(s) adicionada(s)! Clique em "Salvar Alterações" no topo.`, 'success');
       } else {
         inlineUploadProgress.style.color = '#f87171';
-        inlineUploadProgress.textContent = data.error || 'Erro no upload.';
+        inlineUploadProgress.textContent = data.error || data.message || `Erro ${res.status}: Falha no upload.`;
+        if (res.status === 401) {
+          showLiveToast('Sessão expirada. Faça login novamente no cadeado.', 'error');
+        }
       }
     } catch (e) {
       inlineUploadProgress.style.color = '#f87171';
-      inlineUploadProgress.textContent = 'Erro ao conectar com o servidor.';
+      inlineUploadProgress.textContent = `Erro de conexão: ${e.message || 'Verifique a rede'}`;
     } finally {
       inlineFileInput.value = '';
     }

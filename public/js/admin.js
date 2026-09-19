@@ -392,7 +392,13 @@
     }
 
     const token = localStorage.getItem('adm_token');
-    showToast(`Enviando ${files.length} foto(s)...`, 'success');
+    if (!token) {
+      showToast('Sessão expirada. Faça login novamente.', 'error');
+      showLogin();
+      return;
+    }
+
+    showToast(`Enviando ${files.length} foto(s)...`, 'info');
 
     try {
       const res = await fetch('/api/upload', {
@@ -400,8 +406,15 @@
         headers: { 'Authorization': `Bearer ${token}` },
         body: formData
       });
-      const data = await res.json();
-      if (data.success && data.files) {
+
+      let data;
+      try {
+        data = await res.json();
+      } catch (err) {
+        data = { error: `Erro HTTP ${res.status}: ${res.statusText}` };
+      }
+
+      if (res.ok && data.success && data.files) {
         // Adiciona as fotos na galeria atual
         data.files.forEach(f => {
           activeGalleryItems.push({
@@ -415,10 +428,13 @@
         renderGalleryGrid();
         showToast(`${data.files.length} foto(s) enviada(s)! Clique em "Salvar Ordem" para confirmar.`, 'success');
       } else {
-        showToast(data.error || 'Erro no upload.', 'error');
+        showToast(data.error || data.message || `Erro ${res.status} no upload.`, 'error');
+        if (res.status === 401) {
+          showLogin();
+        }
       }
     } catch (e) {
-      showToast('Falha no upload dos arquivos.', 'error');
+      showToast(`Erro ao conectar com o servidor: ${e.message}`, 'error');
     } finally {
       fileInput.value = '';
     }

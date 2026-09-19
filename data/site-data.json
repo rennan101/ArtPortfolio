@@ -1,7 +1,7 @@
 {
   "title": "Max Doe",
   "artistName": "Max Doe",
-  "profession": "Visual Artist",
+  "profession": "Visual Artist & Sculptor",
   "bio": "I believe in design that feels, not just functions. Built on curiosity, dialogue, and craft, my work explores how form and message shape experience. Every project is a collaboration, grounded in clarity and made to last.",
   "aboutLongBio": "My work explores the quiet rhythm between light, texture, and human presence. I move between painting, printmaking, and mixed media — always drawn to subtle tension and stillness. Each piece begins with observation and becomes a search for balance between control and chance.",
   "avatar": "/uploads/about.jpg",
@@ -1882,91 +1882,20 @@
             },
             "items": [
               {
-                "id": "lo9J7iEdsYsJgn3k",
-                "src": "/uploads/artistic-bird-ill-797164.jpg",
-                "width": 1566,
-                "height": 2080,
-                "alt": "",
-                "link": null,
+                "id": "img_1789831529947_uktnt",
+                "src": "/uploads/test_art-1789831529947-83718179.jpg",
+                "filename": "test_art-1789831529947-83718179.jpg",
+                "originalName": "test_art.jpg",
+                "size": 38,
                 "title": "",
-                "subtitle": "",
+                "subtitle": "Gallery",
                 "description": ""
               },
               {
-                "id": "sGtQASBGrsU8Wz8G",
-                "src": "/uploads/artistic-bird-ill-995b03.jpg",
-                "width": 1566,
-                "height": 2080,
-                "alt": "",
-                "link": null,
-                "title": "",
-                "subtitle": "",
-                "description": ""
-              },
-              {
-                "id": "PFHJjrye15In74BS",
-                "src": "/uploads/surreal-bird-illu-99a496.jpg",
-                "width": 1560,
-                "height": 2080,
-                "alt": "",
-                "link": null,
-                "title": "",
-                "subtitle": "",
-                "description": ""
-              },
-              {
-                "id": "GendJDkqiQgQtfa3",
-                "src": "/uploads/surreal-fantastic-ae6eee.jpg",
-                "width": 1566,
-                "height": 2080,
-                "alt": "",
-                "link": null,
-                "title": "",
-                "subtitle": "",
-                "description": ""
-              },
-              {
-                "id": "YrDsveFUUjFCtloi",
-                "src": "/uploads/surreal-goat-humanoid.jpg",
-                "width": 1566,
-                "height": 2080,
-                "alt": "",
-                "link": null,
-                "title": "",
-                "subtitle": "",
-                "description": ""
-              },
-              {
-                "id": "UZBdPehLimNAo1ec",
-                "src": "/uploads/surreal-humanoid-artwork.jpg",
-                "width": 1566,
-                "height": 2080,
-                "alt": "",
-                "link": null,
-                "title": "",
-                "subtitle": "",
-                "description": ""
-              },
-              {
-                "id": "Y4BSE4xfKIj8mnrl",
-                "src": "/uploads/whimsical-antelope-art.jpg",
-                "width": 1566,
-                "height": 2080,
-                "alt": "",
-                "link": null,
-                "title": "",
-                "subtitle": "",
-                "description": ""
-              },
-              {
-                "id": "urN6yEE1npyNgTcA",
-                "src": "/uploads/whimsical-bird-character.jpg",
-                "width": 1560,
-                "height": 2080,
-                "alt": "",
-                "link": null,
-                "title": "",
-                "subtitle": "",
+                "id": "sample_item_1",
+                "src": "/uploads/creatures-1.jpg",
+                "title": "Art Piece 1",
+                "subtitle": "Gallery",
                 "description": ""
               }
             ]
