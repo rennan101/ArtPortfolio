@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Portfólio de Arte Visual e Ilustração por Max Doe.">
-  <title id="pageTitle">Max Doe — Visual Artist</title>
+  <meta name="description" content="Portfólio de Arte Visual e Ilustração.">
+  <title id="pageTitle">Portfolio — Visual Artist</title>
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -38,9 +38,9 @@
     </div>
 
     <div class="live-editor-right">
-      <button class="live-save-btn" id="btnLiveSaveAll"><i class="fa-solid fa-check"></i> Salvar Alterações</button>
-      <a href="/admin.html" class="live-tool-btn secondary" target="_blank" title="Abrir Painel Completo"><i class="fa-solid fa-sliders"></i> Painel</a>
-      <button class="live-tool-btn danger" id="btnLiveLogout" title="Sair do Modo Edição"><i class="fa-solid fa-lock"></i> Sair</button>
+      <button class="live-save-btn icon-only-btn" id="btnLiveSaveAll" title="Salvar Alterações"><i class="fa-solid fa-check"></i></button>
+      <a href="/admin.html" class="live-tool-btn secondary icon-only-btn" target="_blank" title="Abrir Painel Completo"><i class="fa-solid fa-sliders"></i></a>
+      <button class="live-tool-btn danger icon-only-btn" id="btnLiveLogout" title="Sair do Modo Edição"><i class="fa-solid fa-lock"></i></button>
     </div>
   </div>
 
@@ -57,7 +57,7 @@
       </div>
     </div>
 
-    <a href="/" class="brand-logo" id="siteBrandLogo">Max Doe</a>
+    <a href="/" class="brand-logo" id="siteBrandLogo"></a>
     
     <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Abrir Menu">
       <i class="fa-solid fa-bars"></i>
@@ -79,7 +79,7 @@
       <!-- Ícones de redes sociais injetados dinamicamente -->
     </div>
     <div class="footer-content">
-      <p id="footerCopyright">&copy; Max Doe. Todos os direitos reservados.</p>
+      <p id="footerCopyright">&copy; <span id="footerArtistName"></span>. Todos os direitos reservados.</p>
       
       <!-- Ícone Cadeado SVG Discreto e Profissional para Acesso ao Painel ADM -->
       <button id="secretAdminTrigger" class="discreet-lock-btn" title="Área Restrita" aria-label="Painel de Edição">
@@ -211,11 +211,31 @@
         </div>
       </div>
 
+      <!-- Seção 1.5: Elementos Visuais e Separadores de Grid -->
+      <div class="drawer-group">
+        <label class="drawer-label"><i class="fa-solid fa-grip-lines"></i> Elementos Visuais & Linhas</label>
+        <p class="drawer-help">Adicione divisores estéticos e separadores de seção:</p>
+        <div class="drawer-block-buttons">
+          <button type="button" class="drawer-action-btn" id="btnInsertDividerLine">
+            <i class="fa-solid fa-minus"></i>
+            <span>Linha Fina Discreta</span>
+          </button>
+          <button type="button" class="drawer-action-btn" id="btnInsertAccentDivider">
+            <i class="fa-solid fa-grip-lines"></i>
+            <span>Linha de Destaque</span>
+          </button>
+          <button type="button" class="drawer-action-btn" id="btnInsertGridSpacer">
+            <i class="fa-solid fa-arrows-up-down"></i>
+            <span>Espaçador Visual</span>
+          </button>
+        </div>
+      </div>
+
       <!-- Seção 2: Formatação do Texto Selecionado ou Focado -->
       <div class="drawer-group">
-        <label class="drawer-label"><i class="fa-solid fa-pen-nib"></i> Formatar Texto Focado</label>
+        <label class="drawer-label"><i class="fa-solid fa-pen-nib"></i> Formatar Texto Focado / Seleção</label>
         <div class="drawer-target-indicator" id="drawerTargetIndicator">
-          Nenhum texto selecionado. Clique em qualquer texto da página para formatar.
+          Nenhum texto selecionado. Selecione ou clique em qualquer texto para formatar.
         </div>
 
         <!-- Fonte -->
@@ -273,7 +293,46 @@
         </div>
       </div>
 
-      <!-- Seção 3: Tipografia Global do Site -->
+      <!-- Seção 2.5: Layout e Formatação da Grid das Galerias -->
+      <div class="drawer-group">
+        <label class="drawer-label"><i class="fa-solid fa-table-cells-large"></i> Formatar Grid das Galerias</label>
+        <p class="drawer-help">Ajuste colunas e espaçamento do grid de fotos:</p>
+        
+        <div class="drawer-control-row">
+          <label>Colunas da Grid:</label>
+          <select id="gridColumnsSelect" class="drawer-select">
+            <option value="auto">Automático (Responsivo 3-4)</option>
+            <option value="1">1 Coluna (Lista Vertical Grande)</option>
+            <option value="2">2 Colunas (Grandes)</option>
+            <option value="3">3 Colunas (Padrão)</option>
+            <option value="4">4 Colunas (Compacto)</option>
+            <option value="5">5 Colunas (Mural)</option>
+          </select>
+        </div>
+
+        <div class="drawer-control-row">
+          <label>Espaçamento entre Fotos:</label>
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <input type="range" id="gridGapRange" min="0" max="60" value="24" class="drawer-range" />
+            <span id="gridGapValue" style="font-size: 0.85rem; font-weight: 600; width: 42px; text-align: right;">24px</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Seção 3: Configuração do E-mail de Contato -->
+      <div class="drawer-group">
+        <label class="drawer-label"><i class="fa-solid fa-envelope-open-text"></i> Destinatário das Mensagens</label>
+        <p class="drawer-help">E-mail que receberá os envios do formulário de contato:</p>
+        
+        <div class="drawer-control-row" style="flex-direction: column; align-items: stretch; gap: 6px;">
+          <input type="email" id="contactReceiverEmailInput" placeholder="ex: seuemail@dominio.com" style="width: 100%; padding: 8px 12px; background: #1e293b; color: #fff; border: 1px solid #475569; border-radius: 6px; font-size: 0.88rem;" />
+          <button type="button" id="btnSaveReceiverEmail" class="modal-submit-btn" style="padding: 6px 12px; font-size: 0.82rem; margin-top: 4px;">
+            <i class="fa-solid fa-check"></i> Salvar E-mail Destinatário
+          </button>
+        </div>
+      </div>
+
+      <!-- Seção 4: Tipografia Global do Site -->
       <div class="drawer-group">
         <label class="drawer-label"><i class="fa-solid fa-sliders"></i> Tipografia Global do Site</label>
         <p class="drawer-help">Altera a fonte padrão de títulos e corpo em todo o site:</p>

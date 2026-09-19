@@ -1,5 +1,5 @@
 /* ==========================================================================
-   PORTFOLIOBOX - MAX DOE (ARTIST PORTFOLIO) THEME
+   PORTFOLIOBOX - ARTIST PORTFOLIO THEME
    ========================================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap');
@@ -253,6 +253,50 @@ button {
 .live-save-btn:hover {
   background: #059669;
   transform: translateY(-1px);
+}
+
+.icon-only-btn {
+  padding: 8px 12px !important;
+  font-size: 1rem !important;
+  min-width: 40px;
+  justify-content: center;
+  border-radius: 6px;
+}
+
+/* Divisores e Elementos Visuais Inseridos */
+.custom-divider-line {
+  border: none;
+  border-top: 1px solid #e2e8f0;
+  margin: 30px auto;
+  width: 100%;
+  max-width: 800px;
+}
+
+.custom-accent-divider {
+  border: none;
+  height: 3px;
+  background: var(--accent-color);
+  margin: 35px auto;
+  width: 80px;
+  border-radius: 2px;
+}
+
+.custom-grid-spacer {
+  height: 50px;
+  width: 100%;
+  position: relative;
+}
+
+.editable-active.custom-grid-spacer::after {
+  content: 'Espaçador Visual';
+  display: block;
+  text-align: center;
+  font-size: 0.75rem;
+  color: #94a3b8;
+  line-height: 50px;
+  letter-spacing: 0.05em;
+  border: 1px dashed #cbd5e1;
+  border-radius: 4px;
 }
 
 /* ==========================================================================
@@ -1066,8 +1110,8 @@ button {
    ========================================================================== */
 .portfolio-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-  gap: 40px 30px;
+  grid-template-columns: var(--gallery-grid-cols, repeat(auto-fill, minmax(360px, 1fr)));
+  gap: var(--gallery-grid-gap, 40px 30px);
   margin-top: 30px;
 }
 
@@ -1137,8 +1181,8 @@ button {
    ========================================================================== */
 .gallery-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-  gap: 24px;
+  grid-template-columns: var(--gallery-grid-cols, repeat(auto-fill, minmax(340px, 1fr)));
+  gap: var(--gallery-grid-gap, 24px);
   margin-top: 40px;
 }
 

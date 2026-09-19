@@ -1,4 +1,4 @@
-# Max Doe — Artist Portfolio & CMS
+# Portfolio Studio — Artist Portfolio & CMS
 
 Portfólio de artista profissional com CMS integrado para gerenciamento de fotos, reorganização via Drag & Drop, edição de textos, menus e formulário de contato.
 

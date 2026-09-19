@@ -2062,7 +2062,7 @@
             {
               "id": "b2WPrbc2rDUhEHfv",
               "view": "longtext-view",
-              "content": "<span style='font-weight: bold;'>Max Doe</span><br/>Gustavslundsv 99<br/>167 51 BROMMA<br/>Phone: +46 70 11 22 33<br/>max.doe@gmail.com",
+              "content": "",
               "style": {
                 "margin-bottom": "1.1em",
                 "max-width": "800px",

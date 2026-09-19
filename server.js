@@ -92,17 +92,20 @@ function getInitialLocalData() {
     } catch (e) {}
   }
   return {
-    title: "Max Doe",
-    artistName: "Max Doe",
+    title: "Portfolio",
+    artistName: "Portfolio",
     profession: "Visual Artist",
     bio: "",
     aboutLongBio: "",
     avatar: "/uploads/about.jpg",
-    email: "max.doe@gmail.com",
-    phone: "+46 70 11 22 33",
-    address: "Gustavslundsv 99, 167 51 BROMMA",
+    email: "",
+    contactReceiverEmail: "",
+    phone: "",
+    address: "",
     socialLinks: [],
     menu: [],
+    customStyles: {},
+    aboutSections: [],
     adminPasswordHash: "$2b$10$8Oy52wLdi4ZwUOTna.1/1ugK0jwPg.y3rSj5ODWnn8etOsIDjbtaO",
     pages: []
   };
@@ -341,7 +344,7 @@ app.put('/api/site', async (req, res) => {
 
   if (artistName !== undefined) {
     data.artistName = artistName;
-    if (!data.title || data.title === 'Max Doe') data.title = artistName;
+    if (!data.title || data.title === 'Portfolio' || data.title === 'Max Doe') data.title = artistName;
 
     // Atualiza na página Home
     const homePage = data.pages.find(p => p.isStartPage || p.url === '/' || p.url === '/portfolio');
@@ -410,6 +413,7 @@ app.put('/api/site', async (req, res) => {
 
   if (avatar !== undefined) data.avatar = avatar;
   if (email !== undefined) data.email = email;
+  if (req.body.contactReceiverEmail !== undefined) data.contactReceiverEmail = req.body.contactReceiverEmail;
   if (phone !== undefined) data.phone = phone;
   if (address !== undefined) data.address = address;
   if (socialLinks !== undefined) data.socialLinks = socialLinks;
@@ -719,11 +723,14 @@ app.post('/api/upload', upload.array('photos', 20), async (req, res) => {
 // 9. Envio do formulário de contato
 app.post('/api/contact', async (req, res) => {
   const { firstName, lastName, email, message } = req.body;
-  console.log(`[Mensagem de Contato] De: ${firstName} ${lastName} <${email}>\nMensagem: ${message}`);
+  const data = await readData();
+  const receiver = data.contactReceiverEmail || data.email || 'max.doe@gmail.com';
+  console.log(`[Mensagem de Contato] Para: ${receiver} | De: ${firstName} ${lastName} <${email}>\nMensagem: ${message}`);
   
   const newMsg = {
     id: 'msg_' + Date.now(),
     date: new Date().toISOString(),
+    recipient: receiver,
     firstName,
     lastName,
     email,

@@ -313,13 +313,20 @@
   }
 
   // -------------------------------------------------------------
-  // SUPORTE E NORMALIZAÇÃO DE REDES SOCIAIS
+  // SUPORTE E NORMALIZAÇÃO DE REDES SOCIAIS & PLATAFORMAS ACADÊMICAS
   // -------------------------------------------------------------
+  const SVG_ICONS = {
+    orcid: `<svg viewBox="0 0 256 256" width="1em" height="1em" fill="currentColor" style="display: inline-block; vertical-align: -0.125em;"><path d="M128 0C57.308 0 0 57.308 0 128c0 70.693 57.308 128 128 128 70.693 0 128-57.307 128-128C256 57.308 198.693 0 128 0zm-41.52 186.2H66.2V73.8h20.28v112.4zm-10.14-128.4c-6.84 0-12.36-5.52-12.36-12.36s5.52-12.36 12.36-12.36c6.84 0 12.36 5.52 12.36 12.36s-5.52 12.36-12.36 12.36zm114.72 65.76c0 35.04-24.96 52.68-54.84 52.68H106.8V73.8h30.84c30.12 0 49.32 17.52 49.32 49.68zm-20.64 0c0-22.92-12.72-33.36-30.84-33.36h-8.88v66.72h8.88c18.12 0 30.84-10.44 30.84-33.36z"/></svg>`,
+    cienciavitae: `<svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: -0.125em;"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path><path d="M9 10l2 2 4-4"></path><path d="M9 6h6"></path></svg>`
+  };
+
   const SOCIAL_PLATFORMS = [
     { id: 'instagram', name: 'Instagram', icon: 'instagram', prefix: 'https://instagram.com/' },
     { id: 'whatsapp', name: 'WhatsApp', icon: 'whatsapp', prefix: 'https://wa.me/' },
-    { id: 'facebook', name: 'Facebook', icon: 'facebook', prefix: 'https://facebook.com/' },
+    { id: 'orcid', name: 'ORCID', icon: 'orcid', prefix: 'https://orcid.org/' },
+    { id: 'cienciavitae', name: 'Ciência Vitae', icon: 'cienciavitae', prefix: 'https://cienciavitae.pt/portal/id/' },
     { id: 'linkedin', name: 'LinkedIn', icon: 'linkedin', prefix: 'https://linkedin.com/in/' },
+    { id: 'facebook', name: 'Facebook', icon: 'facebook', prefix: 'https://facebook.com/' },
     { id: 'x-twitter', name: 'Twitter / X', icon: 'x-twitter', prefix: 'https://x.com/' },
     { id: 'youtube', name: 'YouTube', icon: 'youtube', prefix: 'https://youtube.com/@' },
     { id: 'tiktok', name: 'TikTok', icon: 'tiktok', prefix: 'https://tiktok.com/@' },
@@ -332,16 +339,30 @@
   function formatSocialUrl(network, url) {
     if (!url) return '';
     let clean = url.trim();
-    if (network === 'whatsapp') {
+    const netLower = (network || '').toLowerCase();
+    if (netLower === 'whatsapp') {
       if (!clean.startsWith('http')) {
         const digits = clean.replace(/[^0-9]/g, '');
         return digits ? `https://wa.me/${digits}` : clean;
       }
       return clean;
     }
-    if (network === 'instagram') {
+    if (netLower === 'instagram') {
       if (clean.startsWith('@')) return `https://instagram.com/${clean.replace('@', '')}`;
       if (!clean.startsWith('http') && !clean.includes('/')) return `https://instagram.com/${clean}`;
+    }
+    if (netLower === 'orcid') {
+      if (!clean.startsWith('http')) {
+        const cleanId = clean.replace(/^orcid\.org\//i, '').trim();
+        return `https://orcid.org/${cleanId}`;
+      }
+      return clean;
+    }
+    if (netLower === 'cienciavitae' || netLower === 'ciencia vitae') {
+      if (!clean.startsWith('http')) {
+        return `https://cienciavitae.pt/portal/id/${clean}`;
+      }
+      return clean;
     }
     if (!clean.startsWith('http://') && !clean.startsWith('https://')) {
       return `https://${clean}`;
@@ -349,12 +370,14 @@
     return clean;
   }
 
-  function getSocialIconClass(iconName) {
-    if (!iconName) return 'fa-solid fa-link';
+  function getSocialIconMarkup(iconName) {
+    if (!iconName) return '<i class="fa-solid fa-link"></i>';
     const lower = iconName.toLowerCase();
-    if (lower === 'twitter' || lower === 'x' || lower === 'x-twitter') return 'fa-brands fa-x-twitter';
-    if (lower === 'facebook') return 'fa-brands fa-facebook';
-    return `fa-brands fa-${lower}`;
+    if (lower === 'orcid' && SVG_ICONS.orcid) return SVG_ICONS.orcid;
+    if ((lower === 'cienciavitae' || lower === 'ciencia vitae') && SVG_ICONS.cienciavitae) return SVG_ICONS.cienciavitae;
+    if (lower === 'twitter' || lower === 'x' || lower === 'x-twitter') return '<i class="fa-brands fa-x-twitter"></i>';
+    if (lower === 'facebook') return '<i class="fa-brands fa-facebook"></i>';
+    return `<i class="fa-brands fa-${lower}"></i>`;
   }
 
   // Elementos Principais do DOM
@@ -400,6 +423,14 @@
   const btnInsertSubTitle = document.getElementById('btnInsertSubTitle');
   const btnInsertLongText = document.getElementById('btnInsertLongText');
   const btnInsertSmallText = document.getElementById('btnInsertSmallText');
+  const btnInsertDividerLine = document.getElementById('btnInsertDividerLine');
+  const btnInsertAccentDivider = document.getElementById('btnInsertAccentDivider');
+  const btnInsertGridSpacer = document.getElementById('btnInsertGridSpacer');
+  const gridColumnsSelect = document.getElementById('gridColumnsSelect');
+  const gridGapRange = document.getElementById('gridGapRange');
+  const gridGapValue = document.getElementById('gridGapValue');
+  const contactReceiverEmailInput = document.getElementById('contactReceiverEmailInput');
+  const btnSaveReceiverEmail = document.getElementById('btnSaveReceiverEmail');
   const globalHeadingFont = document.getElementById('globalHeadingFont');
   const globalBodyFont = document.getElementById('globalBodyFont');
 
@@ -582,8 +613,14 @@
       if (btnLiveManageMenu) btnLiveManageMenu.innerHTML = `<i class="fa-solid fa-bars"></i> ${t('btn_menus')}`;
       if (btnLiveManageSocial) btnLiveManageSocial.innerHTML = `<i class="fa-solid fa-share-nodes"></i> ${t('btn_socials')}`;
       if (btnLiveEditProfile) btnLiveEditProfile.innerHTML = `<i class="fa-solid fa-user-gear"></i> ${t('btn_profile_bio')}`;
-      if (btnLiveSaveAll) btnLiveSaveAll.innerHTML = `<i class="fa-solid fa-check"></i> ${t('btn_save_changes')}`;
-      if (btnLiveLogout) btnLiveLogout.innerHTML = `<i class="fa-solid fa-lock"></i> ${t('btn_logout')}`;
+      if (btnLiveSaveAll) {
+        btnLiveSaveAll.innerHTML = `<i class="fa-solid fa-check"></i>`;
+        btnLiveSaveAll.title = t('btn_save_changes');
+      }
+      if (btnLiveLogout) {
+        btnLiveLogout.innerHTML = `<i class="fa-solid fa-lock"></i>`;
+        btnLiveLogout.title = t('btn_logout');
+      }
     }
   }
 
@@ -601,6 +638,18 @@
     if (styles.bodyFont) {
       document.documentElement.style.setProperty('--font-body', styles.bodyFont);
       if (globalBodyFont) globalBodyFont.value = styles.bodyFont;
+    }
+    if (styles.gridColumns) {
+      document.documentElement.style.setProperty('--gallery-grid-cols', styles.gridColumns === 'auto' ? 'repeat(auto-fill, minmax(340px, 1fr))' : `repeat(${styles.gridColumns}, 1fr)`);
+      if (gridColumnsSelect) gridColumnsSelect.value = styles.gridColumns;
+    }
+    if (styles.gridGap !== undefined) {
+      document.documentElement.style.setProperty('--gallery-grid-gap', `${styles.gridGap}px`);
+      if (gridGapRange) gridGapRange.value = styles.gridGap;
+      if (gridGapValue) gridGapValue.textContent = `${styles.gridGap}px`;
+    }
+    if (contactReceiverEmailInput) {
+      contactReceiverEmailInput.value = siteData.contactReceiverEmail || siteData.email || '';
     }
   }
 
@@ -626,7 +675,7 @@
   function updateGlobalInfo() {
     if (!siteData) return;
     applyCustomStyles();
-    const name = siteData.artistName || 'Max Doe';
+    const name = siteData.artistName || siteData.title || '';
     if (siteBrandLogo) siteBrandLogo.textContent = name;
     if (footerCopyright) {
       footerCopyright.innerHTML = `&copy; ${name}. ${t('all_rights_reserved')}`;
@@ -638,9 +687,9 @@
       const activeSocials = socialList.filter(s => s.url && s.url.trim());
       if (activeSocials.length > 0) {
         footerSocialIcons.innerHTML = activeSocials.map(s => {
-          const iconCls = getSocialIconClass(s.icon || s.name);
+          const iconMarkup = getSocialIconMarkup(s.icon || s.name);
           const url = formatSocialUrl(s.icon || s.name, s.url);
-          return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="social-icon-link" aria-label="${s.name}" title="${s.name}"><i class="${iconCls}"></i></a>`;
+          return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="social-icon-link" aria-label="${s.name}" title="${s.name}">${iconMarkup}</a>`;
         }).join('');
         footerSocialIcons.style.display = 'flex';
       } else {
@@ -822,11 +871,11 @@
   // 1. PÁGINA HOME (PORTFOLIO)
   // -------------------------------------------------------------
   function renderHomePage() {
-    const artistName = siteData.artistName || 'Max Doe';
+    const artistName = siteData.artistName || siteData.title || '';
     const profession = autoTranslate(siteData.profession || 'Visual Artist');
     const bio = siteData.bio || t('default_bio');
 
-    if (pageTitle) pageTitle.textContent = `${artistName} — ${profession}`;
+    if (pageTitle) pageTitle.textContent = artistName ? `${artistName} — ${profession}` : `Portfolio — ${profession}`;
 
     let portfolioItems = [];
     const homePageData = siteData.pages.find(p => p.url === '/' || p.url === '/portfolio' || p.isStartPage);
@@ -909,9 +958,9 @@
   // 2. PÁGINA DE GALERIA INDIVIDUAL
   // -------------------------------------------------------------
   function renderGalleryPage(page) {
-    const artistName = siteData.artistName || 'Max Doe';
+    const artistName = siteData.artistName || siteData.title || '';
     const translatedPageTitle = autoTranslate(page.title);
-    if (pageTitle) pageTitle.textContent = `${translatedPageTitle} — ${artistName}`;
+    if (pageTitle) pageTitle.textContent = artistName ? `${translatedPageTitle} — ${artistName}` : `${translatedPageTitle} — Portfolio`;
 
     let title = page.title;
     let description = '';
@@ -1007,8 +1056,8 @@
   // 3. PÁGINA SERVICES
   // -------------------------------------------------------------
   function renderServicesPage() {
-    const artistName = siteData.artistName || 'Max Doe';
-    if (pageTitle) pageTitle.textContent = `${t('services_title')} — ${artistName}`;
+    const artistName = siteData.artistName || siteData.title || '';
+    if (pageTitle) pageTitle.textContent = artistName ? `${t('services_title')} — ${artistName}` : `${t('services_title')} — Portfolio`;
 
     const services = [
       {
@@ -1073,9 +1122,9 @@
   // 4. PÁGINA ABOUT
   // -------------------------------------------------------------
   function renderAboutPage() {
-    const artistName = siteData.artistName || 'Max Doe';
+    const artistName = siteData.artistName || siteData.title || '';
     const profession = autoTranslate(siteData.profession || 'Visual Artist');
-    if (pageTitle) pageTitle.textContent = `${t('about_title')} — ${artistName}`;
+    if (pageTitle) pageTitle.textContent = artistName ? `${t('about_title')} — ${artistName}` : `${t('about_title')} — Portfolio`;
 
     // Suporte a Múltiplas Seções no Sobre (ex: Recognition, Selected Clients, Exibições, etc.)
     const defaultSections = [
@@ -1224,8 +1273,8 @@
   // 5. PÁGINA CONTACT
   // -------------------------------------------------------------
   function renderContactPage() {
-    const artistName = siteData.artistName || 'Max Doe';
-    if (pageTitle) pageTitle.textContent = `${t('contact_title')} — ${artistName}`;
+    const artistName = siteData.artistName || siteData.title || '';
+    if (pageTitle) pageTitle.textContent = artistName ? `${t('contact_title')} — ${artistName}` : `${t('contact_title')} — Portfolio`;
 
     mainApp.innerHTML = `
       <div class="contact-container">
@@ -1436,7 +1485,8 @@
       el.addEventListener('input', () => {
         hasPendingChanges = true;
         btnLiveSaveAll.style.background = '#f59e0b';
-        btnLiveSaveAll.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> ${t('btn_save_changes')} *`;
+        btnLiveSaveAll.innerHTML = `<i class="fa-solid fa-floppy-disk"></i>`;
+        btnLiveSaveAll.title = `${t('btn_save_changes')} *`;
 
         const field = el.getAttribute('data-field');
         const index = parseInt(el.getAttribute('data-index'), 10);
@@ -1658,15 +1708,20 @@
       };
     }
 
-    // 1. Mudança de Família da Fonte do elemento selecionado
+    // 1. Mudança de Família da Fonte do elemento selecionado ou seleção interna
     if (drawerFontFamily) {
       drawerFontFamily.onchange = () => {
-        if (!currentSelectedTextEl) {
-          showLiveToast('Selecione ou clique em um texto na página primeiro!', 'info');
+        const val = drawerFontFamily.value;
+        const fontVal = val === 'inherit' ? '' : val;
+        const sel = window.getSelection();
+        if (sel && sel.rangeCount > 0 && !sel.isCollapsed) {
+          document.execCommand('fontName', false, fontVal || 'inherit');
+        } else if (currentSelectedTextEl) {
+          currentSelectedTextEl.style.fontFamily = fontVal;
+        } else {
+          showLiveToast('Selecione uma parte do texto ou clique em uma caixa de texto primeiro!', 'info');
           return;
         }
-        const val = drawerFontFamily.value;
-        currentSelectedTextEl.style.fontFamily = val === 'inherit' ? '' : val;
         hasPendingChanges = true;
         btnLiveSaveAll.style.background = '#f59e0b';
       };
@@ -1677,55 +1732,75 @@
       drawerFontSizeRange.oninput = () => {
         const val = drawerFontSizeRange.value;
         drawerFontSizeValue.textContent = `${val}px`;
-        if (currentSelectedTextEl) {
+        const sel = window.getSelection();
+        if (sel && sel.rangeCount > 0 && !sel.isCollapsed) {
+          // Aplica span estilizado na seleção interna
+          const span = document.createElement('span');
+          span.style.fontSize = `${val}px`;
+          const range = sel.getRangeAt(0);
+          span.appendChild(range.extractContents());
+          range.insertNode(span);
+        } else if (currentSelectedTextEl) {
           currentSelectedTextEl.style.fontSize = `${val}px`;
-          hasPendingChanges = true;
-          btnLiveSaveAll.style.background = '#f59e0b';
         }
+        hasPendingChanges = true;
+        btnLiveSaveAll.style.background = '#f59e0b';
       };
     }
 
-    // 3. Negrito
+    // 3. Negrito (com suporte a seleção individual de texto interno)
     if (btnToggleBold) {
       btnToggleBold.onclick = () => {
-        if (!currentSelectedTextEl) {
-          showLiveToast('Clique em um texto na página primeiro!', 'info');
+        const sel = window.getSelection();
+        if (sel && sel.rangeCount > 0 && !sel.isCollapsed) {
+          document.execCommand('bold', false, null);
+        } else if (currentSelectedTextEl) {
+          const currentWeight = currentSelectedTextEl.style.fontWeight;
+          const isBold = currentWeight === 'bold' || parseInt(currentWeight, 10) >= 600;
+          currentSelectedTextEl.style.fontWeight = isBold ? 'normal' : 'bold';
+          btnToggleBold.classList.toggle('active', !isBold);
+        } else {
+          showLiveToast('Selecione um trecho de texto ou clique em uma caixa!', 'info');
           return;
         }
-        const currentWeight = currentSelectedTextEl.style.fontWeight;
-        const isBold = currentWeight === 'bold' || parseInt(currentWeight, 10) >= 600;
-        currentSelectedTextEl.style.fontWeight = isBold ? 'normal' : 'bold';
-        btnToggleBold.classList.toggle('active', !isBold);
         hasPendingChanges = true;
         btnLiveSaveAll.style.background = '#f59e0b';
       };
     }
 
-    // 4. Itálico
+    // 4. Itálico (com suporte a seleção individual de texto interno)
     if (btnToggleItalic) {
       btnToggleItalic.onclick = () => {
-        if (!currentSelectedTextEl) {
-          showLiveToast('Clique em um texto na página primeiro!', 'info');
+        const sel = window.getSelection();
+        if (sel && sel.rangeCount > 0 && !sel.isCollapsed) {
+          document.execCommand('italic', false, null);
+        } else if (currentSelectedTextEl) {
+          const isItalic = currentSelectedTextEl.style.fontStyle === 'italic';
+          currentSelectedTextEl.style.fontStyle = isItalic ? 'normal' : 'italic';
+          btnToggleItalic.classList.toggle('active', !isItalic);
+        } else {
+          showLiveToast('Selecione um trecho de texto ou clique em uma caixa!', 'info');
           return;
         }
-        const isItalic = currentSelectedTextEl.style.fontStyle === 'italic';
-        currentSelectedTextEl.style.fontStyle = isItalic ? 'normal' : 'italic';
-        btnToggleItalic.classList.toggle('active', !isItalic);
         hasPendingChanges = true;
         btnLiveSaveAll.style.background = '#f59e0b';
       };
     }
 
-    // 5. Sublinhado
+    // 5. Sublinhado (com suporte a seleção individual de texto interno)
     if (btnToggleUnderline) {
       btnToggleUnderline.onclick = () => {
-        if (!currentSelectedTextEl) {
-          showLiveToast('Clique em um texto na página primeiro!', 'info');
+        const sel = window.getSelection();
+        if (sel && sel.rangeCount > 0 && !sel.isCollapsed) {
+          document.execCommand('underline', false, null);
+        } else if (currentSelectedTextEl) {
+          const isUnder = (currentSelectedTextEl.style.textDecoration || '').includes('underline');
+          currentSelectedTextEl.style.textDecoration = isUnder ? 'none' : 'underline';
+          btnToggleUnderline.classList.toggle('active', !isUnder);
+        } else {
+          showLiveToast('Selecione um trecho de texto ou clique em uma caixa!', 'info');
           return;
         }
-        const isUnder = currentSelectedTextEl.style.textDecoration.includes('underline');
-        currentSelectedTextEl.style.textDecoration = isUnder ? 'none' : 'underline';
-        btnToggleUnderline.classList.toggle('active', !isUnder);
         hasPendingChanges = true;
         btnLiveSaveAll.style.background = '#f59e0b';
       };
@@ -1781,16 +1856,19 @@
       };
     }
 
-    // 8. Cor do Texto
+    // 8. Cor do Texto (com suporte a seleção individual de texto interno)
     if (drawerTextColor && drawerTextColorLabel) {
       drawerTextColor.oninput = () => {
         const val = drawerTextColor.value;
         drawerTextColorLabel.textContent = val;
-        if (currentSelectedTextEl) {
+        const sel = window.getSelection();
+        if (sel && sel.rangeCount > 0 && !sel.isCollapsed) {
+          document.execCommand('foreColor', false, val);
+        } else if (currentSelectedTextEl) {
           currentSelectedTextEl.style.color = val;
-          hasPendingChanges = true;
-          btnLiveSaveAll.style.background = '#f59e0b';
         }
+        hasPendingChanges = true;
+        btnLiveSaveAll.style.background = '#f59e0b';
       };
     }
 
@@ -1805,7 +1883,6 @@
       newEl.textContent = defaultText;
       newEl.style.cssText = defaultStyle + '; margin: 15px 0; outline: 2px dashed var(--accent-color);';
 
-      // Insere antes de listas ou no final do container
       const ref = container.querySelector('.about-columns-section') || container.querySelector('.submenu-big-section') || null;
       if (ref) {
         container.insertBefore(newEl, ref);
@@ -1831,6 +1908,92 @@
     }
     if (btnInsertSmallText) {
       btnInsertSmallText.onclick = () => insertCustomTextBlock('span', 'Texto curto ou legenda informativa', 'font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.08em; color: #64748b;');
+    }
+
+    // 9.1 Inserção de Linhas e Separadores Visuais
+    function insertCustomVisualElement(htmlStr) {
+      const container = mainApp.querySelector('.hero-section') || mainApp.querySelector('.about-container') || mainApp.querySelector('.gallery-header') || mainApp.querySelector('.gallery-page-container') || mainApp;
+      if (!container) return;
+
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = htmlStr.trim();
+      const el = tempDiv.firstChild;
+
+      const ref = container.querySelector('.about-columns-section') || container.querySelector('.submenu-big-section') || container.querySelector('.gallery-grid') || null;
+      if (ref) {
+        container.insertBefore(el, ref);
+      } else {
+        container.appendChild(el);
+      }
+
+      hasPendingChanges = true;
+      btnLiveSaveAll.style.background = '#f59e0b';
+      showLiveToast('Elemento visual inserido com sucesso!', 'success');
+    }
+
+    if (btnInsertDividerLine) {
+      btnInsertDividerLine.onclick = () => insertCustomVisualElement('<hr class="custom-divider-line" />');
+    }
+    if (btnInsertAccentDivider) {
+      btnInsertAccentDivider.onclick = () => insertCustomVisualElement('<div class="custom-accent-divider"></div>');
+    }
+    if (btnInsertGridSpacer) {
+      btnInsertGridSpacer.onclick = () => insertCustomVisualElement('<div class="custom-grid-spacer editable-active"></div>');
+    }
+
+    // 9.2 Formatação de Grid das Galerias (Colunas & Espaçamento)
+    if (gridColumnsSelect) {
+      gridColumnsSelect.onchange = () => {
+        const val = gridColumnsSelect.value;
+        const colVal = val === 'auto' ? 'repeat(auto-fill, minmax(340px, 1fr))' : `repeat(${val}, 1fr)`;
+        document.documentElement.style.setProperty('--gallery-grid-cols', colVal);
+        if (!siteData.customStyles) siteData.customStyles = {};
+        siteData.customStyles.gridColumns = val;
+        hasPendingChanges = true;
+        btnLiveSaveAll.style.background = '#f59e0b';
+        showLiveToast(`Grid configurada para ${val === 'auto' ? 'modo automático' : val + ' coluna(s)'}!`, 'info');
+      };
+    }
+
+    if (gridGapRange && gridGapValue) {
+      gridGapRange.oninput = () => {
+        const val = gridGapRange.value;
+        gridGapValue.textContent = `${val}px`;
+        document.documentElement.style.setProperty('--gallery-grid-gap', `${val}px`);
+        if (!siteData.customStyles) siteData.customStyles = {};
+        siteData.customStyles.gridGap = parseInt(val, 10);
+        hasPendingChanges = true;
+        btnLiveSaveAll.style.background = '#f59e0b';
+      };
+    }
+
+    // 9.3 Configuração e Salvamento do E-mail Destinatário de Contato
+    if (btnSaveReceiverEmail && contactReceiverEmailInput) {
+      btnSaveReceiverEmail.onclick = async () => {
+        const newEmail = contactReceiverEmailInput.value.trim();
+        if (!newEmail || !newEmail.includes('@')) {
+          showLiveToast('Por favor, informe um e-mail válido.', 'error');
+          return;
+        }
+
+        const token = localStorage.getItem('adm_token');
+        try {
+          const res = await fetch('/api/site', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify({ contactReceiverEmail: newEmail })
+          });
+          const data = await res.json();
+          if (data.success) {
+            siteData.contactReceiverEmail = newEmail;
+            showLiveToast(`E-mail de destino atualizado para: ${newEmail}`, 'success');
+          } else {
+            showLiveToast('Erro ao salvar e-mail.', 'error');
+          }
+        } catch (e) {
+          showLiveToast('Falha na comunicação com o servidor.', 'error');
+        }
+      };
     }
 
     // 10. Tipografia Global do Site
@@ -1919,7 +2082,7 @@
 
     if (btnLiveEditProfile) {
       btnLiveEditProfile.onclick = () => {
-        const newArtistName = prompt('Nome do Artista:', siteData.artistName || 'Max Doe');
+        const newArtistName = prompt('Nome do Artista:', siteData.artistName || siteData.title || '');
         if (newArtistName === null) return;
         const newProfession = prompt('Profissão / Título (ex: Visual Artist):', siteData.profession || 'Visual Artist');
         if (newProfession === null) return;
@@ -2212,7 +2375,8 @@
           body: JSON.stringify({
             artistName: heroTitle,
             profession: heroSubtitle,
-            bio: heroDesc
+            bio: heroDesc,
+            customStyles: siteData.customStyles || {}
           })
         });
 
@@ -2313,7 +2477,8 @@
     } finally {
       btnLiveSaveAll.disabled = false;
       btnLiveSaveAll.style.background = '#10b981';
-      btnLiveSaveAll.innerHTML = `<i class="fa-solid fa-check"></i> ${t('btn_save_changes')}`;
+      btnLiveSaveAll.innerHTML = `<i class="fa-solid fa-check"></i>`;
+      btnLiveSaveAll.title = t('btn_save_changes');
     }
   }
 
