@@ -104,6 +104,11 @@ function getInitialLocalData() {
     address: "",
     socialLinks: [],
     menu: [],
+    footerMenu: [
+      { title: 'Services', url: '/services' },
+      { title: 'About', url: '/about' },
+      { title: 'Contact', url: '/contact' }
+    ],
     customStyles: {},
     aboutSections: [],
     adminPasswordHash: "$2b$10$8Oy52wLdi4ZwUOTna.1/1ugK0jwPg.y3rSj5ODWnn8etOsIDjbtaO",
@@ -338,13 +343,23 @@ app.put('/api/site', async (req, res) => {
   }
 
   const data = await readData();
-  const { title, artistName, profession, bio, aboutLongBio, avatar, email, phone, address, socialLinks, menu } = req.body;
+  const { title, artistName, profession, bio, aboutLongBio, avatar, email, phone, address, socialLinks, menu, footerMenu } = req.body;
+
+  if (!Array.isArray(data.footerMenu)) {
+    data.footerMenu = [
+      { title: 'Services', url: '/services' },
+      { title: 'About', url: '/about' },
+      { title: 'Contact', url: '/contact' }
+    ];
+  }
 
   if (title !== undefined) data.title = title;
 
   if (artistName !== undefined) {
     data.artistName = artistName;
-    if (!data.title || data.title === 'Portfolio' || data.title === 'Max Doe') data.title = artistName;
+    if (artistName && (!data.title || data.title === 'Portfolio' || data.title === 'Max Doe')) {
+      data.title = artistName;
+    }
 
     // Atualiza na página Home
     const homePage = data.pages.find(p => p.isStartPage || p.url === '/' || p.url === '/portfolio');
@@ -420,7 +435,12 @@ app.put('/api/site', async (req, res) => {
   if (req.body.customStyles !== undefined) data.customStyles = req.body.customStyles;
   if (req.body.aboutSections !== undefined) data.aboutSections = req.body.aboutSections;
 
-  // Atualização do menu com criação automática de página/galeria para qualquer novo menu
+  // Atualização explícita do footerMenu (se fornecido)
+  if (footerMenu !== undefined && Array.isArray(footerMenu)) {
+    data.footerMenu = footerMenu;
+  }
+
+  // Atualização do menu com criação automática de página/galeria e sincronização para footerMenu
   if (menu !== undefined && Array.isArray(menu)) {
     data.menu = menu;
 
@@ -428,6 +448,11 @@ app.put('/api/site', async (req, res) => {
     const homeGrid = homePage?.sections?.find(s => s.gallery);
 
     menu.forEach(item => {
+      // Sincroniza novo item adicionado ao menu para o footerMenu se ainda não existir
+      if (item.url && !data.footerMenu.some(fm => fm.url === item.url || (fm.title && fm.title.toLowerCase() === item.title?.toLowerCase()))) {
+        data.footerMenu.push({ title: item.title, url: item.url });
+      }
+
       if (item.url && item.url.startsWith('/') && item.url !== '/' && item.url !== '/portfolio' && item.url !== '/services' && item.url !== '/about' && item.url !== '/contact') {
         const pageExists = data.pages.some(p => p.url === item.url);
         if (!pageExists) {
@@ -458,7 +483,7 @@ app.get('/api/pages/:url', async (req, res) => {
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
   const pageUrl = req.params.url === 'home' ? '/' : '/' + req.params.url;
   const data = await readData();
-  const page = data.pages.find(p => p.url === pageUrl || p.url === '/' + req.params.url || (pageUrl === '/' && p.isStartPage));
+  const page = data.pages.find(p => p.url === pageUrl || (pageUrl === '/' && p.isStartPage));
 
   if (!page) {
     return res.status(404).json({ error: 'Página não encontrada.' });
@@ -492,6 +517,18 @@ app.post('/api/pages', async (req, res) => {
   if (!data.menu) data.menu = [];
   if (!data.menu.some(m => m.url === cleanUrl)) {
     data.menu.push({ title, url: cleanUrl });
+  }
+
+  // Garante sincronização também com o menu do rodapé
+  if (!Array.isArray(data.footerMenu)) {
+    data.footerMenu = [
+      { title: 'Services', url: '/services' },
+      { title: 'About', url: '/about' },
+      { title: 'Contact', url: '/contact' }
+    ];
+  }
+  if (!data.footerMenu.some(m => m.url === cleanUrl)) {
+    data.footerMenu.push({ title, url: cleanUrl });
   }
 
   const homePage = data.pages.find(p => p.isStartPage || p.url === '/');

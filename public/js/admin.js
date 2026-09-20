@@ -44,8 +44,12 @@
 
   // Menu
   const menuItemsContainer = document.getElementById('menuItemsContainer');
+  const footerMenuItemsContainer = document.getElementById('footerMenuItemsContainer');
   const btnAddMenuItem = document.getElementById('btnAddMenuItem');
+  const btnAddFooterMenuItem = document.getElementById('btnAddFooterMenuItem');
   const btnSaveMenu = document.getElementById('btnSaveMenu');
+  const adminMenuArtistNameInp = document.getElementById('adminMenuArtistNameInp');
+  const btnAdminClearMenuArtistName = document.getElementById('btnAdminClearMenuArtistName');
 
   // Segurança
   const changePasswordForm = document.getElementById('changePasswordForm');
@@ -794,75 +798,199 @@
   // ----------------------------------------------------------------
   // 8. MENUS & LINKS
   // ----------------------------------------------------------------
-  function populateMenuTab() {
-    menuItemsContainer.innerHTML = '';
-    const menuList = siteData.menu || [
-      { title: 'Portfolio', url: '/' },
-      { title: 'Services', url: '/services' },
-      { title: 'About', url: '/about' },
-      { title: 'Contact', url: '/contact' }
-    ];
+  function createAdminMenuRow(item = { title: 'Novo Link', url: '/' }, container) {
+    const row = document.createElement('div');
+    row.className = 'admin-menu-item-row';
+    row.style.cssText = 'display: flex; gap: 8px; align-items: center; background: var(--admin-card); padding: 10px 14px; border-radius: 6px; border: 1px solid var(--admin-border);';
+    row.innerHTML = `
+      <div class="admin-order-btns">
+        <button type="button" class="admin-btn-order btn-move-up" title="Mover para Cima"><i class="fa-solid fa-chevron-up"></i></button>
+        <button type="button" class="admin-btn-order btn-move-down" title="Mover para Baixo"><i class="fa-solid fa-chevron-down"></i></button>
+      </div>
+      <input type="text" class="admin-input menu-title-inp" value="${item.title || ''}" style="flex: 1;" placeholder="Nome do link" />
+      <input type="text" class="admin-input menu-url-inp" value="${item.url || ''}" style="flex: 1;" placeholder="URL (ex: /about)" />
+      <button type="button" class="admin-btn small btn-del-menu" style="background: #ef4444; color: #fff; padding: 8px 12px;" title="Excluir"><i class="fa-solid fa-trash"></i></button>
+    `;
 
-    menuList.forEach((m, idx) => {
-      const row = document.createElement('div');
-      row.style.cssText = 'display: flex; gap: 10px; align-items: center; background: var(--admin-card); padding: 10px 14px; border-radius: 6px;';
-      row.innerHTML = `
-        <input type="text" class="admin-input menu-title-inp" value="${m.title}" style="flex: 1;" placeholder="Nome do link" />
-        <input type="text" class="admin-input menu-url-inp" value="${m.url}" style="flex: 1;" placeholder="URL (ex: /about)" />
-        <button class="admin-btn small btn-del-menu" style="background: #ef4444;"><i class="fa-solid fa-trash"></i></button>
-      `;
+    const btnUp = row.querySelector('.btn-move-up');
+    const btnDown = row.querySelector('.btn-move-down');
+    const btnDel = row.querySelector('.btn-del-menu');
 
-      row.querySelector('.btn-del-menu').addEventListener('click', () => {
-        row.remove();
-      });
+    btnUp.addEventListener('click', () => {
+      const prev = row.previousElementSibling;
+      if (prev) {
+        container.insertBefore(row, prev);
+        updateOrderButtonsState(container);
+      }
+    });
 
-      menuItemsContainer.appendChild(row);
+    btnDown.addEventListener('click', () => {
+      const next = row.nextElementSibling;
+      if (next) {
+        container.insertBefore(next, row);
+        updateOrderButtonsState(container);
+      }
+    });
+
+    btnDel.addEventListener('click', () => {
+      row.remove();
+      updateOrderButtonsState(container);
+    });
+
+    return row;
+  }
+
+  function updateOrderButtonsState(container) {
+    if (!container) return;
+    const rows = container.querySelectorAll('.admin-menu-item-row');
+    rows.forEach((r, idx) => {
+      const up = r.querySelector('.btn-move-up');
+      const down = r.querySelector('.btn-move-down');
+      if (up) up.disabled = idx === 0;
+      if (down) down.disabled = idx === rows.length - 1;
     });
   }
 
-  function setupMenuControls() {
-    btnAddMenuItem.addEventListener('click', () => {
-      const row = document.createElement('div');
-      row.style.cssText = 'display: flex; gap: 10px; align-items: center; background: var(--admin-card); padding: 10px 14px; border-radius: 6px;';
-      row.innerHTML = `
-        <input type="text" class="admin-input menu-title-inp" value="Novo Link" style="flex: 1;" placeholder="Nome do link" />
-        <input type="text" class="admin-input menu-url-inp" value="/" style="flex: 1;" placeholder="URL (ex: /about)" />
-        <button class="admin-btn small btn-del-menu" style="background: #ef4444;"><i class="fa-solid fa-trash"></i></button>
-      `;
-      row.querySelector('.btn-del-menu').addEventListener('click', () => row.remove());
-      menuItemsContainer.appendChild(row);
-    });
+  function populateMenuTab() {
+    if (!siteData) return;
 
-    btnSaveMenu.addEventListener('click', async () => {
-      const rows = menuItemsContainer.querySelectorAll('div');
-      const newMenu = [];
-      rows.forEach(r => {
-        const title = r.querySelector('.menu-title-inp').value.trim();
-        const url = r.querySelector('.menu-url-inp').value.trim();
-        if (title && url) {
-          newMenu.push({ title, url });
+    if (adminMenuArtistNameInp) {
+      adminMenuArtistNameInp.value = siteData.artistName || '';
+    }
+
+    // 1. Menu do Topo
+    if (menuItemsContainer) {
+      menuItemsContainer.innerHTML = '';
+      const menuList = siteData.menu || [
+        { title: 'Portfolio', url: '/' },
+        { title: 'Services', url: '/services' },
+        { title: 'About', url: '/about' },
+        { title: 'Contact', url: '/contact' }
+      ];
+
+      menuList.forEach(m => {
+        const row = createAdminMenuRow(m, menuItemsContainer);
+        menuItemsContainer.appendChild(row);
+      });
+      updateOrderButtonsState(menuItemsContainer);
+    }
+
+    // 2. Menu do Rodapé
+    if (footerMenuItemsContainer) {
+      footerMenuItemsContainer.innerHTML = '';
+      const footerList = siteData.footerMenu || [
+        { title: 'Services', url: '/services' },
+        { title: 'About', url: '/about' },
+        { title: 'Contact', url: '/contact' }
+      ];
+
+      footerList.forEach(m => {
+        const row = createAdminMenuRow(m, footerMenuItemsContainer);
+        footerMenuItemsContainer.appendChild(row);
+      });
+      updateOrderButtonsState(footerMenuItemsContainer);
+    }
+  }
+
+  function setupMenuControls() {
+    if (btnAdminClearMenuArtistName && adminMenuArtistNameInp) {
+      btnAdminClearMenuArtistName.addEventListener('click', () => {
+        adminMenuArtistNameInp.value = '';
+        showToast('Nome do topo limpo. Clique em "Salvar Todos os Menus" para aplicar.', 'info');
+      });
+    }
+
+    if (btnAddMenuItem && menuItemsContainer) {
+      btnAddMenuItem.addEventListener('click', () => {
+        const title = prompt('Título do Novo Menu do Topo (ex: Pinturas):', 'Novo Item');
+        if (!title) return;
+        const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        const url = prompt('URL do Menu (ex: /pinturas):', `/${slug}`);
+        if (!url) return;
+
+        const newItem = { title, url };
+
+        // Adiciona ao menu do topo
+        const row = createAdminMenuRow(newItem, menuItemsContainer);
+        menuItemsContainer.appendChild(row);
+        updateOrderButtonsState(menuItemsContainer);
+
+        // SINCRONIZAÇÃO AUTOMÁTICA: Adiciona também à seção do rodapé
+        if (footerMenuItemsContainer) {
+          const footerRow = createAdminMenuRow(newItem, footerMenuItemsContainer);
+          footerMenuItemsContainer.appendChild(footerRow);
+          updateOrderButtonsState(footerMenuItemsContainer);
+        }
+
+        showToast(`Item "${title}" adicionado no Topo e sincronizado no Rodapé!`, 'success');
+      });
+    }
+
+    if (btnAddFooterMenuItem && footerMenuItemsContainer) {
+      btnAddFooterMenuItem.addEventListener('click', () => {
+        const title = prompt('Título do Link no Rodapé (ex: Contato):', 'Novo Link');
+        if (!title) return;
+        const url = prompt('URL do Link (ex: /contact):', '/');
+        if (!url) return;
+
+        const row = createAdminMenuRow({ title, url }, footerMenuItemsContainer);
+        footerMenuItemsContainer.appendChild(row);
+        updateOrderButtonsState(footerMenuItemsContainer);
+      });
+    }
+
+    if (btnSaveMenu) {
+      btnSaveMenu.addEventListener('click', async () => {
+        btnSaveMenu.disabled = true;
+        btnSaveMenu.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Gravando...';
+
+        const topRows = menuItemsContainer ? menuItemsContainer.querySelectorAll('.admin-menu-item-row') : [];
+        const newMenu = [];
+        topRows.forEach(r => {
+          const title = r.querySelector('.menu-title-inp')?.value?.trim();
+          const url = r.querySelector('.menu-url-inp')?.value?.trim();
+          if (title && url) newMenu.push({ title, url });
+        });
+
+        const footerRows = footerMenuItemsContainer ? footerMenuItemsContainer.querySelectorAll('.admin-menu-item-row') : [];
+        const newFooterMenu = [];
+        footerRows.forEach(r => {
+          const title = r.querySelector('.menu-title-inp')?.value?.trim();
+          const url = r.querySelector('.menu-url-inp')?.value?.trim();
+          if (title && url) newFooterMenu.push({ title, url });
+        });
+
+        const newArtistName = adminMenuArtistNameInp ? adminMenuArtistNameInp.value.trim() : undefined;
+
+        const token = localStorage.getItem('adm_token');
+        try {
+          const res = await fetch('/api/site', {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+              artistName: newArtistName,
+              menu: newMenu,
+              footerMenu: newFooterMenu
+            })
+          });
+          const data = await res.json();
+          if (data.success) {
+            showToast('Menus do cabeçalho, rodapé e nome do topo salvos com sucesso!', 'success');
+            await loadSiteData();
+          } else {
+            showToast(data.error || 'Erro ao salvar menus.', 'error');
+          }
+        } catch (e) {
+          showToast('Erro ao salvar menus.', 'error');
+        } finally {
+          btnSaveMenu.disabled = false;
+          btnSaveMenu.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Salvar Todos os Menus';
         }
       });
-
-      const token = localStorage.getItem('adm_token');
-      try {
-        const res = await fetch('/api/site', {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify({ menu: newMenu })
-        });
-        const data = await res.json();
-        if (data.success) {
-          showToast('Menu de navegação salvo com sucesso!', 'success');
-          await loadSiteData();
-        }
-      } catch (e) {
-        showToast('Erro ao salvar menu.', 'error');
-      }
-    });
+    }
   }
 
   // ----------------------------------------------------------------

@@ -52,6 +52,28 @@
       "url": "/contact"
     }
   ],
+  "footerMenu": [
+    {
+      "title": "Services",
+      "url": "/services"
+    },
+    {
+      "title": "About",
+      "url": "/about"
+    },
+    {
+      "title": "Contact",
+      "url": "/contact"
+    },
+    {
+      "title": "Portfolio",
+      "url": "/"
+    },
+    {
+      "title": "Digital Art",
+      "url": "/digital-art"
+    }
+  ],
   "adminPasswordHash": "$2b$10$8Oy52wLdi4ZwUOTna.1/1ugK0jwPg.y3rSj5ODWnn8etOsIDjbtaO",
   "pages": [
     {
@@ -1886,9 +1908,9 @@
             },
             "items": [
               {
-                "id": "img_1789833465784_l4tl1",
-                "src": "/uploads/test_art-1789833465784-132426466.jpg",
-                "filename": "test_art-1789833465784-132426466.jpg",
+                "id": "img_1789915469809_sev9s",
+                "src": "/uploads/test_art-1789915469809-684727435.jpg",
+                "filename": "test_art-1789915469809-684727435.jpg",
                 "originalName": "test_art.jpg",
                 "size": 38,
                 "title": "",
@@ -2971,6 +2993,14 @@
                 "title": "Digital Art",
                 "subtitle": "Gallery",
                 "description": ""
+              },
+              {
+                "id": "card_1789915469824_3tk",
+                "link": "/sculptures",
+                "src": "/uploads/about.jpg",
+                "title": "Sculptures",
+                "subtitle": "Gallery",
+                "description": ""
               }
             ]
           }
@@ -3330,6 +3360,114 @@
             },
             {
               "id": "el_sub_links_1789833136476",
+              "view": "links-view",
+              "content": [
+                {
+                  "Title": "Portfolio",
+                  "Link": "/"
+                },
+                {
+                  "Title": "Services",
+                  "Link": "/services"
+                },
+                {
+                  "Title": "About",
+                  "Link": "/about"
+                },
+                {
+                  "Title": "Contact",
+                  "Link": "/contact"
+                }
+              ],
+              "style": {
+                "font-size": "4em",
+                "text-transform": "uppercase",
+                "line-height": "125%",
+                "flex-direction": "column"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "page_1789915469824_460x",
+      "url": "/sculptures",
+      "title": "Sculptures",
+      "isStartPage": false,
+      "sections": [
+        {
+          "id": "sec_head_1789915469824",
+          "viewType": "Text",
+          "viewId": "text2",
+          "elements": [
+            {
+              "id": "el_title_1789915469824",
+              "view": "header-view",
+              "content": "Sculptures",
+              "style": {
+                "margin-bottom": "0.7em",
+                "max-width": "800px"
+              }
+            },
+            {
+              "id": "el_desc_1789915469824",
+              "view": "longtext-view",
+              "content": "",
+              "style": {
+                "margin-bottom": "3em",
+                "max-width": "800px",
+                "text-align": "center"
+              }
+            },
+            {
+              "id": "el_tags_1789915469824",
+              "view": "list-view",
+              "content": [
+                {
+                  "Title": "Visuals"
+                },
+                {
+                  "Title": "Storytelling"
+                },
+                {
+                  "Title": "Brand"
+                }
+              ],
+              "style": {
+                "flex-direction": "row",
+                "align-items": "center",
+                "max-width": "800px",
+                "background-color": "#efefef",
+                "justify-content": "center"
+              }
+            }
+          ]
+        },
+        {
+          "id": "sec_gallery_1789915469824",
+          "viewType": "Gallery",
+          "viewId": "evenrows",
+          "gallery": {
+            "id": "gal_1789915469824",
+            "items": []
+          }
+        },
+        {
+          "id": "sec_footer_1789915469824",
+          "viewType": "Text",
+          "viewId": "submenubig",
+          "elements": [
+            {
+              "id": "el_sub_title_1789915469824",
+              "view": "shorttext-view",
+              "content": "Let's work together",
+              "style": {
+                "margin-bottom": "1.75em"
+              }
+            },
+            {
+              "id": "el_sub_links_1789915469824",
               "view": "links-view",
               "content": [
                 {

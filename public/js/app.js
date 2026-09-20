@@ -458,8 +458,16 @@
   // Modal Menu Inline
   const inlineMenuModal = document.getElementById('inlineMenuModal');
   const closeInlineMenuModal = document.getElementById('closeInlineMenuModal');
+  const inlineHeaderArtistNameInput = document.getElementById('inlineHeaderArtistNameInput');
+  const btnInlineClearArtistName = document.getElementById('btnInlineClearArtistName');
+  const inlineMenuTabNav = document.getElementById('inlineMenuTabNav');
+  const inlineMenuTopPane = document.getElementById('inlineMenuTopPane');
+  const inlineMenuFooterPane = document.getElementById('inlineMenuFooterPane');
   const inlineMenuList = document.getElementById('inlineMenuList');
+  const inlineFooterMenuList = document.getElementById('inlineFooterMenuList');
   const btnInlineAddMenuItem = document.getElementById('btnInlineAddMenuItem');
+  const btnInlineAddFooterMenuItem = document.getElementById('btnInlineAddFooterMenuItem');
+  const btnInlineCancelMenu = document.getElementById('btnInlineCancelMenu');
   const btnInlineSaveMenu = document.getElementById('btnInlineSaveMenu');
 
   // Modal Redes Sociais Inline
@@ -677,10 +685,27 @@
   function updateGlobalInfo() {
     if (!siteData) return;
     applyCustomStyles();
-    const name = siteData.artistName || siteData.title || '';
-    if (siteBrandLogo) siteBrandLogo.textContent = name;
+    const name = siteData.artistName !== undefined ? siteData.artistName : (siteData.title || '');
+    if (siteBrandLogo) {
+      siteBrandLogo.textContent = name;
+      if (isLiveAdmin) {
+        siteBrandLogo.classList.add('editable-active');
+        siteBrandLogo.setAttribute('contenteditable', 'true');
+        siteBrandLogo.setAttribute('title', 'Clique para editar ou apagar o nome do topo (ou use o botão Menus)');
+        siteBrandLogo.style.display = 'inline-block';
+        siteBrandLogo.onblur = () => {
+          const newName = siteBrandLogo.innerText.trim();
+          siteData.artistName = newName;
+        };
+      } else {
+        siteBrandLogo.classList.remove('editable-active');
+        siteBrandLogo.removeAttribute('contenteditable');
+        siteBrandLogo.removeAttribute('title');
+        siteBrandLogo.style.display = (name && name.trim()) ? 'inline-block' : 'none';
+      }
+    }
     if (footerCopyright) {
-      footerCopyright.innerHTML = `&copy; ${name}. ${t('all_rights_reserved')}`;
+      footerCopyright.innerHTML = `&copy; ${name || 'Portfolio'}. ${t('all_rights_reserved')}`;
     }
 
     // Renderiza ícones de redes sociais no rodapé
@@ -754,6 +779,13 @@
     window.addEventListener('popstate', () => renderCurrentRoute());
 
     document.body.addEventListener('click', (e) => {
+      const btnFooterEdit = e.target.closest('#btnLiveEditFooterLinks');
+      if (btnFooterEdit) {
+        e.preventDefault();
+        openInlineMenuModal('footer');
+        return;
+      }
+
       if (e.target.closest('.live-action-btn') || e.target.closest('.admin-modal-backdrop') || e.target.closest('#liveAdminToolbar') || e.target.hasAttribute('contenteditable') || e.target.closest('.lang-switcher')) {
         return;
       }
@@ -944,11 +976,7 @@
         ${cardsHtml}
       </section>
 
-      ${renderSubmenuBigSection([
-        { title: 'Services', url: '/services' },
-        { title: 'About', url: '/about' },
-        { title: 'Contact', url: '/contact' }
-      ])}
+      ${renderSubmenuBigSection()}
     `;
 
     if (isLiveAdmin) {
@@ -1040,12 +1068,7 @@
           ${galleryGridHtml}
         </section>
 
-        ${renderSubmenuBigSection([
-          { title: 'Portfolio', url: '/' },
-          { title: 'Services', url: '/services' },
-          { title: 'About', url: '/about' },
-          { title: 'Contact', url: '/contact' }
-        ])}
+        ${renderSubmenuBigSection()}
       </div>
     `;
 
@@ -1111,11 +1134,7 @@
           </div>
         </section>
 
-        ${renderSubmenuBigSection([
-          { title: 'Portfolio', url: '/' },
-          { title: 'About', url: '/about' },
-          { title: 'Contact', url: '/contact' }
-        ])}
+        ${renderSubmenuBigSection()}
       </div>
     `;
   }
@@ -1207,11 +1226,7 @@
           </div>
         ` : ''}
 
-        ${renderSubmenuBigSection([
-          { title: 'Portfolio', url: '/' },
-          { title: 'Services', url: '/services' },
-          { title: 'Contact', url: '/contact' }
-        ])}
+        ${renderSubmenuBigSection()}
       </div>
     `;
 
@@ -1378,17 +1393,36 @@
   }
 
   // -------------------------------------------------------------
-  // HELPER SUBMENU BIG (LET'S WORK TOGETHER)
+  // HELPER SUBMENU BIG (LET'S WORK TOGETHER / MENUS DO FIM DA PÁGINA)
   // -------------------------------------------------------------
-  function renderSubmenuBigSection(links) {
+  function renderSubmenuBigSection(customLinks) {
+    const links = customLinks && customLinks.length > 0
+      ? customLinks
+      : (siteData?.footerMenu && siteData.footerMenu.length > 0
+          ? siteData.footerMenu
+          : [
+              { title: 'Services', url: '/services' },
+              { title: 'About', url: '/about' },
+              { title: 'Contact', url: '/contact' }
+            ]);
+
     let linksHtml = '';
     links.forEach(l => {
       const title = autoTranslate(l.title);
-      linksHtml += `<a href="${l.url}" class="submenu-big-link">${title}</a>`;
+      linksHtml += `<a href="${l.url}" class="submenu-big-link" data-nav>${title}</a>`;
     });
+
+    const editBarHtml = isLiveAdmin ? `
+      <div class="submenu-big-edit-bar">
+        <button type="button" class="live-action-btn" id="btnLiveEditFooterLinks" title="Editar ou Reordenar Menus do Rodapé" style="background: rgba(59, 130, 246, 0.2); border: 1px solid #3b82f6; color: #93c5fd; padding: 7px 16px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;">
+          <i class="fa-solid fa-bars-staggered"></i> Editar Menus do Fim da Página
+        </button>
+      </div>
+    ` : '';
 
     return `
       <section class="submenu-big-section fade-in">
+        ${editBarHtml}
         <span class="submenu-big-title">${t('work_together')}</span>
         <div class="submenu-big-links">
           ${linksHtml}
@@ -2139,10 +2173,13 @@
     }
 
     if (btnLiveManageMenu) {
-      btnLiveManageMenu.onclick = () => openInlineMenuModal();
+      btnLiveManageMenu.onclick = () => openInlineMenuModal('top');
     }
     if (closeInlineMenuModal) {
       closeInlineMenuModal.onclick = () => inlineMenuModal.style.display = 'none';
+    }
+    if (btnInlineCancelMenu) {
+      btnInlineCancelMenu.onclick = () => inlineMenuModal.style.display = 'none';
     }
 
     // Modal de Redes Sociais
@@ -2370,63 +2407,235 @@
     }
   }
 
-  function openInlineMenuModal() {
-    inlineMenuList.innerHTML = '';
-    const menu = siteData.menu || [];
+  function createInlineMenuRow(item = { title: 'Nova Galeria', url: '/nova-galeria' }, container, isFooter = false) {
+    const row = document.createElement('div');
+    row.className = 'menu-item-row';
+    row.innerHTML = `
+      <div class="menu-order-btns">
+        <button type="button" class="btn-order-menu btn-move-up" title="Mover para Cima"><i class="fa-solid fa-chevron-up"></i></button>
+        <button type="button" class="btn-order-menu btn-move-down" title="Mover para Baixo"><i class="fa-solid fa-chevron-down"></i></button>
+      </div>
+      <input type="text" class="menu-title-input" value="${item.title || ''}" placeholder="Título do Menu" style="flex: 1; padding: 8px 12px; background: #1e293b; color: #fff; border: 1px solid #475569; border-radius: 4px; font-size: 0.9rem;" />
+      <input type="text" class="menu-url-input" value="${item.url || ''}" placeholder="/url" style="flex: 1; padding: 8px 12px; background: #1e293b; color: #fff; border: 1px solid #475569; border-radius: 4px; font-size: 0.9rem;" />
+      <button type="button" class="btn-del-menu" style="background: #ef4444; color: #fff; border: none; padding: 8px 10px; border-radius: 4px; cursor: pointer;" title="Excluir"><i class="fa-solid fa-trash"></i></button>
+    `;
 
-    menu.forEach(item => {
-      const row = document.createElement('div');
-      row.style.cssText = 'display: flex; gap: 8px; align-items: center; background: #0f172a; padding: 8px 12px; border-radius: 6px; border: 1px solid #334155;';
-      row.innerHTML = `
-        <input type="text" class="menu-title-input" value="${item.title}" style="flex: 1; padding: 8px 12px; background: #1e293b; color: #fff; border: 1px solid #475569; border-radius: 4px;" />
-        <input type="text" class="menu-url-input" value="${item.url}" style="flex: 1; padding: 8px 12px; background: #1e293b; color: #fff; border: 1px solid #475569; border-radius: 4px;" />
-        <button type="button" class="btn-del-menu" style="background: #ef4444; color: #fff; border: none; padding: 8px 10px; border-radius: 4px; cursor: pointer;"><i class="fa-solid fa-trash"></i></button>
-      `;
-      row.querySelector('.btn-del-menu').onclick = () => row.remove();
-      inlineMenuList.appendChild(row);
-    });
+    const btnUp = row.querySelector('.btn-move-up');
+    const btnDown = row.querySelector('.btn-move-down');
+    const btnDel = row.querySelector('.btn-del-menu');
 
-    btnInlineAddMenuItem.onclick = () => {
-      const row = document.createElement('div');
-      row.style.cssText = 'display: flex; gap: 8px; align-items: center; background: #0f172a; padding: 8px 12px; border-radius: 6px; border: 1px solid #334155;';
-      row.innerHTML = `
-        <input type="text" class="menu-title-input" placeholder="Título do Menu" value="Nova Galeria" style="flex: 1; padding: 8px 12px; background: #1e293b; color: #fff; border: 1px solid #475569; border-radius: 4px;" />
-        <input type="text" class="menu-url-input" placeholder="/url-da-galeria" value="/nova-galeria" style="flex: 1; padding: 8px 12px; background: #1e293b; color: #fff; border: 1px solid #475569; border-radius: 4px;" />
-        <button type="button" class="btn-del-menu" style="background: #ef4444; color: #fff; border: none; padding: 8px 10px; border-radius: 4px; cursor: pointer;"><i class="fa-solid fa-trash"></i></button>
-      `;
-      row.querySelector('.btn-del-menu').onclick = () => row.remove();
-      inlineMenuList.appendChild(row);
-    };
-
-    btnInlineSaveMenu.onclick = async () => {
-      const rows = inlineMenuList.querySelectorAll('div');
-      const newMenu = [];
-      rows.forEach(r => {
-        const title = r.querySelector('.menu-title-input')?.value?.trim();
-        const url = r.querySelector('.menu-url-input')?.value?.trim();
-        if (title && url) newMenu.push({ title, url });
-      });
-
-      const token = localStorage.getItem('adm_token');
-      try {
-        const res = await fetch('/api/site', {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify({ menu: newMenu })
-        });
-        const data = await res.json();
-        if (data.success) {
-          showLiveToast('Menu e galerias atualizados com sucesso!', 'success');
-          inlineMenuModal.style.display = 'none';
-          await fetchSiteData();
-        }
-      } catch (e) {
-        showLiveToast('Erro ao salvar menu.', 'error');
+    btnUp.onclick = () => {
+      const prev = row.previousElementSibling;
+      if (prev) {
+        container.insertBefore(row, prev);
+        updateInlineOrderButtons(container);
       }
     };
+
+    btnDown.onclick = () => {
+      const next = row.nextElementSibling;
+      if (next) {
+        container.insertBefore(next, row);
+        updateInlineOrderButtons(container);
+      }
+    };
+
+    btnDel.onclick = () => {
+      row.remove();
+      updateInlineOrderButtons(container);
+    };
+
+    return row;
+  }
+
+  function updateInlineOrderButtons(container) {
+    if (!container) return;
+    const rows = container.querySelectorAll('.menu-item-row');
+    rows.forEach((r, idx) => {
+      const up = r.querySelector('.btn-move-up');
+      const down = r.querySelector('.btn-move-down');
+      if (up) up.disabled = idx === 0;
+      if (down) down.disabled = idx === rows.length - 1;
+    });
+  }
+
+  function openInlineMenuModal(activeTab = 'top') {
+    if (!siteData) return;
+
+    // Popula o campo do Nome do Topo / Logo
+    if (inlineHeaderArtistNameInput) {
+      inlineHeaderArtistNameInput.value = siteData.artistName || '';
+    }
+
+    if (btnInlineClearArtistName && inlineHeaderArtistNameInput) {
+      btnInlineClearArtistName.onclick = () => {
+        inlineHeaderArtistNameInput.value = '';
+        showLiveToast('Nome do topo limpo. Clique em Salvar para aplicar.', 'info');
+      };
+    }
+
+    // Configuração de Abas
+    if (inlineMenuTabNav) {
+      const tabBtns = inlineMenuTabNav.querySelectorAll('.menu-tab-btn');
+      const switchTab = (tab) => {
+        tabBtns.forEach(b => {
+          if (b.getAttribute('data-menutab') === tab) b.classList.add('active');
+          else b.classList.remove('active');
+        });
+        if (inlineMenuTopPane && inlineMenuFooterPane) {
+          if (tab === 'top') {
+            inlineMenuTopPane.style.display = 'block';
+            inlineMenuFooterPane.style.display = 'none';
+          } else {
+            inlineMenuTopPane.style.display = 'none';
+            inlineMenuFooterPane.style.display = 'block';
+          }
+        }
+      };
+
+      tabBtns.forEach(btn => {
+        btn.onclick = () => switchTab(btn.getAttribute('data-menutab'));
+      });
+
+      switchTab(activeTab);
+    }
+
+    // 1. Preenche Menu do Topo
+    if (inlineMenuList) {
+      inlineMenuList.innerHTML = '';
+      const menu = siteData.menu || [
+        { title: 'Portfolio', url: '/' },
+        { title: 'Services', url: '/services' },
+        { title: 'About', url: '/about' },
+        { title: 'Contact', url: '/contact' }
+      ];
+
+      menu.forEach(item => {
+        const row = createInlineMenuRow(item, inlineMenuList, false);
+        inlineMenuList.appendChild(row);
+      });
+      updateInlineOrderButtons(inlineMenuList);
+    }
+
+    // 2. Preenche Menu do Rodapé
+    if (inlineFooterMenuList) {
+      inlineFooterMenuList.innerHTML = '';
+      const footerMenu = siteData.footerMenu || [
+        { title: 'Services', url: '/services' },
+        { title: 'About', url: '/about' },
+        { title: 'Contact', url: '/contact' }
+      ];
+
+      footerMenu.forEach(item => {
+        const row = createInlineMenuRow(item, inlineFooterMenuList, true);
+        inlineFooterMenuList.appendChild(row);
+      });
+      updateInlineOrderButtons(inlineFooterMenuList);
+    }
+
+    // Botão Adicionar Item no Topo (com sincronização automática no Rodapé)
+    if (btnInlineAddMenuItem && inlineMenuList) {
+      btnInlineAddMenuItem.onclick = () => {
+        const title = prompt('Título do Novo Item de Menu do Topo (ex: Pinturas):', 'Novo Menu');
+        if (!title) return;
+        const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        const url = prompt('URL do Menu (ex: /pinturas):', `/${slug}`);
+        if (!url) return;
+
+        const newItem = { title, url };
+
+        // Adiciona ao topo
+        const row = createInlineMenuRow(newItem, inlineMenuList, false);
+        inlineMenuList.appendChild(row);
+        updateInlineOrderButtons(inlineMenuList);
+
+        // SINCRONIZAÇÃO AUTOMÁTICA: Adiciona também ao rodapé
+        if (inlineFooterMenuList) {
+          const footerRow = createInlineMenuRow(newItem, inlineFooterMenuList, true);
+          inlineFooterMenuList.appendChild(footerRow);
+          updateInlineOrderButtons(inlineFooterMenuList);
+        }
+
+        showLiveToast(`Item "${title}" adicionado no Topo e sincronizado no Rodapé!`, 'success');
+      };
+    }
+
+    // Botão Adicionar Item no Rodapé
+    if (btnInlineAddFooterMenuItem && inlineFooterMenuList) {
+      btnInlineAddFooterMenuItem.onclick = () => {
+        const title = prompt('Título do Link no Rodapé (ex: Contato):', 'Novo Link');
+        if (!title) return;
+        const url = prompt('URL do Link (ex: /contact):', '/');
+        if (!url) return;
+
+        const row = createInlineMenuRow({ title, url }, inlineFooterMenuList, true);
+        inlineFooterMenuList.appendChild(row);
+        updateInlineOrderButtons(inlineFooterMenuList);
+      };
+    }
+
+    // Botão Cancelar
+    if (btnInlineCancelMenu) {
+      btnInlineCancelMenu.onclick = () => {
+        inlineMenuModal.style.display = 'none';
+      };
+    }
+
+    // Botão Salvar Menus
+    if (btnInlineSaveMenu) {
+      btnInlineSaveMenu.onclick = async () => {
+        btnInlineSaveMenu.disabled = true;
+        btnInlineSaveMenu.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Salvando...';
+
+        const topRows = inlineMenuList ? inlineMenuList.querySelectorAll('.menu-item-row') : [];
+        const newMenu = [];
+        topRows.forEach(r => {
+          const title = r.querySelector('.menu-title-input')?.value?.trim();
+          const url = r.querySelector('.menu-url-input')?.value?.trim();
+          if (title && url) newMenu.push({ title, url });
+        });
+
+        const footerRows = inlineFooterMenuList ? inlineFooterMenuList.querySelectorAll('.menu-item-row') : [];
+        const newFooterMenu = [];
+        footerRows.forEach(r => {
+          const title = r.querySelector('.menu-title-input')?.value?.trim();
+          const url = r.querySelector('.menu-url-input')?.value?.trim();
+          if (title && url) newFooterMenu.push({ title, url });
+        });
+
+        const newArtistName = inlineHeaderArtistNameInput ? inlineHeaderArtistNameInput.value.trim() : undefined;
+
+        const token = localStorage.getItem('adm_token');
+        try {
+          const res = await fetch('/api/site', {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+              artistName: newArtistName,
+              menu: newMenu,
+              footerMenu: newFooterMenu
+            })
+          });
+          const data = await res.json();
+          if (data.success) {
+            showLiveToast('Menus do topo, rodapé e nome atualizados com sucesso!', 'success');
+            inlineMenuModal.style.display = 'none';
+            await fetchSiteData();
+            renderCurrentRoute();
+          } else {
+            showLiveToast(data.error || 'Erro ao salvar menus.', 'error');
+          }
+        } catch (e) {
+          showLiveToast('Erro ao salvar menu.', 'error');
+        } finally {
+          btnInlineSaveMenu.disabled = false;
+          btnInlineSaveMenu.innerHTML = '<i class="fa-solid fa-check"></i> Salvar Menus & Alterações';
+        }
+      };
+    }
 
     inlineMenuModal.style.display = 'flex';
   }
@@ -2441,6 +2650,10 @@
     btnLiveSaveAll.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${t('btn_saving')}`;
 
     try {
+      if (siteBrandLogo) {
+        siteData.artistName = siteBrandLogo.innerText.trim();
+      }
+
       // 1. Se estiver na Home
       if (path === '/' || path === '/portfolio') {
         const heroTitle = document.getElementById('liveHeroTitle')?.innerText || siteData.artistName;

@@ -209,19 +209,61 @@
              ======================================================== -->
         <div id="tabMenu" class="tab-pane">
           <div class="admin-header-row">
-            <h2 class="admin-title">Menu de Navegação</h2>
+            <div>
+              <h2 class="admin-title">Menus & Navegação</h2>
+              <p style="color: var(--admin-text-muted); font-size: 0.9rem; margin-top: 4px;">
+                Gerencie o nome do topo, a ordem dos menus do cabeçalho e os links do fim da página.
+              </p>
+            </div>
             <button id="btnSaveMenu" class="admin-btn small success">
-              <i class="fa-solid fa-floppy-disk"></i> Salvar Menu
+              <i class="fa-solid fa-floppy-disk"></i> Salvar Todos os Menus
             </button>
           </div>
 
-          <div id="menuItemsContainer" style="display: flex; flex-direction: column; gap: 12px;">
-            <!-- Itens de menu gerenciáveis -->
+          <!-- 1. Nome do Topo / Logo -->
+          <div class="admin-menu-section" style="margin-bottom: 20px;">
+            <div class="admin-menu-section-header">
+              <span class="admin-menu-section-title"><i class="fa-solid fa-signature"></i> Nome do Topo / Marca (Logo)</span>
+            </div>
+            <div style="display: flex; gap: 10px; align-items: center;">
+              <input type="text" id="adminMenuArtistNameInp" class="admin-input" placeholder="ex: Luana Silva (deixe vazio para excluir/ocultar)" style="flex: 1;" />
+              <button type="button" id="btnAdminClearMenuArtistName" class="admin-btn small secondary" style="background: rgba(239, 68, 68, 0.2); color: #fca5a5; border-color: #ef4444;">
+                <i class="fa-solid fa-eraser"></i> Limpar Nome
+              </button>
+            </div>
           </div>
-          
-          <button id="btnAddMenuItem" class="admin-btn small secondary" style="margin-top: 15px;">
-            <i class="fa-solid fa-plus"></i> Adicionar Item de Menu
-          </button>
+
+          <!-- 2. Menu do Topo (Cabeçalho) -->
+          <div class="admin-menu-section">
+            <div class="admin-menu-section-header">
+              <span class="admin-menu-section-title"><i class="fa-solid fa-arrow-up-wide-short"></i> Menu do Topo (Cabeçalho Principal)</span>
+              <button id="btnAddMenuItem" class="admin-btn small secondary">
+                <i class="fa-solid fa-plus"></i> Adicionar Item no Topo
+              </button>
+            </div>
+            <p style="color: var(--admin-text-muted); font-size: 0.85rem; margin-bottom: 12px;">
+              Clique nas setas <strong>↑ ↓</strong> para alterar a ordem de exibição no cabeçalho:
+            </p>
+            <div id="menuItemsContainer" style="display: flex; flex-direction: column; gap: 10px;">
+              <!-- Itens de menu gerenciáveis do topo -->
+            </div>
+          </div>
+
+          <!-- 3. Menus do Fim da Página (Rodapé) -->
+          <div class="admin-menu-section">
+            <div class="admin-menu-section-header">
+              <span class="admin-menu-section-title"><i class="fa-solid fa-arrow-down-wide-short"></i> Menus do Fim da Página (Rodapé: [SERVIÇOS] [SOBRE] [CONTATO])</span>
+              <button id="btnAddFooterMenuItem" class="admin-btn small secondary">
+                <i class="fa-solid fa-plus"></i> Adicionar Link no Rodapé
+              </button>
+            </div>
+            <p style="color: var(--admin-text-muted); font-size: 0.85rem; margin-bottom: 12px;">
+              Links destacados na seção inferior de todas as páginas. Reordene com as setas <strong>↑ ↓</strong>:
+            </p>
+            <div id="footerMenuItemsContainer" style="display: flex; flex-direction: column; gap: 10px;">
+              <!-- Itens de menu gerenciáveis do rodapé -->
+            </div>
+          </div>
         </div>
 
         <!-- ========================================================

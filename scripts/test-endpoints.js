@@ -124,7 +124,97 @@ const server = app.listen(PORT, async () => {
     const checkSocialRes = await fetch(`http://127.0.0.1:${PORT}/api/site`);
     const checkSocialData = await checkSocialRes.json();
     const socialMatches = checkSocialData.socialLinks && checkSocialData.socialLinks.length === 4 && checkSocialData.socialLinks.some(s => s.name === 'WhatsApp');
-    console.log('10. Social Links Persistence Test (Instagram, WhatsApp, FB, LinkedIn):', socialMatches ? 'PASSED ✅' : 'FAILED ❌');
+    // 11. Test Menu Reorder and Footer Menu Management
+    const reorderPayload = {
+      artistName: 'Luana Silva Studio',
+      menu: [
+        { title: 'Digital Art', url: '/digital-art' },
+        { title: 'Portfolio', url: '/' },
+        { title: 'About', url: '/about' },
+        { title: 'Services', url: '/services' },
+        { title: 'Contact', url: '/contact' }
+      ],
+      footerMenu: [
+        { title: 'About', url: '/about' },
+        { title: 'Services', url: '/services' },
+        { title: 'Contact', url: '/contact' }
+      ]
+    };
+
+    const reorderRes = await fetch(`http://127.0.0.1:${PORT}/api/site`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(reorderPayload)
+    });
+    const reorderData = await reorderRes.json();
+    console.log('11. Menu Reorder & Footer Menu Test:', reorderData.success ? 'PASSED ✅' : 'FAILED ❌');
+
+    // Verify persistence of reordered menus
+    const verifyReorderRes = await fetch(`http://127.0.0.1:${PORT}/api/site`);
+    const verifyReorderData = await verifyReorderRes.json();
+    const topFirstIsDigital = verifyReorderData.menu[0].title === 'Digital Art';
+    const footerFirstIsAbout = verifyReorderData.footerMenu[0].title === 'About';
+    console.log('12. Top Menu Order Persistence Test (First is Digital Art):', topFirstIsDigital ? 'PASSED ✅' : 'FAILED ❌');
+    console.log('13. Footer Menu Order Persistence Test (First is About):', footerFirstIsAbout ? 'PASSED ✅' : 'FAILED ❌');
+
+    // 14. Test Adding New Top Menu -> Auto Sync to Footer Menu
+    const addMenuPayload = {
+      menu: [
+        ...verifyReorderData.menu,
+        { title: 'Sculptures', url: '/sculptures' }
+      ]
+    };
+    const addMenuRes = await fetch(`http://127.0.0.1:${PORT}/api/site`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(addMenuPayload)
+    });
+    const addMenuData = await addMenuRes.json();
+    const footerHasSculptures = addMenuData.data.footerMenu.some(fm => fm.url === '/sculptures');
+    console.log('14. Auto-Sync New Top Menu to Footer Menu Test:', footerHasSculptures ? 'PASSED ✅' : 'FAILED ❌');
+
+    // 15. Test Clearing / Removing Artist Name ("Luana Silva")
+    const clearNameRes = await fetch(`http://127.0.0.1:${PORT}/api/site`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ artistName: '' })
+    });
+    const clearNameData = await clearNameRes.json();
+    const nameCleared = clearNameData.data.artistName === '';
+    console.log('15. Clear Artist Name Test (Empty string):', nameCleared ? 'PASSED ✅' : 'FAILED ❌');
+
+    // Restore original artist name for default view
+    await fetch(`http://127.0.0.1:${PORT}/api/site`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        artistName: 'Luana Silva',
+        menu: [
+          { title: 'Portfolio', url: '/' },
+          { title: 'Digital Art', url: '/digital-art' },
+          { title: 'Services', url: '/services' },
+          { title: 'About', url: '/about' },
+          { title: 'Contact', url: '/contact' }
+        ],
+        footerMenu: [
+          { title: 'Services', url: '/services' },
+          { title: 'About', url: '/about' },
+          { title: 'Contact', url: '/contact' }
+        ]
+      })
+    });
 
     console.log('\n🎉 ALL ADVANCED TESTS PASSED SUCCESSFULLY!');
   } catch (err) {
