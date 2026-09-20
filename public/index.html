@@ -93,8 +93,8 @@
 
   <!-- MODAL DE LOGIN ADMIN DISCRETO -->
   <div id="adminLoginModal" class="admin-modal-backdrop" style="display: none;">
-    <div class="admin-modal-card">
-      <button class="admin-modal-close" id="closeAdminLoginModal">&times;</button>
+    <div class="admin-modal-card login-modal-card">
+      <button class="admin-modal-close" id="closeAdminLoginModal" title="Fechar">&times;</button>
       <div class="admin-modal-header">
         <div class="lock-circle-icon">
           <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -103,14 +103,15 @@
           </svg>
         </div>
         <h3>Modo de Edição Visual</h3>
-        <p>Insira sua credencial de administrador</p>
+        <p>Insira sua credencial de administrador para editar o site</p>
       </div>
 
       <form id="inlineLoginForm">
         <div class="form-group-modal">
-          <input type="password" id="inlineAdminPassword" placeholder="Senha do Administrador" required autocomplete="current-password" />
+          <label for="inlineAdminPassword"><i class="fa-solid fa-key"></i> Senha de Administrador</label>
+          <input type="password" id="inlineAdminPassword" placeholder="Digite a senha de acesso" required autocomplete="current-password" />
         </div>
-        <button type="submit" class="modal-submit-btn" id="btnSubmitInlineLogin">
+        <button type="submit" class="modal-submit-btn" id="btnSubmitInlineLogin" style="width: 100%;">
           <span>Acessar Modo Edição</span>
           <i class="fa-solid fa-arrow-right"></i>
         </button>
@@ -122,20 +123,20 @@
   <!-- MODAL DE UPLOAD DE FOTOS DIRETO NA PÁGINA (WIX STYLE) -->
   <div id="inlineUploadModal" class="admin-modal-backdrop" style="display: none;">
     <div class="admin-modal-card upload-modal-card">
-      <button class="admin-modal-close" id="closeInlineUploadModal">&times;</button>
+      <button class="admin-modal-close" id="closeInlineUploadModal" title="Fechar">&times;</button>
       <div class="admin-modal-header">
-        <div class="lock-circle-icon" style="color: var(--accent-color); border-color: rgba(223,47,60,0.3);">
+        <div class="lock-circle-icon" style="color: var(--accent-color); border-color: rgba(239,68,68,0.3); background: rgba(239,68,68,0.12);">
           <i class="fa-solid fa-cloud-arrow-up"></i>
         </div>
         <h3>Adicionar Fotos nesta Galeria</h3>
-        <p>Arraste fotos ou selecione do computador</p>
+        <p>Arraste fotos ou clique no quadro abaixo para selecionar do computador</p>
       </div>
       
       <div class="inline-upload-dropzone" id="inlineUploadDropzone">
         <input type="file" id="inlineFileInput" multiple accept="image/*" style="display: none;" />
-        <i class="fa-solid fa-images" style="font-size: 2.2rem; margin-bottom: 12px; color: #888;"></i>
-        <p><strong>Clique ou arraste as fotos aqui</strong></p>
-        <span style="font-size: 0.8rem; color: #999;">Formatos: JPG, PNG, WEBP</span>
+        <i class="fa-solid fa-images" style="font-size: 2.4rem; margin-bottom: 12px; color: #94a3b8;"></i>
+        <p style="font-size: 1.05rem;"><strong>Clique ou arraste as fotos aqui</strong></p>
+        <span style="font-size: 0.85rem; color: #94a3b8; margin-top: 6px; display: block;">Formatos suportados: JPG, PNG, WEBP (até 25MB por foto)</span>
       </div>
       <div id="inlineUploadProgress" style="margin-top: 15px; font-size: 0.9rem; font-weight: 600;"></div>
     </div>
@@ -143,10 +144,10 @@
 
   <!-- MODAL DE GERENCIAMENTO DE MENUS & NOME DO TOPO (WIX STYLE) -->
   <div id="inlineMenuModal" class="admin-modal-backdrop" style="display: none;">
-    <div class="admin-modal-card" style="max-width: 580px; text-align: left;">
-      <button class="admin-modal-close" id="closeInlineMenuModal">&times;</button>
+    <div class="admin-modal-card menu-modal-card" style="text-align: left;">
+      <button class="admin-modal-close" id="closeInlineMenuModal" title="Fechar">&times;</button>
       <div class="admin-modal-header" style="text-align: center;">
-        <div class="lock-circle-icon" style="color: #60a5fa; border-color: rgba(96, 165, 250, 0.3);">
+        <div class="lock-circle-icon" style="color: #60a5fa; border-color: rgba(96, 165, 250, 0.3); background: rgba(59, 130, 246, 0.12);">
           <i class="fa-solid fa-bars-staggered"></i>
         </div>
         <h3>Gerenciar Menus & Nome do Topo</h3>
@@ -154,14 +155,14 @@
       </div>
 
       <!-- Campo para Editar/Excluir Nome do Artista no Topo -->
-      <div style="background: #0f172a; padding: 12px 14px; border-radius: 8px; border: 1px solid #334155; margin-bottom: 16px;">
-        <label style="display: block; font-size: 0.82rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; margin-bottom: 6px;">
+      <div style="background: #0f172a; padding: 14px 16px; border-radius: 8px; border: 1px solid #334155; margin-bottom: 16px;">
+        <label style="display: block; font-size: 0.82rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px;">
           <i class="fa-solid fa-signature"></i> Nome do Artista / Logo do Topo:
         </label>
-        <div style="display: flex; gap: 8px; align-items: center;">
-          <input type="text" id="inlineHeaderArtistNameInput" placeholder="ex: Luana Silva (deixe vazio para excluir/ocultar)" style="flex: 1; padding: 8px 12px; background: #1e293b; color: #fff; border: 1px solid #475569; border-radius: 6px; font-size: 0.92rem;" />
-          <button type="button" id="btnInlineClearArtistName" title="Excluir / Limpar Nome do Topo" style="background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid #ef4444; padding: 8px 12px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; white-space: nowrap;">
-            <i class="fa-solid fa-eraser"></i> Limpar
+        <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+          <input type="text" id="inlineHeaderArtistNameInput" placeholder="ex: Luana Silva (deixe vazio para excluir/ocultar)" style="flex: 1; min-width: 200px; padding: 10px 14px; background: #1e293b; color: #fff; border: 1px solid #475569; border-radius: 6px; font-size: 0.92rem;" />
+          <button type="button" id="btnInlineClearArtistName" title="Excluir / Limpar Nome do Topo" style="background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid #ef4444; padding: 9px 14px; border-radius: 6px; font-size: 0.82rem; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.2s;">
+            <i class="fa-solid fa-eraser"></i> Limpar Nome
           </button>
         </div>
       </div>
@@ -169,7 +170,7 @@
       <!-- Abas para alternar entre Menu do Topo e Menus do Rodapé -->
       <div class="menu-tab-nav" id="inlineMenuTabNav">
         <button type="button" class="menu-tab-btn active" data-menutab="top">
-          <i class="fa-solid fa-arrow-up-wide-short"></i> Menu do Topo
+          <i class="fa-solid fa-arrow-up-wide-short"></i> Menu do Topo (Cabeçalho)
         </button>
         <button type="button" class="menu-tab-btn" data-menutab="footer">
           <i class="fa-solid fa-arrow-down-wide-short"></i> Menus do Rodapé (Fim da Página)
@@ -178,29 +179,29 @@
 
       <!-- Painel 1: Menu do Topo -->
       <div id="inlineMenuTopPane" class="menu-pane-content">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-          <span style="font-size: 0.82rem; color: #94a3b8;">Use as setas <strong style="color: #60a5fa;">↑ ↓</strong> para reorganizar a ordem dos menus:</span>
-          <button type="button" class="modal-secondary-btn" id="btnInlineAddMenuItem" style="padding: 6px 12px; font-size: 0.82rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
+          <span style="font-size: 0.82rem; color: #94a3b8;">Use as setas <strong style="color: #60a5fa;">↑ ↓</strong> para reorganizar a ordem:</span>
+          <button type="button" class="modal-secondary-btn" id="btnInlineAddMenuItem" style="padding: 7px 14px; font-size: 0.82rem;">
             <i class="fa-solid fa-plus"></i> Novo Item no Topo
           </button>
         </div>
-        <div id="inlineMenuList" style="display: flex; flex-direction: column; gap: 8px; max-height: 260px; overflow-y: auto; padding: 4px 0;"></div>
+        <div id="inlineMenuList" style="display: flex; flex-direction: column; gap: 8px; max-height: 280px; overflow-y: auto; padding: 4px 2px;"></div>
       </div>
 
       <!-- Painel 2: Menus do Rodapé -->
       <div id="inlineMenuFooterPane" class="menu-pane-content" style="display: none;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
           <span style="font-size: 0.82rem; color: #94a3b8;">Links gigantes no fim da página ([SERVIÇOS][SOBRE][CONTATO]):</span>
-          <button type="button" class="modal-secondary-btn" id="btnInlineAddFooterMenuItem" style="padding: 6px 12px; font-size: 0.82rem;">
+          <button type="button" class="modal-secondary-btn" id="btnInlineAddFooterMenuItem" style="padding: 7px 14px; font-size: 0.82rem;">
             <i class="fa-solid fa-plus"></i> Novo Link no Rodapé
           </button>
         </div>
-        <div id="inlineFooterMenuList" style="display: flex; flex-direction: column; gap: 8px; max-height: 260px; overflow-y: auto; padding: 4px 0;"></div>
+        <div id="inlineFooterMenuList" style="display: flex; flex-direction: column; gap: 8px; max-height: 280px; overflow-y: auto; padding: 4px 2px;"></div>
       </div>
 
-      <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; border-top: 1px solid #334155; padding-top: 14px;">
+      <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; border-top: 1px solid #334155; padding-top: 16px; flex-wrap: wrap;">
         <button type="button" class="modal-secondary-btn" id="btnInlineCancelMenu">Cancelar</button>
-        <button type="button" class="modal-submit-btn" id="btnInlineSaveMenu" style="margin-top: 0; padding: 10px 24px;">
+        <button type="button" class="modal-submit-btn" id="btnInlineSaveMenu" style="margin-top: 0; padding: 11px 24px;">
           <i class="fa-solid fa-check"></i> Salvar Menus & Alterações
         </button>
       </div>
@@ -209,19 +210,27 @@
 
   <!-- MODAL DE GERENCIAMENTO DE REDES SOCIAIS (WIX STYLE) -->
   <div id="inlineSocialModal" class="admin-modal-backdrop" style="display: none;">
-    <div class="admin-modal-card" style="max-width: 560px;">
-      <button class="admin-modal-close" id="closeInlineSocialModal">&times;</button>
-      <div class="admin-modal-header">
-        <div class="lock-circle-icon" style="color: #38bdf8; border-color: rgba(56, 189, 248, 0.3);">
+    <div class="admin-modal-card social-modal-card" style="text-align: left;">
+      <button class="admin-modal-close" id="closeInlineSocialModal" title="Fechar">&times;</button>
+      <div class="admin-modal-header" style="text-align: center;">
+        <div class="lock-circle-icon" style="color: #38bdf8; border-color: rgba(56, 189, 248, 0.3); background: rgba(56, 189, 248, 0.12);">
           <i class="fa-solid fa-share-nodes"></i>
         </div>
         <h3>Redes Sociais</h3>
         <p>Insira, edite ou apague links do Instagram, WhatsApp, Facebook, LinkedIn, etc.</p>
       </div>
-      <div id="inlineSocialList" style="display: flex; flex-direction: column; gap: 10px; max-height: 350px; overflow-y: auto; padding: 10px 0;"></div>
-      <div style="display: flex; gap: 10px; margin-top: 15px;">
-        <button type="button" class="modal-secondary-btn" id="btnInlineAddSocialItem"><i class="fa-solid fa-plus"></i> Nova Rede Social</button>
-        <button type="button" class="modal-submit-btn" id="btnInlineSaveSocial" style="margin-top: 0;">Salvar Redes Sociais</button>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <span style="font-size: 0.82rem; color: #94a3b8;">Plataformas e URLs:</span>
+        <button type="button" class="modal-secondary-btn" id="btnInlineAddSocialItem" style="padding: 7px 14px; font-size: 0.82rem;">
+          <i class="fa-solid fa-plus"></i> Nova Rede Social
+        </button>
+      </div>
+      <div id="inlineSocialList" style="display: flex; flex-direction: column; gap: 8px; max-height: 280px; overflow-y: auto; padding: 4px 2px;"></div>
+      <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; border-top: 1px solid #334155; padding-top: 16px; flex-wrap: wrap;">
+        <button type="button" class="modal-secondary-btn" id="btnInlineCancelSocial">Cancelar</button>
+        <button type="button" class="modal-submit-btn" id="btnInlineSaveSocial" style="margin-top: 0; padding: 11px 24px;">
+          <i class="fa-solid fa-check"></i> Salvar Redes Sociais
+        </button>
       </div>
     </div>
   </div>

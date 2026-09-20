@@ -475,6 +475,7 @@
   const closeInlineSocialModal = document.getElementById('closeInlineSocialModal');
   const inlineSocialList = document.getElementById('inlineSocialList');
   const btnInlineAddSocialItem = document.getElementById('btnInlineAddSocialItem');
+  const btnInlineCancelSocial = document.getElementById('btnInlineCancelSocial');
   const btnInlineSaveSocial = document.getElementById('btnInlineSaveSocial');
 
   // -------------------------------------------------------------
@@ -2189,6 +2190,9 @@
     if (closeInlineSocialModal) {
       closeInlineSocialModal.onclick = () => inlineSocialModal.style.display = 'none';
     }
+    if (btnInlineCancelSocial) {
+      btnInlineCancelSocial.onclick = () => inlineSocialModal.style.display = 'none';
+    }
 
     if (btnLiveAddPage) {
       btnLiveAddPage.onclick = () => {
@@ -2286,7 +2290,6 @@
   function createInlineSocialRow(socialItem) {
     const row = document.createElement('div');
     row.className = 'inline-social-row';
-    row.style.cssText = 'display: flex; gap: 8px; align-items: center; background: #0f172a; padding: 8px 12px; border-radius: 6px; border: 1px solid #334155;';
 
     let selectOptions = SOCIAL_PLATFORMS.map(net => {
       const selected = (net.name.toLowerCase() === (socialItem.name || '').toLowerCase() || net.icon === socialItem.icon) ? 'selected' : '';
@@ -2294,11 +2297,11 @@
     }).join('');
 
     row.innerHTML = `
-      <select class="social-select" style="padding: 8px 10px; background: #1e293b; color: #fff; border: 1px solid #475569; border-radius: 4px; font-weight: 600; width: 140px;">
+      <select class="social-select">
         ${selectOptions}
       </select>
-      <input type="text" class="social-url-input" value="${socialItem.url || ''}" placeholder="Link / Usuário / WhatsApp" style="flex: 1; padding: 8px 12px; background: #1e293b; color: #fff; border: 1px solid #475569; border-radius: 4px;" />
-      <button type="button" class="btn-del-social" style="background: #ef4444; color: #fff; border: none; padding: 8px 10px; border-radius: 4px; cursor: pointer;" title="Excluir"><i class="fa-solid fa-trash"></i></button>
+      <input type="text" class="social-url-input" value="${socialItem.url || ''}" placeholder="Link / Usuário / WhatsApp" />
+      <button type="button" class="btn-del-social" title="Excluir"><i class="fa-solid fa-trash"></i></button>
     `;
 
     row.querySelector('.btn-del-social').onclick = () => row.remove();
